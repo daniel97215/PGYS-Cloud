@@ -29,6 +29,13 @@ enum MemberStatus {
   REVOKED
 }
 
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+  DISABLED
+}
+
 enum ServiceType {
   CLOUD
   HOSTING
@@ -124,18 +131,40 @@ model Workspace {
 }
 
 model User {
-  id         String     @id @default(uuid()) @db.Uuid
-  email      String     @unique
-  firstName  String
-  lastName   String
-  members    Member[]
-  tickets    Ticket[]
-  activities Activity[]
-  auditLogs  AuditLog[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  passwordHash String?
+  status       UserStatus @default(INVITED)
+  firstName    String
+  lastName     String
+  lastLoginAt  DateTime?
+  members      Member[]
+  sessions     Session[]
+  tickets      Ticket[]
+  activities   Activity[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@index([lastName, firstName])
+  @@index([status])
+}
+
+model Session {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  refreshTokenHash String
+  userAgent        String?
+  ipAddress        String?   @db.VarChar(64)
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  lastSeenAt       DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
 }
 
 model Member {

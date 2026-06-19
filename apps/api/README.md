@@ -31,6 +31,10 @@ doit pointer vers l'instance PostgreSQL locale décrite dans
 `docker-compose.yml`. Les valeurs de `.env.example` sont réservées au
 développement et doivent être adaptées si nécessaire.
 
+Les variables `JWT_ACCESS_SECRET` et `JWT_REFRESH_SECRET` doivent contenir deux
+valeurs aléatoires distinctes d'au moins 32 caractères. Les durées de vie sont
+configurées avec `JWT_ACCESS_EXPIRES_IN` et `JWT_REFRESH_EXPIRES_IN`.
+
 Le fichier `apps/api/.env` contient une configuration locale potentiellement
 sensible : il est ignoré par Git et ne doit jamais être versionné. Seul
 `apps/api/.env.example`, qui ne contient aucun secret réel, sert de modèle.
@@ -80,6 +84,11 @@ pnpm --filter api prisma:studio
 | `GET` | `/workspaces` | Liste les espaces clients |
 | `GET` | `/workspaces/:id` | Retourne un espace client |
 | `POST` | `/workspaces` | Crée un espace client |
+| `POST` | `/auth/register` | Crée un utilisateur et une session |
+| `POST` | `/auth/login` | Ouvre une session |
+| `POST` | `/auth/refresh` | Renouvelle l'access token |
+| `POST` | `/auth/logout` | Révoque la session |
+| `GET` | `/auth/me` | Retourne l'utilisateur authentifié |
 
 Exemple de création :
 

@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@import "@pgys/ui/styles.css";
+@import "../styles/portal.css";
+
+:root {
+  --font-sans: var(--font-geist);
+}
+
+* {
+  border-color: var(--pgys-border);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+html {
+  background: var(--pgys-background);
+}
+
+body {
+  min-width: 320px;
+  background: var(--pgys-background);
+  color: var(--pgys-content);
+  font-family: var(--font-geist), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #172554;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

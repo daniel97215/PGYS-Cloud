@@ -1,0 +1,14 @@
+.portal-backdrop {
+  background-image: radial-gradient(
+    circle at 85% 10%,
+    rgb(37 99 235 / 0.06),
+    transparent 28rem
+  );
+}
+
+@media (min-width: 64rem) {
+  .portal-grid {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+  }
+}

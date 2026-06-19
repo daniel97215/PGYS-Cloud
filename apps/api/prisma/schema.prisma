@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkspaceStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  CLOSING
+  CLOSED
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum MemberStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  REVOKED
+}
+
+enum ServiceType {
+  CLOUD
+  HOSTING
+  BACKUP
+  APP
+  MAINTENANCE
+  MAIL
+}
+
+enum ServiceStatus {
+  REQUESTED
+  PROVISIONING
+  ACTIVE
+  DEGRADED
+  SUSPENDED
+  TERMINATING
+  TERMINATED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+  EXPIRED
+}
+
+enum BillingInterval {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  ONE_TIME
+  CUSTOM
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  OVERDUE
+  VOID
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum AuditAction {
+  CREATED
+  UPDATED
+  DELETED
+  STATUS_CHANGED
+  MEMBER_INVITED
+  MEMBER_REVOKED
+  ROLE_CHANGED
+  SERVICE_CONFIG_CHANGED
+}
+
+model Workspace {
+  id            String          @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String          @unique
+  status        WorkspaceStatus @default(DRAFT)
+  billingEmail  String?
+  phone         String?
+  locale        String          @default("fr-FR")
+  timezone      String          @default("Europe/Paris")
+  members       Member[]
+  subscriptions Subscription[]
+  services      Service[]
+  invoices      Invoice[]
+  tickets       Ticket[]
+  activities    Activity[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  closedAt      DateTime?
+
+  @@index([name])
+  @@index([status])
+}
+
+model User {
+  id         String     @id @default(uuid()) @db.Uuid
+  email      String     @unique
+  firstName  String
+  lastName   String
+  members    Member[]
+  tickets    Ticket[]
+  activities Activity[]
+  auditLogs  AuditLog[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([lastName, firstName])
+}
+
+model Member {
+  id          String       @id @default(uuid()) @db.Uuid
+  workspaceId String       @db.Uuid
+  userId      String       @db.Uuid
+  role        MemberRole   @default(MEMBER)
+  status      MemberStatus @default(INVITED)
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  invitedAt   DateTime     @default(now())
+  joinedAt    DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId, status])
+  @@index([userId])
+}
+
+model Product {
+  id            String         @id @default(uuid()) @db.Uuid
+  code          String         @unique
+  name          String
+  description   String?
+  serviceType   ServiceType
+  isActive      Boolean        @default(true)
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([serviceType, isActive])
+}
+
+model Subscription {
+  id              String             @id @default(uuid()) @db.Uuid
+  workspaceId     String             @db.Uuid
+  productId       String             @db.Uuid
+  status          SubscriptionStatus @default(ACTIVE)
+  priceAmount     Decimal            @db.Decimal(12, 2)
+  currency        String             @default("EUR") @db.VarChar(3)
+  discountAmount  Decimal?           @db.Decimal(12, 2)
+  discountPercent Decimal?           @db.Decimal(5, 2)
+  billingInterval BillingInterval
+  termsSnapshot   Json
+  startsAt        DateTime           @default(now())
+  endsAt          DateTime?
+  cancelledAt     DateTime?
+  workspace       Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  product         Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+  service         Service?
+  invoices        Invoice[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([workspaceId, status])
+  @@index([productId])
+  @@index([status, endsAt])
+}
+
+model Service {
+  id             String           @id @default(uuid()) @db.Uuid
+  workspaceId    String           @db.Uuid
+  subscriptionId String?          @unique @db.Uuid
+  name           String
+  type           ServiceType
+  status         ServiceStatus    @default(REQUESTED)
+  version        Int              @default(1)
+  /// Configuration non secrète, validée par l'API avant écriture.
+  config         Json
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  subscription   Subscription?    @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  accounts       ServiceAccount[]
+  tickets        Ticket[]
+  activities     Activity[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  terminatedAt   DateTime?
+
+  @@index([workspaceId, status])
+  @@index([type, status])
+}
+
+model ServiceAccount {
+  id          String   @id @default(uuid()) @db.Uuid
+  serviceId   String   @db.Uuid
+  email       String   @unique
+  displayName String?
+  externalId  String?
+  isActive    Boolean  @default(true)
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([serviceId, isActive])
+}
+
+model Invoice {
+  id             String        @id @default(uuid()) @db.Uuid
+  workspaceId    String        @db.Uuid
+  subscriptionId String?       @db.Uuid
+  number         String        @unique
+  status         InvoiceStatus @default(DRAFT)
+  totalAmount    Decimal       @db.Decimal(12, 2)
+  currency       String        @default("EUR") @db.VarChar(3)
+  billingDetails Json
+  issuedAt       DateTime      @default(now())
+  dueAt          DateTime
+  paidAt         DateTime?
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([workspaceId, status])
+  @@index([subscriptionId])
+  @@index([status, dueAt])
+}
+
+model Ticket {
+  id          String         @id @default(uuid()) @db.Uuid
+  workspaceId String         @db.Uuid
+  serviceId   String?        @db.Uuid
+  createdById String?        @db.Uuid
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(NORMAL)
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  service     Service?       @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  createdBy   User?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  activities  Activity[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  resolvedAt  DateTime?
+
+  @@index([workspaceId, status])
+  @@index([serviceId])
+  @@index([createdById])
+  @@index([status, priority])
+}
+
+model Activity {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  userId      String?   @db.Uuid
+  serviceId   String?   @db.Uuid
+  ticketId    String?   @db.Uuid
+  type        String
+  message     String
+  metadata    Json?
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  service     Service?  @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  ticket      Ticket?   @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([userId])
+  @@index([serviceId])
+  @@index([ticketId])
+}
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  workspaceId String      @db.Uuid
+  actorId     String?     @db.Uuid
+  action      AuditAction
+  targetType  String
+  targetId    String?
+  metadata    Json?
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  actor       User?       @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([actorId])
+  @@index([targetType, targetId])
+  @@index([action, createdAt])
+}

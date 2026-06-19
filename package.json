@@ -1,9 +1,14 @@
 {
   "name": "PGYS-Cloud",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,5 +21,8 @@
       "onFail": "download"
     }
   },
-  "type": "module"
+  "devDependencies": {
+    "turbo": "latest"
+  },
+    "type": "module"
 }

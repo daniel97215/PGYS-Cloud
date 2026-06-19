@@ -5,14 +5,18 @@ export type IconName =
   | "apps"
   | "arrowRight"
   | "backup"
+  | "bell"
   | "check"
   | "checkCircle"
   | "chevronDown"
   | "cloud"
   | "error"
   | "hosting"
+  | "home"
   | "info"
   | "menu"
+  | "settings"
+  | "ticket"
   | "warning";
 
 export type IconProps = SVGAttributes<SVGSVGElement> & {
@@ -48,6 +52,13 @@ function IconPaths({ name }: { name: IconName }) {
           <path d="M12 8v4l3 2" />
         </>
       );
+    case "bell":
+      return (
+        <>
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+          <path d="M10 21h4" />
+        </>
+      );
     case "check":
       return <path d="m5 12 4 4L19 6" />;
     case "checkCircle":
@@ -81,6 +92,13 @@ function IconPaths({ name }: { name: IconName }) {
           <path d="M8 8h.01M8 16h.01M12 8h5M12 16h5" />
         </>
       );
+    case "home":
+      return (
+        <>
+          <path d="m3 11 9-8 9 8" />
+          <path d="M5 10v10h14V10M9 20v-6h6v6" />
+        </>
+      );
     case "info":
       return (
         <>
@@ -90,6 +108,20 @@ function IconPaths({ name }: { name: IconName }) {
       );
     case "menu":
       return <path d="M4 7h16M4 12h16M4 17h16" />;
+    case "settings":
+      return (
+        <>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 9 19.36a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.63 15 1.7 1.7 0 0 0 3.09 14H3v-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.63h.01A1.7 1.7 0 0 0 10 3.09V3h4v.09A1.7 1.7 0 0 0 15 4.64a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.37 9v.01A1.7 1.7 0 0 0 20.91 10H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z" />
+        </>
+      );
+    case "ticket":
+      return (
+        <>
+          <path d="M3 9a3 3 0 0 0 0 6v3h18v-3a3 3 0 0 0 0-6V6H3v3Z" />
+          <path d="M13 9v.01M13 12v.01M13 15v.01" />
+        </>
+      );
     case "warning":
       return (
         <>

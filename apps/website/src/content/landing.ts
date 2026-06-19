@@ -13,10 +13,16 @@ export type Service = {
   features: string[];
 };
 
-export type Testimonial = {
-  audience: string;
-  context: string;
-  status: string;
+export type CloudPlan = {
+  name: string;
+  storage: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  cta: Link;
+  featured?: boolean;
+  badge?: string;
 };
 
 const services: Service[] = [
@@ -29,7 +35,7 @@ const services: Service[] = [
     features: ["Accès multi-appareils", "Partage sécurisé", "Gestion des utilisateurs"],
   },
   {
-    name: "PGYS Apps",
+    name: "Applications métier",
     tagline: "Un outil qui suit vraiment votre métier.",
     description:
       "Remplacez les tableaux dispersés et les tâches répétitives par une application adaptée à votre activité.",
@@ -37,7 +43,7 @@ const services: Service[] = [
     features: ["Conception sur mesure", "Interfaces simples", "Maintenance incluse"],
   },
   {
-    name: "PGYS Hosting",
+    name: "Hébergement",
     tagline: "Votre service en ligne, sans la charge technique.",
     description:
       "Confiez-nous l’hébergement, la supervision et la maintenance de vos sites et applications.",
@@ -45,10 +51,10 @@ const services: Service[] = [
     features: ["Hébergement en France", "Suivi de disponibilité", "Mises à jour maîtrisées"],
   },
   {
-    name: "PGYS Backup",
-    tagline: "Vos données restent récupérables.",
+    name: "Sauvegardes & maintenance",
+    tagline: "Vos services restent suivis et vos données récupérables.",
     description:
-      "Protégez les fichiers essentiels de votre structure avec des sauvegardes externalisées et suivies.",
+      "Protégez les fichiers essentiels de votre structure et gardez vos outils à jour dans le temps.",
     icon: "backup",
     features: ["Copies externalisées", "Sauvegardes chiffrées", "Restaurations testées"],
   },
@@ -62,18 +68,18 @@ export const landingContent = {
     mobileMenuLabel: "Ouvrir le menu",
     links: [
       { label: "Services", href: "#services" },
-      { label: "Notre approche", href: "#approche" },
-      { label: "Témoignages", href: "#temoignages" },
+      { label: "Pourquoi PGYS", href: "#pourquoi-pgys" },
+      { label: "Offre Cloud", href: "#offres-cloud" },
     ] satisfies Link[],
-    cta: { label: "Parler de votre besoin", href: "#contact" },
+    cta: { label: "Demander un échange", href: "#contact" },
   },
   hero: {
-    eyebrow: "Le numérique à taille humaine",
-    title: "Des outils professionnels qui vous laissent faire votre métier.",
+    eyebrow: "Votre partenaire numérique de proximité",
+    title: "Des solutions numériques simples pour les entreprises",
     description:
-      "PGYS accompagne les indépendants, TPE, PME et associations avec un cloud privé, des applications métier, de l’hébergement et des sauvegardes — sans complexité inutile.",
-    primaryCta: { label: "Échanger sur mon projet", href: "#contact" },
-    secondaryCta: { label: "Découvrir les services", href: "#services" },
+      "Cloud privé, applications métier, hébergement et maintenance : PGYS accompagne les petites entreprises avec des outils fiables, suivis et sans complexité inutile.",
+    primaryCta: { label: "Demander un échange", href: "#contact" },
+    secondaryCta: { label: "Découvrir PGYS Cloud", href: "#offres-cloud" },
     proofPoints: ["Accompagnement humain", "Hébergement en France", "Solutions maintenues"],
     panelLabel: "Votre environnement PGYS",
     panelStatus: "Services suivis",
@@ -87,53 +93,73 @@ export const landingContent = {
     services,
   },
   value: {
-    eyebrow: "Notre approche",
-    title: "La technique reste notre sujet, pas le vôtre.",
+    eyebrow: "Pourquoi PGYS",
+    title: "Un partenaire proche, des solutions maîtrisées.",
     description:
-      "Nous traduisons vos besoins en solutions compréhensibles, fiables et suivies dans le temps.",
+      "PGYS réunit la maîtrise technique et un accompagnement accessible pour que votre numérique reste simple au quotidien.",
     points: [
       {
         number: "01",
-        title: "On écoute votre quotidien",
+        title: "Proximité",
         description:
-          "Nous partons de vos usages, de vos contraintes et de ce qui vous fait perdre du temps.",
+          "Nous partons de votre activité et de vos usages réels pour proposer une réponse adaptée.",
       },
       {
         number: "02",
-        title: "On propose une solution claire",
+        title: "Simplicité",
         description:
-          "Vous savez ce qui est inclus, comment cela fonctionne et pourquoi c’est utile.",
+          "Des outils compréhensibles, des offres lisibles et aucun jargon technique inutile.",
       },
       {
         number: "03",
-        title: "On reste à vos côtés",
+        title: "Support humain",
         description:
-          "Hébergement, maintenance, sauvegardes et support continuent après la mise en ligne.",
+          "Vous échangez avec une personne qui connaît votre contexte et suit votre solution.",
+      },
+      {
+        number: "04",
+        title: "Données hébergées en France",
+        description:
+          "Nous privilégions un hébergement français pour garder vos données sous contrôle.",
       },
     ],
   },
-  testimonials: {
-    eyebrow: "Retours d’expérience",
-    title: "Des relations construites sur la durée.",
+  pricing: {
+    eyebrow: "Offre PGYS Cloud",
+    title: "Un espace adapté à la taille de votre équipe.",
     description:
-      "Les premiers retours clients seront publiés ici avec leur accord. Pas de faux avis, seulement des expériences vérifiables.",
-    items: [
+      "Trois offres simples pour stocker, synchroniser et partager vos fichiers. Tarifs indicatifs, sans souscription automatique.",
+    plans: [
       {
-        audience: "Artisan ou TPE",
-        context: "Cloud partagé et accompagnement",
-        status: "Témoignage à venir",
+        name: "Essentiel",
+        storage: "100 Go",
+        price: "5,99 €",
+        period: "/ mois",
+        description: "Pour démarrer avec un espace professionnel individuel.",
+        features: ["1 utilisateur", "Partage de fichiers", "Support email"],
+        cta: { label: "Choisir Essentiel", href: "mailto:contact@pgys.fr?subject=Offre%20PGYS%20Cloud%20Essentiel" },
       },
       {
-        audience: "Association",
-        context: "Documents communs et gestion des accès",
-        status: "Témoignage à venir",
+        name: "Pro",
+        storage: "500 Go",
+        price: "11,99 €",
+        period: "/ mois",
+        description: "Pour partager les documents d’une petite équipe.",
+        features: ["Jusqu’à 5 utilisateurs", "Synchronisation multi-appareils", "Support prioritaire"],
+        cta: { label: "Choisir Pro", href: "mailto:contact@pgys.fr?subject=Offre%20PGYS%20Cloud%20Pro" },
+        featured: true,
+        badge: "Recommandée",
       },
       {
-        audience: "PME",
-        context: "Application métier et hébergement",
-        status: "Témoignage à venir",
+        name: "Business",
+        storage: "2 To",
+        price: "24,99 €",
+        period: "/ mois",
+        description: "Pour centraliser les fichiers d’une structure en croissance.",
+        features: ["Jusqu’à 15 utilisateurs", "Support prioritaire", "Accompagnement initial"],
+        cta: { label: "Choisir Business", href: "mailto:contact@pgys.fr?subject=Offre%20PGYS%20Cloud%20Business" },
       },
-    ] satisfies Testimonial[],
+    ] satisfies CloudPlan[],
   },
   cta: {
     eyebrow: "Un besoin, même encore imprécis ?",
@@ -156,8 +182,8 @@ export const landingContent = {
       {
         title: "PGYS",
         links: [
-          { label: "Notre approche", href: "#approche" },
-          { label: "Témoignages", href: "#temoignages" },
+          { label: "Pourquoi PGYS", href: "#pourquoi-pgys" },
+          { label: "Offre PGYS Cloud", href: "#offres-cloud" },
           { label: "Nous contacter", href: "mailto:contact@pgys.fr" },
         ],
       },

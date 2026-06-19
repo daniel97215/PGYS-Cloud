@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Link, Service, ServiceIconName, Testimonial } from "@/content/landing";
+import type { CloudPlan, Link, Service, ServiceIconName } from "@/content/landing";
 import { ButtonLink, Container, SectionHeading } from "@/components/ui";
 
 type HeaderProps = {
@@ -153,10 +153,10 @@ type ValueProps = {
 
 export function ValueSection({ eyebrow, title, description, points }: ValueProps) {
   return (
-    <section id="approche" aria-labelledby="approach-title" className="scroll-mt-24 bg-pgys-ink py-20 sm:py-28">
+    <section id="pourquoi-pgys" aria-labelledby="why-title" className="scroll-mt-24 bg-pgys-ink py-20 sm:py-28">
       <Container>
-        <SectionHeading eyebrow={eyebrow} title={title} description={description} titleId="approach-title" inverse />
-        <ol className="mt-14 grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 lg:grid-cols-3">
+        <SectionHeading eyebrow={eyebrow} title={title} description={description} titleId="why-title" inverse />
+        <ol className="mt-14 grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 sm:grid-cols-2 xl:grid-cols-4">
           {points.map((point) => (
             <li key={point.number} className="bg-pgys-ink p-7 sm:p-9">
               <span className="text-sm font-black tracking-[0.2em] text-blue-300">{point.number}</span>
@@ -170,30 +170,39 @@ export function ValueSection({ eyebrow, title, description, points }: ValueProps
   );
 }
 
-type TestimonialsProps = {
+type PricingProps = {
   eyebrow: string;
   title: string;
   description: string;
-  items: Testimonial[];
+  plans: CloudPlan[];
 };
 
-export function TestimonialsSection({ eyebrow, title, description, items }: TestimonialsProps) {
+export function PricingSection({ eyebrow, title, description, plans }: PricingProps) {
   return (
-    <section id="temoignages" aria-labelledby="testimonials-title" className="scroll-mt-24 bg-pgys-mist py-20 sm:py-28">
+    <section id="offres-cloud" aria-labelledby="pricing-title" className="scroll-mt-24 bg-pgys-mist py-20 sm:py-28">
       <Container>
-        <SectionHeading eyebrow={eyebrow} title={title} description={description} titleId="testimonials-title" align="center" />
+        <SectionHeading eyebrow={eyebrow} title={title} description={description} titleId="pricing-title" align="center" />
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {items.map((item) => (
-            <article key={item.audience} className="rounded-[1.5rem] border border-slate-200 bg-white p-7 shadow-sm">
-              <QuoteIcon />
-              <p className="mt-8 text-lg font-bold text-pgys-ink">{item.status}</p>
-              <p className="mt-3 leading-7 text-pgys-slate">{item.context}</p>
-              <p className="mt-8 border-t border-slate-100 pt-5 text-sm font-bold text-pgys-blue">{item.audience}</p>
-            </article>
-          ))}
+          {plans.map((plan) => <PricingCard key={plan.name} plan={plan} />)}
         </div>
       </Container>
     </section>
+  );
+}
+
+function PricingCard({ plan }: { plan: CloudPlan }) {
+  return (
+    <article className={`relative flex flex-col rounded-[1.5rem] border bg-white p-7 ${plan.featured ? "border-pgys-blue shadow-[0_20px_55px_rgba(37,99,235,0.16)] md:-translate-y-3" : "border-slate-200 shadow-sm"}`}>
+      {plan.badge ? <p className="absolute right-5 top-5 rounded-full bg-pgys-blue-light px-3 py-1 text-xs font-bold text-pgys-navy">{plan.badge}</p> : null}
+      <p className="text-lg font-bold text-pgys-ink">{plan.name}</p>
+      <p className="mt-5 text-4xl font-black tracking-[-0.04em] text-pgys-navy">{plan.storage}</p>
+      <p className="mt-2 text-pgys-slate"><span className="font-bold text-pgys-ink">{plan.price}</span> {plan.period}</p>
+      <p className="mt-5 min-h-14 leading-7 text-pgys-slate">{plan.description}</p>
+      <ul className="mt-7 flex-1 space-y-3 border-t border-slate-100 pt-6" aria-label={`Inclus dans l’offre ${plan.name}`}>
+        {plan.features.map((feature) => <li key={feature} className="flex gap-2 text-sm font-semibold text-pgys-ink"><CheckIcon />{feature}</li>)}
+      </ul>
+      <ButtonLink href={plan.cta.href} variant={plan.featured ? "primary" : "secondary"} className="mt-8 w-full">{plan.cta.label}</ButtonLink>
+    </article>
   );
 }
 
@@ -294,8 +303,4 @@ function ArrowIcon() {
 
 function ChevronIcon() {
   return <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 transition group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 8 4 4 4-4" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-
-function QuoteIcon() {
-  return <svg aria-hidden="true" viewBox="0 0 32 32" className="size-9 text-blue-200" fill="currentColor"><path d="M13.4 7.2C8.3 9.5 5.5 13 5 18.1c-.3 3.8 1.7 6.7 5 6.7 2.7 0 4.8-2 4.8-4.7 0-2.5-1.8-4.3-4.3-4.5.7-2.4 2.3-4.2 4.9-5.5l-2-2.9Zm13 0c-5.1 2.3-7.9 5.8-8.4 10.9-.3 3.8 1.7 6.7 5 6.7 2.7 0 4.8-2 4.8-4.7 0-2.5-1.8-4.3-4.3-4.5.7-2.4 2.3-4.2 4.9-5.5l-2-2.9Z" /></svg>;
 }

@@ -1,10 +1,10 @@
 import {
   CtaSection,
   HeroSection,
+  PricingSection,
   ServicesSection,
   SiteFooter,
   SiteHeader,
-  TestimonialsSection,
   ValueSection,
 } from "@/components/landing";
 import { landingContent } from "@/content/landing";
@@ -23,7 +23,7 @@ export default function Home() {
         <HeroSection {...landingContent.hero} />
         <ServicesSection {...landingContent.services} />
         <ValueSection {...landingContent.value} />
-        <TestimonialsSection {...landingContent.testimonials} />
+        <PricingSection {...landingContent.pricing} />
         <CtaSection {...landingContent.cta} />
       </main>
       <SiteFooter

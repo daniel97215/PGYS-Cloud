@@ -9,20 +9,23 @@ import {
 } from "@/components/landing";
 import { landingContent } from "@/content/landing";
 
+const skipLinkClassName = [
+  "sr-only z-50 rounded-lg bg-pgys-navy px-4 py-3",
+  "text-sm font-semibold text-white",
+  "focus:not-sr-only focus:fixed focus:left-4 focus:top-4",
+].join(" ");
+
 export default function Home() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <>
-      <a
-        href="#contenu"
-        className={[
-          "sr-only z-50 rounded-lg bg-pgys-navy px-4 py-3",
-          "text-sm font-semibold text-white",
-          "focus:not-sr-only focus:fixed focus:left-4 focus:top-4",
-        ].join(" ")}
-      >
-        Aller au contenu
+    <div className="min-h-screen bg-white">
+      <a href="#contenu" className={skipLinkClassName}>
+        Aller au contenu principal
       </a>
+
       <SiteHeader {...landingContent.header} />
+
       <main id="contenu">
         <HeroSection {...landingContent.hero} />
         <ServicesSection {...landingContent.services} />
@@ -30,10 +33,11 @@ export default function Home() {
         <PricingSection {...landingContent.pricing} />
         <CtaSection {...landingContent.cta} />
       </main>
+
       <SiteFooter
         {...landingContent.footer}
-        copyright={`© ${new Date().getFullYear()} PGYS. Tous droits réservés.`}
+        copyright={`© ${currentYear} PGYS. Tous droits réservés.`}
       />
-    </>
+    </div>
   );
 }

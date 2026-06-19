@@ -14,7 +14,11 @@ export default function Home() {
     <>
       <a
         href="#contenu"
-        className="sr-only z-50 rounded-lg bg-pgys-navy px-4 py-3 text-sm font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className={[
+          "sr-only z-50 rounded-lg bg-pgys-navy px-4 py-3",
+          "text-sm font-semibold text-white",
+          "focus:not-sr-only focus:fixed focus:left-4 focus:top-4",
+        ].join(" ")}
       >
         Aller au contenu
       </a>

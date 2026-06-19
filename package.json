@@ -14,16 +14,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@10.25.0",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.8.0",
+      "version": "10.25.0",
       "onFail": "download"
     }
   },
   "devDependencies": {
     "turbo": "latest"
   },
-    "type": "module"
+  "type": "module"
 }

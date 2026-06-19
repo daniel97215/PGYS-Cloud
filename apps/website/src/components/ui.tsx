@@ -65,7 +65,11 @@ export function SectionHeading({
 
   return (
     <div className={`flex max-w-3xl flex-col ${alignment}`}>
-      <p className={`mb-4 text-sm font-bold uppercase tracking-[0.18em] ${inverse ? "text-blue-200" : "text-pgys-blue"}`}>
+      <p
+        className={`mb-4 text-sm font-bold uppercase tracking-[0.18em] ${
+          inverse ? "text-blue-200" : "text-pgys-blue"
+        }`}
+      >
         {eyebrow}
       </p>
       <h2

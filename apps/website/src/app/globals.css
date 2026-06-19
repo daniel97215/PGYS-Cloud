@@ -1,25 +1,12 @@
 @import "tailwindcss";
+@import "@pgys/ui/styles.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-pgys-blue: #2563eb;
-  --color-pgys-blue-light: #dbeafe;
-  --color-pgys-navy: #1e3a8a;
-  --color-pgys-ink: #0f172a;
-  --color-pgys-slate: #475569;
-  --color-pgys-mist: #f8fafc;
-  --color-pgys-success: #10b981;
   --font-sans: var(--font-geist);
 }
 
 * {
-  border-color: #e2e8f0;
+  border-color: var(--pgys-border);
 }
 
 html,
@@ -28,13 +15,13 @@ body {
 }
 
 html {
-  background: var(--background);
+  background: var(--pgys-background);
 }
 
 body {
   min-width: 320px;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--pgys-background);
+  color: var(--pgys-content);
   font-family: var(--font-geist), Arial, Helvetica, sans-serif;
 }
 

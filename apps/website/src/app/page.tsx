@@ -19,14 +19,14 @@ export default function Home() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-content">
       <a href="#contenu" className={skipLinkClassName}>
         Aller au contenu principal
       </a>
 
       <SiteHeader {...landingContent.header} />
 
-      <main id="contenu">
+      <main id="contenu" aria-label="Contenu principal">
         <HeroSection {...landingContent.hero} />
         <ServicesSection {...landingContent.services} />
         <ValueSection {...landingContent.value} />

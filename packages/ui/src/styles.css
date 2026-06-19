@@ -1,0 +1,70 @@
+@source ".";
+
+:root {
+  --pgys-background: #ffffff;
+  --pgys-surface: #ffffff;
+  --pgys-surface-muted: #f8fafc;
+  --pgys-content: #0f172a;
+  --pgys-content-muted: #475569;
+  --pgys-border: #e2e8f0;
+  --pgys-brand: #2563eb;
+  --pgys-brand-dark: #1e3a8a;
+  --pgys-brand-soft: #dbeafe;
+  --pgys-success: #10b981;
+  --pgys-warning: #f59e0b;
+  --pgys-danger: #ef4444;
+}
+
+.dark {
+  --pgys-background: #020617;
+  --pgys-surface: #0f172a;
+  --pgys-surface-muted: #1e293b;
+  --pgys-content: #f8fafc;
+  --pgys-content-muted: #cbd5e1;
+  --pgys-border: #334155;
+  --pgys-brand: #60a5fa;
+  --pgys-brand-dark: #93c5fd;
+  --pgys-brand-soft: #172554;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--pgys-background);
+  --color-surface: var(--pgys-surface);
+  --color-surface-muted: var(--pgys-surface-muted);
+  --color-content: var(--pgys-content);
+  --color-content-muted: var(--pgys-content-muted);
+  --color-border: var(--pgys-border);
+  --color-brand: var(--pgys-brand);
+  --color-brand-dark: var(--pgys-brand-dark);
+  --color-brand-soft: var(--pgys-brand-soft);
+  --color-success: var(--pgys-success);
+  --color-warning: var(--pgys-warning);
+  --color-danger: var(--pgys-danger);
+
+  --color-pgys-blue: var(--pgys-brand);
+  --color-pgys-blue-light: var(--pgys-brand-soft);
+  --color-pgys-navy: var(--pgys-brand-dark);
+  --color-pgys-ink: var(--pgys-content);
+  --color-pgys-slate: var(--pgys-content-muted);
+  --color-pgys-mist: var(--pgys-surface-muted);
+  --color-pgys-success: var(--pgys-success);
+
+  --radius-pgys-sm: 0.5rem;
+  --radius-pgys-md: 0.75rem;
+  --radius-pgys-lg: 1rem;
+  --radius-pgys-xl: 1.5rem;
+
+  --shadow-pgys-sm: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-pgys-card: 0 18px 50px rgb(15 23 42 / 0.08);
+  --shadow-pgys-elevated: 0 24px 70px rgb(15 23 42 / 0.14);
+  --shadow-pgys-brand: 0 12px 32px rgb(37 99 235 / 0.22);
+
+  --spacing-pgys-section: 6rem;
+  --spacing-pgys-section-sm: 4rem;
+
+  --text-pgys-display: 3.5rem;
+  --text-pgys-display--line-height: 1.05;
+  --text-pgys-heading: 2.25rem;
+  --text-pgys-heading--line-height: 1.15;
+}

@@ -4,14 +4,14 @@ import { AuthModule } from "./auth/auth.module";
 import { validateEnvironment } from "./config/environment";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { WorkspacesModule } from "./workspaces/workspaces.module";
+import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
     PrismaModule,
     HealthModule,
-    WorkspacesModule,
+    WorkspaceModule,
     AuthModule,
   ],
 })

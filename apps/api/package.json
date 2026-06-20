@@ -7,6 +7,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
+    "test": "jest --runInBand",
     "typecheck": "tsc --noEmit",
     "prisma": "prisma",
     "prisma:generate": "prisma generate",
@@ -21,6 +22,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "11.1.6",
+    "@nestjs/swagger": "^11.4.4",
     "@prisma/client": "6.19.0",
     "argon2": "^0.44.0",
     "class-transformer": "0.5.1",
@@ -28,17 +30,35 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "0.2.2",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "11.0.14",
+    "@nestjs/testing": "^11.1.27",
     "@types/express": "^5",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
+    "jest": "^30.4.2",
     "prisma": "6.19.0",
+    "ts-jest": "^29.4.11",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "^5"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "testEnvironment": "node"
   }
 }

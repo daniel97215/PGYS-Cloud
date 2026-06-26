@@ -109,12 +109,28 @@ enum AuditAction {
 model Workspace {
   id            String          @id @default(uuid()) @db.Uuid
   name          String
+  displayName   String          @db.VarChar(120)
+  legalName     String?
+  siret         String?         @db.VarChar(14)
+  siren         String?         @db.VarChar(9)
+  vatNumber     String?         @db.VarChar(32)
+  addressLine1  String?
+  addressLine2  String?
+  postalCode    String?         @db.VarChar(20)
+  city          String?
+  country       String?         @db.VarChar(80)
   slug          String          @unique
   status        WorkspaceStatus @default(DRAFT)
   billingEmail  String?
   phone         String?
+  website       String?         @db.VarChar(2048)
+  logoUrl       String?         @db.VarChar(2048)
   locale        String          @default("fr-FR")
+  language      String?         @db.VarChar(2)
   timezone      String          @default("Europe/Paris")
+  currency      String?         @db.VarChar(3)
+  activity      String?
+  companySize   String?         @db.VarChar(80)
   members       Member[]
   subscriptions Subscription[]
   services      Service[]

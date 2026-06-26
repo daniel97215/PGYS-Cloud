@@ -11,15 +11,55 @@ import { PrismaService } from "../prisma/prisma.service";
 const workspaceSelect = {
   id: true,
   name: true,
+  displayName: true,
+  legalName: true,
+  siret: true,
+  siren: true,
+  vatNumber: true,
+  addressLine1: true,
+  addressLine2: true,
+  postalCode: true,
+  city: true,
+  country: true,
   slug: true,
   status: true,
   billingEmail: true,
   phone: true,
+  website: true,
+  logoUrl: true,
   locale: true,
+  language: true,
   timezone: true,
+  currency: true,
+  activity: true,
+  companySize: true,
   createdAt: true,
   updatedAt: true,
   closedAt: true,
+} satisfies Prisma.WorkspaceSelect;
+
+const workspaceProfileSelect = {
+  id: true,
+  displayName: true,
+  legalName: true,
+  siret: true,
+  siren: true,
+  vatNumber: true,
+  addressLine1: true,
+  addressLine2: true,
+  postalCode: true,
+  city: true,
+  country: true,
+  phone: true,
+  website: true,
+  logoUrl: true,
+  language: true,
+  timezone: true,
+  currency: true,
+  activity: true,
+  companySize: true,
+  createdAt: true,
+  updatedAt: true,
 } satisfies Prisma.WorkspaceSelect;
 
 const memberSelect = {
@@ -44,6 +84,9 @@ const memberSelect = {
 
 export type WorkspaceRecord = Prisma.WorkspaceGetPayload<{
   select: typeof workspaceSelect;
+}>;
+export type WorkspaceProfileRecord = Prisma.WorkspaceGetPayload<{
+  select: typeof workspaceProfileSelect;
 }>;
 export type MemberRecord = Prisma.MemberGetPayload<{
   select: typeof memberSelect;
@@ -98,6 +141,21 @@ export class WorkspaceRepository {
     });
   }
 
+  findCurrentProfileForUser(
+    userId: string,
+  ): Promise<WorkspaceProfileRecord | null> {
+    return this.prisma.workspace.findFirst({
+      where: {
+        status: { not: WorkspaceStatus.CLOSED },
+        members: {
+          some: { userId, status: MemberStatus.ACTIVE },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      select: workspaceProfileSelect,
+    });
+  }
+
   findActiveMembership(
     workspaceId: string,
     userId: string,
@@ -124,6 +182,7 @@ export class WorkspaceRepository {
       const workspace = await transaction.workspace.create({
         data: {
           name: data.name,
+          displayName: data.name,
           slug: data.slug,
           status: WorkspaceStatus.ACTIVE,
           billingEmail: data.billingEmail,
@@ -154,6 +213,17 @@ export class WorkspaceRepository {
       where: { id },
       data,
       select: workspaceSelect,
+    });
+  }
+
+  updateProfile(
+    id: string,
+    data: Prisma.WorkspaceUpdateInput,
+  ): Promise<WorkspaceProfileRecord> {
+    return this.prisma.workspace.update({
+      where: { id },
+      data,
+      select: workspaceProfileSelect,
     });
   }
 

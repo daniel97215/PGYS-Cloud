@@ -7,6 +7,7 @@ import {
 } from "@prisma/client";
 import {
   MemberRecord,
+  WorkspaceProfileRecord,
   WorkspaceRecord,
   WorkspaceRepository,
 } from "../workspace.repository";
@@ -19,15 +20,54 @@ describe("WorkspaceService", () => {
   const workspace: WorkspaceRecord = {
     id: "10000000-0000-4000-8000-000000000001",
     name: "Garage Martin",
+    displayName: "Garage Martin",
+    legalName: null,
+    siret: null,
+    siren: null,
+    vatNumber: null,
+    addressLine1: null,
+    addressLine2: null,
+    postalCode: null,
+    city: null,
+    country: null,
     slug: "garage-martin",
     status: WorkspaceStatus.ACTIVE,
     billingEmail: null,
     phone: null,
+    website: null,
+    logoUrl: null,
     locale: "fr-FR",
+    language: null,
     timezone: "Europe/Paris",
+    currency: null,
+    activity: null,
+    companySize: null,
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     closedAt: null,
+  };
+  const profile: WorkspaceProfileRecord = {
+    id: workspace.id,
+    displayName: workspace.displayName,
+    legalName: workspace.legalName,
+    siret: workspace.siret,
+    siren: workspace.siren,
+    vatNumber: workspace.vatNumber,
+    addressLine1: workspace.addressLine1,
+    addressLine2: workspace.addressLine2,
+    postalCode: workspace.postalCode,
+    city: workspace.city,
+    country: workspace.country,
+    phone: workspace.phone,
+    website: workspace.website,
+    logoUrl: workspace.logoUrl,
+    language: workspace.language,
+    timezone: workspace.timezone,
+    currency: workspace.currency,
+    activity: workspace.activity,
+    companySize: workspace.companySize,
+    createdAt: workspace.createdAt,
+    updatedAt: workspace.updatedAt,
   };
   const ownerId = "20000000-0000-4000-8000-000000000001";
   const memberId = "30000000-0000-4000-8000-000000000001";
@@ -36,6 +76,7 @@ describe("WorkspaceService", () => {
     repository = {
       findManyForUser: jest.fn(),
       findById: jest.fn().mockResolvedValue(workspace),
+      findCurrentProfileForUser: jest.fn().mockResolvedValue(profile),
       findActiveMembership: jest.fn().mockResolvedValue({
         id: "40000000-0000-4000-8000-000000000001",
         workspaceId: workspace.id,
@@ -46,6 +87,7 @@ describe("WorkspaceService", () => {
       slugExists: jest.fn().mockResolvedValue(false),
       createWithOwner: jest.fn().mockResolvedValue(workspace),
       update: jest.fn(),
+      updateProfile: jest.fn(),
       close: jest.fn(),
       listMembers: jest.fn(),
       findMember: jest.fn(),
@@ -90,6 +132,40 @@ describe("WorkspaceService", () => {
     expect(result).toEqual(invitedMember);
     expect(repository.inviteMember).toHaveBeenCalledWith(
       expect.objectContaining({ role: MemberRole.MEMBER }),
+    );
+  });
+
+  it("retrieves the current workspace profile", async () => {
+    const result = await service.getProfile(ownerId);
+
+    expect(result).toEqual(profile);
+    expect(repository.findCurrentProfileForUser).toHaveBeenCalledWith(ownerId);
+  });
+
+  it("partially updates the current workspace profile", async () => {
+    const updatedProfile = {
+      ...profile,
+      displayName: "Garage Martin Pro",
+      website: "https://garage-martin.fr",
+    };
+    repository.updateProfile.mockResolvedValue(updatedProfile);
+
+    const result = await service.updateProfile(
+      {
+        displayName: updatedProfile.displayName,
+        website: updatedProfile.website,
+      },
+      ownerId,
+    );
+
+    expect(result).toEqual(updatedProfile);
+    expect(repository.updateProfile).toHaveBeenCalledWith(
+      workspace.id,
+      expect.objectContaining({
+        displayName: updatedProfile.displayName,
+        name: updatedProfile.displayName,
+        website: updatedProfile.website,
+      }),
     );
   });
 

@@ -4,14 +4,21 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { MemberRole, MemberStatus, WorkspaceStatus } from "@prisma/client";
+import {
+  MemberRole,
+  MemberStatus,
+  Prisma,
+  WorkspaceStatus,
+} from "@prisma/client";
 import { CreateWorkspaceDto } from "./dto/create-workspace.dto";
 import { InviteMemberDto } from "./dto/invite-member.dto";
 import { UpdateMemberRoleDto } from "./dto/update-member-role.dto";
+import { UpdateWorkspaceProfileDto } from "./dto/update-workspace-profile.dto";
 import { UpdateWorkspaceDto } from "./dto/update-workspace.dto";
 import {
   MemberRecord,
   MembershipRecord,
+  WorkspaceProfileRecord,
   WorkspaceRecord,
   WorkspaceRepository,
 } from "./workspace.repository";
@@ -33,6 +40,10 @@ export class WorkspaceService {
   async findOne(id: string, userId: string): Promise<WorkspaceRecord> {
     await this.requireMembership(id, userId);
     return this.requireWorkspace(id);
+  }
+
+  async getProfile(userId: string): Promise<WorkspaceProfileRecord> {
+    return this.requireCurrentProfile(userId);
   }
 
   async create(
@@ -57,7 +68,27 @@ export class WorkspaceService {
   ): Promise<WorkspaceRecord> {
     await this.requireManager(id, userId);
     await this.requireWorkspace(id);
-    return this.repository.update(id, data);
+    const updateData: Prisma.WorkspaceUpdateInput = { ...data };
+
+    if (data.name !== undefined) {
+      updateData.displayName = data.name;
+    }
+
+    return this.repository.update(id, updateData);
+  }
+
+  async updateProfile(
+    data: UpdateWorkspaceProfileDto,
+    userId: string,
+  ): Promise<WorkspaceProfileRecord> {
+    const profile = await this.requireCurrentProfile(userId);
+
+    await this.requireManager(profile.id, userId);
+
+    return this.repository.updateProfile(
+      profile.id,
+      this.toProfileUpdateInput(data),
+    );
   }
 
   async remove(id: string, userId: string): Promise<void> {
@@ -179,6 +210,18 @@ export class WorkspaceService {
     return workspace;
   }
 
+  private async requireCurrentProfile(
+    userId: string,
+  ): Promise<WorkspaceProfileRecord> {
+    const profile = await this.repository.findCurrentProfileForUser(userId);
+
+    if (!profile) {
+      throw new NotFoundException("Workspace profile not found");
+    }
+
+    return profile;
+  }
+
   private async requireMembership(
     workspaceId: string,
     userId: string,
@@ -227,5 +270,86 @@ export class WorkspaceService {
     if (ownerCount <= 1) {
       throw new ConflictException("Workspace must keep at least one owner");
     }
+  }
+
+  private toProfileUpdateInput(
+    data: UpdateWorkspaceProfileDto,
+  ): Prisma.WorkspaceUpdateInput {
+    const update: Prisma.WorkspaceUpdateInput = {};
+
+    if (data.displayName !== undefined) {
+      update.displayName = data.displayName;
+      update.name = data.displayName;
+    }
+
+    if (data.legalName !== undefined) {
+      update.legalName = data.legalName;
+    }
+
+    if (data.siret !== undefined) {
+      update.siret = data.siret;
+    }
+
+    if (data.siren !== undefined) {
+      update.siren = data.siren;
+    }
+
+    if (data.vatNumber !== undefined) {
+      update.vatNumber = data.vatNumber;
+    }
+
+    if (data.addressLine1 !== undefined) {
+      update.addressLine1 = data.addressLine1;
+    }
+
+    if (data.addressLine2 !== undefined) {
+      update.addressLine2 = data.addressLine2;
+    }
+
+    if (data.postalCode !== undefined) {
+      update.postalCode = data.postalCode;
+    }
+
+    if (data.city !== undefined) {
+      update.city = data.city;
+    }
+
+    if (data.country !== undefined) {
+      update.country = data.country;
+    }
+
+    if (data.phone !== undefined) {
+      update.phone = data.phone;
+    }
+
+    if (data.website !== undefined) {
+      update.website = data.website;
+    }
+
+    if (data.logoUrl !== undefined) {
+      update.logoUrl = data.logoUrl;
+    }
+
+    if (data.language !== undefined) {
+      update.language = data.language;
+    }
+
+    if (data.timezone !== undefined) {
+      update.timezone = data.timezone;
+    }
+
+    if (data.currency !== undefined) {
+      update.currency = data.currency;
+    }
+
+    if (data.activity !== undefined) {
+      update.activity = data.activity;
+    }
+
+    if (data.companySize !== undefined) {
+      update.companySize = data.companySize;
+    }
+
+    return update;
   }
 }

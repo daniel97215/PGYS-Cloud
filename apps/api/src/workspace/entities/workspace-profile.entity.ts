@@ -1,14 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { WorkspaceStatus } from "@prisma/client";
 
-export class WorkspaceEntity {
+export class WorkspaceProfileEntity {
   @ApiProperty({ format: "uuid" })
   id!: string;
 
-  @ApiProperty()
-  name!: string;
-
-  @ApiProperty()
+  @ApiProperty({ example: "Garage Martin" })
   displayName!: string;
 
   @ApiPropertyOptional({ nullable: true })
@@ -38,15 +34,6 @@ export class WorkspaceEntity {
   @ApiPropertyOptional({ nullable: true })
   country!: string | null;
 
-  @ApiProperty({ example: "garage-martin" })
-  slug!: string;
-
-  @ApiProperty({ enum: WorkspaceStatus })
-  status!: WorkspaceStatus;
-
-  @ApiPropertyOptional({ nullable: true })
-  billingEmail!: string | null;
-
   @ApiPropertyOptional({ nullable: true })
   phone!: string | null;
 
@@ -55,9 +42,6 @@ export class WorkspaceEntity {
 
   @ApiPropertyOptional({ nullable: true })
   logoUrl!: string | null;
-
-  @ApiProperty()
-  locale!: string;
 
   @ApiPropertyOptional({ nullable: true })
   language!: string | null;
@@ -79,7 +63,4 @@ export class WorkspaceEntity {
 
   @ApiProperty()
   updatedAt!: Date;
-
-  @ApiPropertyOptional({ nullable: true })
-  closedAt!: Date | null;
 }

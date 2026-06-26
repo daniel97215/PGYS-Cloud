@@ -1,6 +1,10 @@
 # Documentation PGYS
 
-Ce dossier contient les documents fondateurs du projet PGYS.
+Cette documentation constitue la référence officielle du projet PGYS.
+
+Toute décision métier, fonctionnelle, technique ou architecturale doit être documentée ici avant d'être implémentée.
+
+La documentation fait foi en cas de divergence entre le code et les discussions.
 
 ## Documents
 
@@ -14,6 +18,21 @@ Ce dossier contient les documents fondateurs du projet PGYS.
 - `07-BACKLOG.md` : backlog initial.
 - `08-DEPLOIEMENT.md` : stratégie de déploiement.
 - `09-SECURITE.md` : règles de sécurité.
+
+## Documentation métier
+
+- `20-CATALOG.md`
+- `25-PARTNERS-BILLING.md`
+- `30-BUSINESS-MODEL.md` (à venir)
+
+## Documentation technique
+
+- `40-DEPLOIEMENT.md`
+- `50-SECURITE.md`
+
+## Historique
+
+- `90-CHANGELOG.md`
 
 ## Principe
 

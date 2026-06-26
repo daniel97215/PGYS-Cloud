@@ -13,3 +13,13 @@ et le projet suit le [versionnement semantique](https://semver.org/lang/fr/).
 - configuration commune des editeurs et de Git ;
 - modeles d'issues et de pull request GitHub ;
 - exemple de configuration d'environnement sans secret.
+
+v0.1.0-alpha
+
+- Workspace
+- Catalog
+- Providers
+- Provisioning
+- Docker
+- Staging
+- Documentation

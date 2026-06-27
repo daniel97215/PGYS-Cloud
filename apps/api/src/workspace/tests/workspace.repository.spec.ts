@@ -36,7 +36,12 @@ describe("WorkspaceRepository", () => {
   it("creates an active workspace", async () => {
     const workspaceCreate = jest.fn().mockResolvedValue(workspace);
     const memberCreate = jest.fn().mockResolvedValue({});
-    const prisma = createPrismaMock(workspaceCreate, memberCreate);
+    const settingsCreate = jest.fn().mockResolvedValue({});
+    const prisma = createPrismaMock(
+      workspaceCreate,
+      memberCreate,
+      settingsCreate,
+    );
     const repository = new WorkspaceRepository(prisma);
 
     const result = await repository.createWithOwner({
@@ -60,7 +65,12 @@ describe("WorkspaceRepository", () => {
   it("creates the creator membership as OWNER", async () => {
     const workspaceCreate = jest.fn().mockResolvedValue(workspace);
     const memberCreate = jest.fn().mockResolvedValue({});
-    const prisma = createPrismaMock(workspaceCreate, memberCreate);
+    const settingsCreate = jest.fn().mockResolvedValue({});
+    const prisma = createPrismaMock(
+      workspaceCreate,
+      memberCreate,
+      settingsCreate,
+    );
     const repository = new WorkspaceRepository(prisma);
     const creatorId = "20000000-0000-4000-8000-000000000001";
 
@@ -79,15 +89,48 @@ describe("WorkspaceRepository", () => {
       }),
     });
   });
+
+  it("creates default workspace settings", async () => {
+    const workspaceCreate = jest.fn().mockResolvedValue(workspace);
+    const memberCreate = jest.fn().mockResolvedValue({});
+    const settingsCreate = jest.fn().mockResolvedValue({});
+    const prisma = createPrismaMock(
+      workspaceCreate,
+      memberCreate,
+      settingsCreate,
+    );
+    const repository = new WorkspaceRepository(prisma);
+
+    await repository.createWithOwner({
+      name: workspace.name,
+      slug: workspace.slug,
+      creatorId: "20000000-0000-4000-8000-000000000001",
+    });
+
+    expect(settingsCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        workspaceId: workspace.id,
+        language: "fr",
+        timezone: "Europe/Paris",
+        currency: "EUR",
+        requireMfa: false,
+        sessionTimeoutMinutes: 480,
+        dateFormat: "dd/MM/yyyy",
+        timeFormat: "HH:mm",
+      }),
+    });
+  });
 });
 
 function createPrismaMock(
   workspaceCreate: jest.Mock,
   memberCreate: jest.Mock,
+  settingsCreate: jest.Mock,
 ): PrismaService {
   const transaction = {
     workspace: { create: workspaceCreate },
     member: { create: memberCreate },
+    workspaceSettings: { create: settingsCreate },
   };
   const prisma = {
     $transaction: jest.fn(

@@ -13,6 +13,7 @@ import {
 import { CreateWorkspaceDto } from "./dto/create-workspace.dto";
 import { InviteMemberDto } from "./dto/invite-member.dto";
 import { UpdateMemberRoleDto } from "./dto/update-member-role.dto";
+import { UpdateWorkspaceSettingsDto } from "./dto/update-workspace-settings.dto";
 import { UpdateWorkspaceProfileDto } from "./dto/update-workspace-profile.dto";
 import { UpdateWorkspaceDto } from "./dto/update-workspace.dto";
 import {
@@ -21,6 +22,8 @@ import {
   WorkspaceProfileRecord,
   WorkspaceRecord,
   WorkspaceRepository,
+  WorkspaceSettingsRecord,
+  WorkspaceSettingsUpdateData,
 } from "./workspace.repository";
 import { toSlug } from "./validators/slug.validator";
 
@@ -28,6 +31,26 @@ const MANAGER_ROLES = new Set<MemberRole>([
   MemberRole.OWNER,
   MemberRole.ADMIN,
 ]);
+
+export interface WorkspaceSettingsView {
+  id: string;
+  workspaceId: string;
+  general: {
+    language: string;
+    timezone: string;
+    currency: string;
+  };
+  security: {
+    requireMfa: boolean;
+    sessionTimeoutMinutes: number;
+  };
+  preferences: {
+    dateFormat: string;
+    timeFormat: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 @Injectable()
 export class WorkspaceService {
@@ -44,6 +67,11 @@ export class WorkspaceService {
 
   async getProfile(userId: string): Promise<WorkspaceProfileRecord> {
     return this.requireCurrentProfile(userId);
+  }
+
+  async getSettings(userId: string): Promise<WorkspaceSettingsView> {
+    const settings = await this.requireCurrentSettings(userId);
+    return this.toSettingsView(settings);
   }
 
   async create(
@@ -89,6 +117,26 @@ export class WorkspaceService {
       profile.id,
       this.toProfileUpdateInput(data),
     );
+  }
+
+  async updateSettings(
+    data: UpdateWorkspaceSettingsDto,
+    userId: string,
+  ): Promise<WorkspaceSettingsView> {
+    const current = await this.repository.findCurrentSettingsForUser(userId);
+
+    if (!current) {
+      throw new NotFoundException("Workspace settings not found");
+    }
+
+    await this.requireManager(current.id, userId);
+
+    const settings = await this.repository.upsertSettings(
+      current.id,
+      this.toSettingsUpdateData(data),
+    );
+
+    return this.toSettingsView(settings);
   }
 
   async remove(id: string, userId: string): Promise<void> {
@@ -222,6 +270,22 @@ export class WorkspaceService {
     return profile;
   }
 
+  private async requireCurrentSettings(
+    userId: string,
+  ): Promise<WorkspaceSettingsRecord> {
+    const current = await this.repository.findCurrentSettingsForUser(userId);
+
+    if (!current) {
+      throw new NotFoundException("Workspace settings not found");
+    }
+
+    if (current.settings) {
+      return current.settings;
+    }
+
+    return this.repository.createDefaultSettings(current.id);
+  }
+
   private async requireMembership(
     workspaceId: string,
     userId: string,
@@ -351,5 +415,57 @@ export class WorkspaceService {
     }
 
     return update;
+  }
+
+  private toSettingsUpdateData(
+    data: UpdateWorkspaceSettingsDto,
+  ): WorkspaceSettingsUpdateData {
+    return {
+      ...(data.general?.language !== undefined
+        ? { language: data.general.language }
+        : {}),
+      ...(data.general?.timezone !== undefined
+        ? { timezone: data.general.timezone }
+        : {}),
+      ...(data.general?.currency !== undefined
+        ? { currency: data.general.currency }
+        : {}),
+      ...(data.security?.requireMfa !== undefined
+        ? { requireMfa: data.security.requireMfa }
+        : {}),
+      ...(data.security?.sessionTimeoutMinutes !== undefined
+        ? { sessionTimeoutMinutes: data.security.sessionTimeoutMinutes }
+        : {}),
+      ...(data.preferences?.dateFormat !== undefined
+        ? { dateFormat: data.preferences.dateFormat }
+        : {}),
+      ...(data.preferences?.timeFormat !== undefined
+        ? { timeFormat: data.preferences.timeFormat }
+        : {}),
+    };
+  }
+
+  private toSettingsView(
+    settings: WorkspaceSettingsRecord,
+  ): WorkspaceSettingsView {
+    return {
+      id: settings.id,
+      workspaceId: settings.workspaceId,
+      general: {
+        language: settings.language,
+        timezone: settings.timezone,
+        currency: settings.currency,
+      },
+      security: {
+        requireMfa: settings.requireMfa,
+        sessionTimeoutMinutes: settings.sessionTimeoutMinutes,
+      },
+      preferences: {
+        dateFormat: settings.dateFormat,
+        timeFormat: settings.timeFormat,
+      },
+      createdAt: settings.createdAt,
+      updatedAt: settings.updatedAt,
+    };
   }
 }

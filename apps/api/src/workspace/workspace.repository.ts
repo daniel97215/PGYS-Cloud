@@ -62,6 +62,27 @@ const workspaceProfileSelect = {
   updatedAt: true,
 } satisfies Prisma.WorkspaceSelect;
 
+const workspaceSettingsSelect = {
+  id: true,
+  workspaceId: true,
+  language: true,
+  timezone: true,
+  currency: true,
+  requireMfa: true,
+  sessionTimeoutMinutes: true,
+  dateFormat: true,
+  timeFormat: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.WorkspaceSettingsSelect;
+
+const currentWorkspaceSettingsSelect = {
+  id: true,
+  settings: {
+    select: workspaceSettingsSelect,
+  },
+} satisfies Prisma.WorkspaceSelect;
+
 const memberSelect = {
   id: true,
   workspaceId: true,
@@ -88,6 +109,24 @@ export type WorkspaceRecord = Prisma.WorkspaceGetPayload<{
 export type WorkspaceProfileRecord = Prisma.WorkspaceGetPayload<{
   select: typeof workspaceProfileSelect;
 }>;
+export type WorkspaceSettingsRecord = Prisma.WorkspaceSettingsGetPayload<{
+  select: typeof workspaceSettingsSelect;
+}>;
+export type CurrentWorkspaceSettingsRecord = Prisma.WorkspaceGetPayload<{
+  select: typeof currentWorkspaceSettingsSelect;
+}>;
+export type WorkspaceSettingsUpdateData = Partial<
+  Pick<
+    WorkspaceSettingsRecord,
+    | "language"
+    | "timezone"
+    | "currency"
+    | "requireMfa"
+    | "sessionTimeoutMinutes"
+    | "dateFormat"
+    | "timeFormat"
+  >
+>;
 export type MemberRecord = Prisma.MemberGetPayload<{
   select: typeof memberSelect;
 }>;
@@ -116,6 +155,19 @@ export interface InviteMemberResult {
   member: MemberRecord;
   alreadyMember: boolean;
 }
+
+const DEFAULT_WORKSPACE_SETTINGS = {
+  language: "fr",
+  timezone: "Europe/Paris",
+  currency: "EUR",
+  requireMfa: false,
+  sessionTimeoutMinutes: 480,
+  dateFormat: "dd/MM/yyyy",
+  timeFormat: "HH:mm",
+} satisfies Omit<
+  Prisma.WorkspaceSettingsUncheckedCreateInput,
+  "id" | "workspaceId" | "createdAt" | "updatedAt"
+>;
 
 @Injectable()
 export class WorkspaceRepository {
@@ -153,6 +205,21 @@ export class WorkspaceRepository {
       },
       orderBy: { createdAt: "desc" },
       select: workspaceProfileSelect,
+    });
+  }
+
+  findCurrentSettingsForUser(
+    userId: string,
+  ): Promise<CurrentWorkspaceSettingsRecord | null> {
+    return this.prisma.workspace.findFirst({
+      where: {
+        status: { not: WorkspaceStatus.CLOSED },
+        members: {
+          some: { userId, status: MemberStatus.ACTIVE },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      select: currentWorkspaceSettingsSelect,
     });
   }
 
@@ -201,6 +268,13 @@ export class WorkspaceRepository {
         },
       });
 
+      await transaction.workspaceSettings.create({
+        data: {
+          workspaceId: workspace.id,
+          ...DEFAULT_WORKSPACE_SETTINGS,
+        },
+      });
+
       return workspace;
     });
   }
@@ -224,6 +298,32 @@ export class WorkspaceRepository {
       where: { id },
       data,
       select: workspaceProfileSelect,
+    });
+  }
+
+  createDefaultSettings(workspaceId: string): Promise<WorkspaceSettingsRecord> {
+    return this.prisma.workspaceSettings.create({
+      data: {
+        workspaceId,
+        ...DEFAULT_WORKSPACE_SETTINGS,
+      },
+      select: workspaceSettingsSelect,
+    });
+  }
+
+  upsertSettings(
+    workspaceId: string,
+    data: WorkspaceSettingsUpdateData,
+  ): Promise<WorkspaceSettingsRecord> {
+    return this.prisma.workspaceSettings.upsert({
+      where: { workspaceId },
+      create: {
+        workspaceId,
+        ...DEFAULT_WORKSPACE_SETTINGS,
+        ...data,
+      },
+      update: data,
+      select: workspaceSettingsSelect,
     });
   }
 

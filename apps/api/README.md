@@ -86,6 +86,8 @@ pnpm --filter api prisma:studio
 | `POST` | `/workspaces` | Crée un espace client |
 | `GET` | `/workspace/profile` | Retourne le profil de l'organisation du workspace courant |
 | `PUT` | `/workspace/profile` | Met à jour partiellement le profil de l'organisation |
+| `GET` | `/workspace/settings` | Retourne les paramètres du workspace courant |
+| `PUT` | `/workspace/settings` | Met à jour partiellement les paramètres du workspace |
 | `POST` | `/auth/register` | Crée un utilisateur et une session |
 | `POST` | `/auth/login` | Ouvre une session |
 | `POST` | `/auth/refresh` | Renouvelle l'access token |

@@ -10,6 +10,7 @@ import {
   WorkspaceProfileRecord,
   WorkspaceRecord,
   WorkspaceRepository,
+  WorkspaceSettingsRecord,
 } from "../workspace.repository";
 import { WorkspaceService } from "../workspace.service";
 
@@ -69,6 +70,19 @@ describe("WorkspaceService", () => {
     createdAt: workspace.createdAt,
     updatedAt: workspace.updatedAt,
   };
+  const settings: WorkspaceSettingsRecord = {
+    id: "60000000-0000-4000-8000-000000000001",
+    workspaceId: workspace.id,
+    language: "fr",
+    timezone: "Europe/Paris",
+    currency: "EUR",
+    requireMfa: false,
+    sessionTimeoutMinutes: 480,
+    dateFormat: "dd/MM/yyyy",
+    timeFormat: "HH:mm",
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+  };
   const ownerId = "20000000-0000-4000-8000-000000000001";
   const memberId = "30000000-0000-4000-8000-000000000001";
 
@@ -77,6 +91,10 @@ describe("WorkspaceService", () => {
       findManyForUser: jest.fn(),
       findById: jest.fn().mockResolvedValue(workspace),
       findCurrentProfileForUser: jest.fn().mockResolvedValue(profile),
+      findCurrentSettingsForUser: jest.fn().mockResolvedValue({
+        id: workspace.id,
+        settings,
+      }),
       findActiveMembership: jest.fn().mockResolvedValue({
         id: "40000000-0000-4000-8000-000000000001",
         workspaceId: workspace.id,
@@ -88,6 +106,8 @@ describe("WorkspaceService", () => {
       createWithOwner: jest.fn().mockResolvedValue(workspace),
       update: jest.fn(),
       updateProfile: jest.fn(),
+      createDefaultSettings: jest.fn().mockResolvedValue(settings),
+      upsertSettings: jest.fn(),
       close: jest.fn(),
       listMembers: jest.fn(),
       findMember: jest.fn(),
@@ -165,6 +185,73 @@ describe("WorkspaceService", () => {
         displayName: updatedProfile.displayName,
         name: updatedProfile.displayName,
         website: updatedProfile.website,
+      }),
+    );
+  });
+
+  it("retrieves the current workspace settings", async () => {
+    const result = await service.getSettings(ownerId);
+
+    expect(result).toEqual({
+      id: settings.id,
+      workspaceId: workspace.id,
+      general: {
+        language: settings.language,
+        timezone: settings.timezone,
+        currency: settings.currency,
+      },
+      security: {
+        requireMfa: settings.requireMfa,
+        sessionTimeoutMinutes: settings.sessionTimeoutMinutes,
+      },
+      preferences: {
+        dateFormat: settings.dateFormat,
+        timeFormat: settings.timeFormat,
+      },
+      createdAt: settings.createdAt,
+      updatedAt: settings.updatedAt,
+    });
+    expect(repository.findCurrentSettingsForUser).toHaveBeenCalledWith(ownerId);
+  });
+
+  it("creates default settings when the current workspace has none", async () => {
+    repository.findCurrentSettingsForUser.mockResolvedValueOnce({
+      id: workspace.id,
+      settings: null,
+    });
+
+    await service.getSettings(ownerId);
+
+    expect(repository.createDefaultSettings).toHaveBeenCalledWith(workspace.id);
+  });
+
+  it("partially updates the current workspace settings", async () => {
+    const updatedSettings = {
+      ...settings,
+      language: "en",
+      requireMfa: true,
+      timeFormat: "hh:mm a",
+    };
+    repository.upsertSettings.mockResolvedValue(updatedSettings);
+
+    const result = await service.updateSettings(
+      {
+        general: { language: "en" },
+        security: { requireMfa: true },
+        preferences: { timeFormat: "hh:mm a" },
+      },
+      ownerId,
+    );
+
+    expect(result.general.language).toBe("en");
+    expect(result.security.requireMfa).toBe(true);
+    expect(result.preferences.timeFormat).toBe("hh:mm a");
+    expect(repository.upsertSettings).toHaveBeenCalledWith(
+      workspace.id,
+      expect.objectContaining({
+        language: "en",
+        requireMfa: true,
+        timeFormat: "hh:mm a",
       }),
     );
   });

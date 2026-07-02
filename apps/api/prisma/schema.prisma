@@ -133,15 +133,16 @@ model Workspace {
   companySize   String?            @db.VarChar(80)
   members       Member[]
   subscriptions Subscription[]
-  services      Service[]
-  invoices      Invoice[]
-  tickets       Ticket[]
-  activities    Activity[]
-  auditLogs     AuditLog[]
-  settings      WorkspaceSettings?
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  closedAt      DateTime?
+  services          Service[]
+  workspaceServices WorkspaceService[]
+  invoices          Invoice[]
+  tickets           Ticket[]
+  activities        Activity[]
+  auditLogs         AuditLog[]
+  settings          WorkspaceSettings?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  closedAt          DateTime?
 
   @@index([name])
   @@index([status])
@@ -242,6 +243,23 @@ model ServiceDefinition {
   configSchema Json?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model WorkspaceService {
+  id            String    @id @default(uuid()) @db.Uuid
+  workspaceId   String    @db.Uuid
+  serviceKey    String
+  status        String
+  configuration Json?
+  activatedAt   DateTime?
+  deactivatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, serviceKey])
+  @@index([workspaceId])
+  @@index([serviceKey])
 }
 
 model Subscription {

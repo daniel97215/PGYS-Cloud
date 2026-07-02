@@ -107,32 +107,32 @@ enum AuditAction {
 }
 
 model Workspace {
-  id            String             @id @default(uuid()) @db.Uuid
-  name          String
-  displayName   String             @db.VarChar(120)
-  legalName     String?
-  siret         String?            @db.VarChar(14)
-  siren         String?            @db.VarChar(9)
-  vatNumber     String?            @db.VarChar(32)
-  addressLine1  String?
-  addressLine2  String?
-  postalCode    String?            @db.VarChar(20)
-  city          String?
-  country       String?            @db.VarChar(80)
-  slug          String             @unique
-  status        WorkspaceStatus    @default(DRAFT)
-  billingEmail  String?
-  phone         String?
-  website       String?            @db.VarChar(2048)
-  logoUrl       String?            @db.VarChar(2048)
-  locale        String             @default("fr-FR")
-  language      String?            @db.VarChar(2)
-  timezone      String             @default("Europe/Paris")
-  currency      String?            @db.VarChar(3)
-  activity      String?
-  companySize   String?            @db.VarChar(80)
-  members       Member[]
-  subscriptions Subscription[]
+  id                String             @id @default(uuid()) @db.Uuid
+  name              String
+  displayName       String             @db.VarChar(120)
+  legalName         String?
+  siret             String?            @db.VarChar(14)
+  siren             String?            @db.VarChar(9)
+  vatNumber         String?            @db.VarChar(32)
+  addressLine1      String?
+  addressLine2      String?
+  postalCode        String?            @db.VarChar(20)
+  city              String?
+  country           String?            @db.VarChar(80)
+  slug              String             @unique
+  status            WorkspaceStatus    @default(DRAFT)
+  billingEmail      String?
+  phone             String?
+  website           String?            @db.VarChar(2048)
+  logoUrl           String?            @db.VarChar(2048)
+  locale            String             @default("fr-FR")
+  language          String?            @db.VarChar(2)
+  timezone          String             @default("Europe/Paris")
+  currency          String?            @db.VarChar(3)
+  activity          String?
+  companySize       String?            @db.VarChar(80)
+  members           Member[]
+  subscriptions     Subscription[]
   services          Service[]
   workspaceServices WorkspaceService[]
   invoices          Invoice[]
@@ -246,18 +246,18 @@ model ServiceDefinition {
 }
 
 model ServiceCatalogItem {
-  id                  String   @id @default(uuid()) @db.Uuid
-  key                 String   @unique
+  id                  String         @id @default(uuid()) @db.Uuid
+  key                 String         @unique
   name                String
   description         String?
   category            String?
-  version             String   @default("1.0.0")
-  status              String   @default("draft")
+  version             String         @default("1.0.0")
+  status              String         @default("draft")
   configurationSchema Json?
   icon                String?
-  visibility          String   @default("private")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  visibility          String         @default("private")
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
   offerServices       OfferService[]
 
   @@index([status])
@@ -274,7 +274,9 @@ model Offer {
   visibility    String         @default("public")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  offerFeatures OfferFeature[]
   offerServices OfferService[]
+  prices        Price[]
 }
 
 model OfferService {
@@ -287,6 +289,53 @@ model OfferService {
   serviceCatalogItem   ServiceCatalogItem @relation(fields: [serviceCatalogItemId], references: [id], onDelete: Cascade)
 
   @@unique([offerId, serviceCatalogItemId])
+}
+
+model Feature {
+  id            String         @id @default(uuid()) @db.Uuid
+  key           String         @unique
+  name          String
+  description   String?
+  category      String?
+  status        String         @default("active")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  offerFeatures OfferFeature[]
+
+  @@index([category])
+  @@index([status])
+}
+
+model OfferFeature {
+  id        String   @id @default(uuid()) @db.Uuid
+  offerId   String   @db.Uuid
+  featureId String   @db.Uuid
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  offer     Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  feature   Feature  @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, featureId])
+  @@index([offerId])
+  @@index([featureId])
+}
+
+model Price {
+  id            String    @id @default(uuid()) @db.Uuid
+  offerId       String    @db.Uuid
+  currency      String    @default("EUR")
+  amount        Decimal   @db.Decimal(12, 2)
+  billingPeriod String
+  validFrom     DateTime
+  validTo       DateTime?
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  offer         Offer     @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([offerId])
+  @@index([status])
+  @@index([currency])
 }
 
 model WorkspaceService {

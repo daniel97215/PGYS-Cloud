@@ -258,10 +258,35 @@ model ServiceCatalogItem {
   visibility          String   @default("private")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  offerServices       OfferService[]
 
   @@index([status])
   @@index([category])
   @@index([visibility])
+}
+
+model Offer {
+  id            String         @id @default(uuid()) @db.Uuid
+  key           String         @unique
+  name          String
+  description   String?
+  status        String         @default("draft")
+  visibility    String         @default("public")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  offerServices OfferService[]
+}
+
+model OfferService {
+  id                   String             @id @default(uuid()) @db.Uuid
+  offerId              String             @db.Uuid
+  serviceCatalogItemId String             @db.Uuid
+  configuration        Json?
+  createdAt            DateTime           @default(now())
+  offer                Offer              @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  serviceCatalogItem   ServiceCatalogItem @relation(fields: [serviceCatalogItemId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, serviceCatalogItemId])
 }
 
 model WorkspaceService {

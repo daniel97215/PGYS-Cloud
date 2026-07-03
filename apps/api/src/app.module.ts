@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { validateEnvironment } from "./config/environment";
+import { CustomersModule } from "./customers/customers.module";
 import { FeaturesModule } from "./features/features.module";
 import { HealthModule } from "./health/health.module";
 import { OffersModule } from "./offers/offers.module";
@@ -17,6 +18,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
     PrismaModule,
     HealthModule,
+    CustomersModule,
     FeaturesModule,
     OffersModule,
     PricingModule,

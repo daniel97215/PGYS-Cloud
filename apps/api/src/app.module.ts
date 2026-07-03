@@ -8,6 +8,7 @@ import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
+import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({
@@ -19,6 +20,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     OffersModule,
     PricingModule,
     ServiceCatalogModule,
+    SubscriptionsModule,
     WorkspaceModule,
     AuthModule,
   ],

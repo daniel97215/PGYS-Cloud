@@ -32,6 +32,7 @@ import { WorkspaceServicesService } from "./workspace-services.service";
 class ActivateWorkspaceServiceDto {
   @ApiPropertyOptional({
     example: { defaultCurrency: "EUR" },
+    additionalProperties: true,
     type: "object",
   })
   @IsOptional()
@@ -42,6 +43,7 @@ class ActivateWorkspaceServiceDto {
 class UpdateWorkspaceServiceConfigurationDto {
   @ApiProperty({
     example: { defaultCurrency: "EUR" },
+    additionalProperties: true,
     type: "object",
   })
   @IsObject()

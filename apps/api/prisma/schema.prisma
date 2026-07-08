@@ -377,6 +377,7 @@ model Customer {
   workspace       Workspace                       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   addresses       BusinessPartnerAddress[]
   contacts        BusinessPartnerContact[]
+  partnerNotes    BusinessPartnerNote[]
   roleAssignments BusinessPartnerRoleAssignment[]
 
   @@unique([workspaceId, code])
@@ -429,6 +430,23 @@ model BusinessPartnerContact {
   @@index([email])
   @@index([lastName])
   @@index([isActive])
+}
+
+model BusinessPartnerNote {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @db.Uuid
+  customerId  String   @db.Uuid
+  title       String?
+  content     String
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([customerId])
+  @@index([createdAt])
 }
 
 model CustomerCategory {

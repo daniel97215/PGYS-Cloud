@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { BusinessPartnerAddressesModule } from "./business-partner-addresses/business-partner-addresses.module";
 import { BusinessPartnerContactsModule } from "./business-partner-contacts/business-partner-contacts.module";
+import { BusinessPartnerNotesModule } from "./business-partner-notes/business-partner-notes.module";
 import { BusinessPartnerRolesModule } from "./business-partner-roles/business-partner-roles.module";
 import { validateEnvironment } from "./config/environment";
 import { CustomerCategoriesModule } from "./customer-categories/customer-categories.module";
@@ -24,6 +25,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     HealthModule,
     BusinessPartnerAddressesModule,
     BusinessPartnerContactsModule,
+    BusinessPartnerNotesModule,
     BusinessPartnerRolesModule,
     CustomerCategoriesModule,
     CustomersModule,

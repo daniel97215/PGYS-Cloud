@@ -2,19 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomerStatus } from "./enums/customer-status.enum";
+import { CustomerType } from "./enums/customer-type.enum";
 
-export const CUSTOMER_TYPE_CUSTOMER = "customer";
-export const CUSTOMER_TYPE_PROSPECT = "prospect";
-export const CUSTOMER_TYPE_PARTNER = "partner";
-export const CUSTOMER_TYPE_SUPPLIER = "supplier";
-export const CUSTOMER_TYPES = [
-  CUSTOMER_TYPE_CUSTOMER,
-  CUSTOMER_TYPE_PROSPECT,
-  CUSTOMER_TYPE_PARTNER,
-  CUSTOMER_TYPE_SUPPLIER,
-] as const;
-
-export type CustomerType = (typeof CUSTOMER_TYPES)[number];
 export type CustomerRecord = Prisma.CustomerGetPayload<object>;
 
 export interface CreateCustomerData {

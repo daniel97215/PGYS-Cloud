@@ -8,9 +8,9 @@ import { UpdateCustomerDto } from "./dto/update-customer.dto";
 import {
   CustomerRecord,
   CustomersRepository,
-  CustomerType,
 } from "./customers.repository";
 import { CustomerStatus } from "./enums/customer-status.enum";
+import { CustomerType } from "./enums/customer-type.enum";
 
 @Injectable()
 export class CustomersService {

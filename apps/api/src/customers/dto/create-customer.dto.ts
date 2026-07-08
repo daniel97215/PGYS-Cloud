@@ -2,18 +2,17 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import {
   IsEnum,
-  IsIn,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from "class-validator";
-import { CUSTOMER_TYPES } from "../customers.repository";
 import {
   CustomerStatus,
   CUSTOMER_STATUSES,
 } from "../enums/customer-status.enum";
+import { CustomerType, CUSTOMER_TYPES } from "../enums/customer-type.enum";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
@@ -30,11 +29,11 @@ export class CreateCustomerDto {
   @Matches(/^[A-Z0-9][A-Z0-9._-]*$/)
   code!: string;
 
-  @ApiProperty({ enum: CUSTOMER_TYPES, example: "customer" })
+  @ApiProperty({ enum: CUSTOMER_TYPES, example: CustomerType.CUSTOMER })
   @Transform(normalizeText)
   @IsString()
-  @IsIn(CUSTOMER_TYPES)
-  type!: string;
+  @IsEnum(CustomerType)
+  type!: CustomerType;
 
   @ApiProperty({ example: "ACME France", maxLength: 160 })
   @Transform(normalizeText)

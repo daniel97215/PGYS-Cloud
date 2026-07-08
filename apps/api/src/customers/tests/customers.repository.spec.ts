@@ -1,6 +1,7 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { CustomersRepository } from "../customers.repository";
 import { CustomerStatus } from "../enums/customer-status.enum";
+import { CustomerType } from "../enums/customer-type.enum";
 
 describe("CustomersRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
@@ -8,7 +9,7 @@ describe("CustomersRepository", () => {
     id: "20000000-0000-4000-8000-000000000001",
     workspaceId,
     code: "CUST-001",
-    type: "customer",
+    type: CustomerType.CUSTOMER,
     name: "ACME France",
     legalName: "ACME France SAS",
     status: CustomerStatus.ACTIVE,
@@ -24,7 +25,7 @@ describe("CustomersRepository", () => {
     const result = await repository.create({
       workspaceId,
       code: customer.code,
-      type: "customer",
+      type: CustomerType.CUSTOMER,
       name: customer.name,
       legalName: customer.legalName,
       notes: customer.notes,
@@ -35,7 +36,7 @@ describe("CustomersRepository", () => {
       data: {
         workspaceId,
         code: customer.code,
-        type: "customer",
+        type: CustomerType.CUSTOMER,
         name: customer.name,
         legalName: customer.legalName,
         notes: customer.notes,

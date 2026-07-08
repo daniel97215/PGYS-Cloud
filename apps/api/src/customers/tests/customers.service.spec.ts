@@ -2,6 +2,7 @@ import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { CustomersRepository } from "../customers.repository";
 import { CustomersService } from "../customers.service";
 import { CustomerStatus } from "../enums/customer-status.enum";
+import { CustomerType } from "../enums/customer-type.enum";
 
 describe("CustomersService", () => {
   let repository: jest.Mocked<CustomersRepository>;
@@ -12,7 +13,7 @@ describe("CustomersService", () => {
     id: "20000000-0000-4000-8000-000000000001",
     workspaceId,
     code: "CUST-001",
-    type: "customer",
+    type: CustomerType.CUSTOMER,
     name: "ACME France",
     legalName: "ACME France SAS",
     status: CustomerStatus.ACTIVE,
@@ -39,7 +40,7 @@ describe("CustomersService", () => {
   it("creates a customer", async () => {
     const result = await service.createCustomer(workspaceId, {
       code: "cust-001",
-      type: "customer",
+      type: CustomerType.CUSTOMER,
       name: customer.name,
       legalName: customer.legalName,
       notes: customer.notes,

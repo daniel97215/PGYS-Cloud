@@ -90,43 +90,44 @@ enum AuditAction {
 }
 
 model Workspace {
-  id                String             @id @default(uuid()) @db.Uuid
-  name              String
-  displayName       String             @db.VarChar(120)
-  legalName         String?
-  siret             String?            @db.VarChar(14)
-  siren             String?            @db.VarChar(9)
-  vatNumber         String?            @db.VarChar(32)
-  addressLine1      String?
-  addressLine2      String?
-  postalCode        String?            @db.VarChar(20)
-  city              String?
-  country           String?            @db.VarChar(80)
-  slug              String             @unique
-  status            WorkspaceStatus    @default(DRAFT)
-  billingEmail      String?
-  phone             String?
-  website           String?            @db.VarChar(2048)
-  logoUrl           String?            @db.VarChar(2048)
-  locale            String             @default("fr-FR")
-  language          String?            @db.VarChar(2)
-  timezone          String             @default("Europe/Paris")
-  currency          String?            @db.VarChar(3)
-  activity          String?
-  companySize       String?            @db.VarChar(80)
-  members           Member[]
-  subscriptions     Subscription[]
-  services          Service[]
-  workspaceServices WorkspaceService[]
-  customers         Customer[]
-  invoices          Invoice[]
-  tickets           Ticket[]
-  activities        Activity[]
-  auditLogs         AuditLog[]
-  settings          WorkspaceSettings?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  closedAt          DateTime?
+  id                 String             @id @default(uuid()) @db.Uuid
+  name               String
+  displayName        String             @db.VarChar(120)
+  legalName          String?
+  siret              String?            @db.VarChar(14)
+  siren              String?            @db.VarChar(9)
+  vatNumber          String?            @db.VarChar(32)
+  addressLine1       String?
+  addressLine2       String?
+  postalCode         String?            @db.VarChar(20)
+  city               String?
+  country            String?            @db.VarChar(80)
+  slug               String             @unique
+  status             WorkspaceStatus    @default(DRAFT)
+  billingEmail       String?
+  phone              String?
+  website            String?            @db.VarChar(2048)
+  logoUrl            String?            @db.VarChar(2048)
+  locale             String             @default("fr-FR")
+  language           String?            @db.VarChar(2)
+  timezone           String             @default("Europe/Paris")
+  currency           String?            @db.VarChar(3)
+  activity           String?
+  companySize        String?            @db.VarChar(80)
+  members            Member[]
+  subscriptions      Subscription[]
+  services           Service[]
+  workspaceServices  WorkspaceService[]
+  customerCategories CustomerCategory[]
+  customers          Customer[]
+  invoices           Invoice[]
+  tickets            Ticket[]
+  activities         Activity[]
+  auditLogs          AuditLog[]
+  settings           WorkspaceSettings?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  closedAt           DateTime?
 
   @@index([name])
   @@index([status])
@@ -378,6 +379,23 @@ model Customer {
   @@index([workspaceId])
   @@index([status])
   @@index([name])
+}
+
+model CustomerCategory {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  code        String
+  name        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([name])
+  @@index([isActive])
 }
 
 model ProvisioningJob {

@@ -364,17 +364,18 @@ model Subscription {
 }
 
 model Customer {
-  id          String    @id @default(uuid()) @db.Uuid
-  workspaceId String    @db.Uuid
-  code        String
-  type        String
-  name        String
-  legalName   String?
-  status      String    @default("active")
-  notes       String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  id              String                          @id @default(uuid()) @db.Uuid
+  workspaceId     String                          @db.Uuid
+  code            String
+  type            String
+  name            String
+  legalName       String?
+  status          String                          @default("active")
+  notes           String?
+  createdAt       DateTime                        @default(now())
+  updatedAt       DateTime                        @updatedAt
+  workspace       Workspace                       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  roleAssignments BusinessPartnerRoleAssignment[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -400,21 +401,38 @@ model CustomerCategory {
 }
 
 model BusinessPartnerRole {
-  id          String    @id @default(uuid()) @db.Uuid
-  workspaceId String    @db.Uuid
+  id          String                          @id @default(uuid()) @db.Uuid
+  workspaceId String                          @db.Uuid
   code        String
   name        String
   description String?
-  isSystem    Boolean   @default(false)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  isSystem    Boolean                         @default(false)
+  isActive    Boolean                         @default(true)
+  createdAt   DateTime                        @default(now())
+  updatedAt   DateTime                        @updatedAt
+  workspace   Workspace                       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignments BusinessPartnerRoleAssignment[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([code])
   @@index([isActive])
+}
+
+model BusinessPartnerRoleAssignment {
+  id                    String              @id @default(uuid()) @db.Uuid
+  workspaceId           String              @db.Uuid
+  customerId            String              @db.Uuid
+  businessPartnerRoleId String              @db.Uuid
+  assignedAt            DateTime            @default(now())
+  assignedBy            String?
+  customer              Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartnerRole   BusinessPartnerRole @relation(fields: [businessPartnerRoleId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, businessPartnerRoleId])
+  @@index([workspaceId])
+  @@index([customerId])
+  @@index([businessPartnerRoleId])
 }
 
 model ProvisioningJob {

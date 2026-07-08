@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
+import { BusinessPartnerRolesModule } from "./business-partner-roles/business-partner-roles.module";
 import { validateEnvironment } from "./config/environment";
 import { CustomerCategoriesModule } from "./customer-categories/customer-categories.module";
 import { CustomersModule } from "./customers/customers.module";
@@ -19,6 +20,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
     PrismaModule,
     HealthModule,
+    BusinessPartnerRolesModule,
     CustomerCategoriesModule,
     CustomersModule,
     FeaturesModule,

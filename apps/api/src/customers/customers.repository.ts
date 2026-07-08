@@ -1,15 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const CUSTOMER_STATUS_ACTIVE = "active";
-export const CUSTOMER_STATUS_INACTIVE = "inactive";
-export const CUSTOMER_STATUS_ARCHIVED = "archived";
-export const CUSTOMER_STATUSES = [
-  CUSTOMER_STATUS_ACTIVE,
-  CUSTOMER_STATUS_INACTIVE,
-  CUSTOMER_STATUS_ARCHIVED,
-] as const;
+import { CustomerStatus } from "./enums/customer-status.enum";
 
 export const CUSTOMER_TYPE_CUSTOMER = "customer";
 export const CUSTOMER_TYPE_PROSPECT = "prospect";
@@ -22,7 +14,6 @@ export const CUSTOMER_TYPES = [
   CUSTOMER_TYPE_SUPPLIER,
 ] as const;
 
-export type CustomerStatus = (typeof CUSTOMER_STATUSES)[number];
 export type CustomerType = (typeof CUSTOMER_TYPES)[number];
 export type CustomerRecord = Prisma.CustomerGetPayload<object>;
 
@@ -76,7 +67,7 @@ export class CustomersRepository {
           code,
         },
       },
-      data: { status: CUSTOMER_STATUS_ARCHIVED },
+      data: { status: CustomerStatus.ARCHIVED },
     });
   }
 

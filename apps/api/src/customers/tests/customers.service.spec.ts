@@ -1,9 +1,7 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import {
-  CUSTOMER_STATUS_ARCHIVED,
-  CustomersRepository,
-} from "../customers.repository";
+import { CustomersRepository } from "../customers.repository";
 import { CustomersService } from "../customers.service";
+import { CustomerStatus } from "../enums/customer-status.enum";
 
 describe("CustomersService", () => {
   let repository: jest.Mocked<CustomersRepository>;
@@ -17,7 +15,7 @@ describe("CustomersService", () => {
     type: "customer",
     name: "ACME France",
     legalName: "ACME France SAS",
-    status: "active",
+    status: CustomerStatus.ACTIVE,
     notes: "Strategic customer",
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -29,7 +27,7 @@ describe("CustomersService", () => {
       update: jest.fn().mockResolvedValue(customer),
       archive: jest.fn().mockResolvedValue({
         ...customer,
-        status: CUSTOMER_STATUS_ARCHIVED,
+        status: CustomerStatus.ARCHIVED,
       }),
       findByWorkspace: jest.fn().mockResolvedValue([customer]),
       findByWorkspaceAndCode: jest.fn().mockResolvedValue(customer),
@@ -79,13 +77,13 @@ describe("CustomersService", () => {
   it("updates a customer", async () => {
     const result = await service.updateCustomer(workspaceId, customer.code, {
       name: "ACME Europe",
-      status: "inactive",
+      status: CustomerStatus.INACTIVE,
     });
 
     expect(result).toEqual(customer);
     expect(repository.update).toHaveBeenCalledWith(workspaceId, customer.code, {
       name: "ACME Europe",
-      status: "inactive",
+      status: CustomerStatus.INACTIVE,
       type: undefined,
     });
   });
@@ -93,7 +91,7 @@ describe("CustomersService", () => {
   it("archives a customer", async () => {
     const result = await service.archiveCustomer(workspaceId, customer.code);
 
-    expect(result.status).toBe(CUSTOMER_STATUS_ARCHIVED);
+    expect(result.status).toBe(CustomerStatus.ARCHIVED);
     expect(repository.archive).toHaveBeenCalledWith(workspaceId, customer.code);
   });
 

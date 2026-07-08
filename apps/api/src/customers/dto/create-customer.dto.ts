@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import {
+  IsEnum,
   IsIn,
   IsOptional,
   IsString,
@@ -8,7 +9,11 @@ import {
   MaxLength,
   MinLength,
 } from "class-validator";
-import { CUSTOMER_STATUSES, CUSTOMER_TYPES } from "../customers.repository";
+import { CUSTOMER_TYPES } from "../customers.repository";
+import {
+  CustomerStatus,
+  CUSTOMER_STATUSES,
+} from "../enums/customer-status.enum";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
@@ -45,12 +50,12 @@ export class CreateCustomerDto {
   @MaxLength(200)
   legalName?: string;
 
-  @ApiPropertyOptional({ enum: CUSTOMER_STATUSES, example: "active" })
+  @ApiPropertyOptional({ enum: CUSTOMER_STATUSES, example: CustomerStatus.ACTIVE })
   @Transform(normalizeText)
   @IsOptional()
   @IsString()
-  @IsIn(CUSTOMER_STATUSES)
-  status?: string;
+  @IsEnum(CustomerStatus)
+  status?: CustomerStatus;
 
   @ApiPropertyOptional({ example: "Strategic customer", maxLength: 1000 })
   @Transform(normalizeText)

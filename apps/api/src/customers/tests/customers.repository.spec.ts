@@ -1,8 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
-import {
-  CUSTOMER_STATUS_ARCHIVED,
-  CustomersRepository,
-} from "../customers.repository";
+import { CustomersRepository } from "../customers.repository";
+import { CustomerStatus } from "../enums/customer-status.enum";
 
 describe("CustomersRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
@@ -13,7 +11,7 @@ describe("CustomersRepository", () => {
     type: "customer",
     name: "ACME France",
     legalName: "ACME France SAS",
-    status: "active",
+    status: CustomerStatus.ACTIVE,
     notes: "Strategic customer",
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -68,13 +66,13 @@ describe("CustomersRepository", () => {
   it("archives a customer through Prisma", async () => {
     const update = jest.fn().mockResolvedValue({
       ...customer,
-      status: CUSTOMER_STATUS_ARCHIVED,
+      status: CustomerStatus.ARCHIVED,
     });
     const repository = new CustomersRepository(createPrismaMock({ update }));
 
     const result = await repository.archive(workspaceId, customer.code);
 
-    expect(result.status).toBe(CUSTOMER_STATUS_ARCHIVED);
+    expect(result.status).toBe(CustomerStatus.ARCHIVED);
     expect(update).toHaveBeenCalledWith({
       where: {
         workspaceId_code: {
@@ -82,7 +80,7 @@ describe("CustomersRepository", () => {
           code: customer.code,
         },
       },
-      data: { status: CUSTOMER_STATUS_ARCHIVED },
+      data: { status: CustomerStatus.ARCHIVED },
     });
   });
 

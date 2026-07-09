@@ -377,6 +377,7 @@ model Customer {
   workspace       Workspace                       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   addresses       BusinessPartnerAddress[]
   contacts        BusinessPartnerContact[]
+  documents       BusinessPartnerDocument[]
   partnerNotes    BusinessPartnerNote[]
   roleAssignments BusinessPartnerRoleAssignment[]
 
@@ -446,6 +447,26 @@ model BusinessPartnerNote {
 
   @@index([workspaceId])
   @@index([customerId])
+  @@index([createdAt])
+}
+
+model BusinessPartnerDocument {
+  id           String   @id @default(uuid()) @db.Uuid
+  workspaceId  String   @db.Uuid
+  customerId   String   @db.Uuid
+  name         String
+  documentType String
+  fileName     String
+  mimeType     String
+  fileSize     Int
+  storageKey   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([customerId])
+  @@index([documentType])
   @@index([createdAt])
 }
 

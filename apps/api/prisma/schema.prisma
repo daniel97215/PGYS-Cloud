@@ -232,6 +232,7 @@ model Product {
   status      ProductStatus @default(ACTIVE)
   workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   variants    ProductVariant[]
+  barcodes    ProductBarcode[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -253,6 +254,7 @@ model ProductVariant {
   isDefault   Boolean  @default(false)
   isActive    Boolean  @default(true)
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  barcodes    ProductBarcode[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -262,6 +264,27 @@ model ProductVariant {
   @@index([sku])
   @@index([isDefault])
   @@index([isActive])
+}
+
+model ProductBarcode {
+  id               String          @id @default(uuid()) @db.Uuid
+  workspaceId      String          @db.Uuid
+  productId        String?         @db.Uuid
+  productVariantId String?         @db.Uuid
+  barcode          String
+  barcodeType      String
+  isPrimary        Boolean         @default(false)
+  product          Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([workspaceId, barcode])
+  @@index([workspaceId])
+  @@index([productId])
+  @@index([productVariantId])
+  @@index([barcode])
+  @@index([isPrimary])
 }
 
 model ProductCategory {

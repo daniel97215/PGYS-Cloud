@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
+import { BrandsModule } from "./brands/brands.module";
 import { BusinessPartnerAddressesModule } from "./business-partner-addresses/business-partner-addresses.module";
 import { BusinessPartnerContactsModule } from "./business-partner-contacts/business-partner-contacts.module";
 import { BusinessPartnerDocumentsModule } from "./business-partner-documents/business-partner-documents.module";
@@ -29,6 +30,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
     PrismaModule,
     HealthModule,
+    BrandsModule,
     BusinessPartnerAddressesModule,
     BusinessPartnerContactsModule,
     BusinessPartnerDocumentsModule,

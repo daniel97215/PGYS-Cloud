@@ -131,6 +131,7 @@ model Workspace {
   products             Product[]
   productCategories    ProductCategory[]
   brands               Brand[]
+  manufacturers        Manufacturer[]
   businessPartnerRoles BusinessPartnerRole[]
   businessPartnerTags  BusinessPartnerTag[]
   businessPartnerCategories BusinessPartnerCategory[]
@@ -258,6 +259,25 @@ model ProductCategory {
 }
 
 model Brand {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  code        String
+  name        String
+  description String?
+  websiteUrl  String?
+  isActive    Boolean   @default(true)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([code])
+  @@index([name])
+  @@index([isActive])
+}
+
+model Manufacturer {
   id          String    @id @default(uuid()) @db.Uuid
   workspaceId String    @db.Uuid
   code        String

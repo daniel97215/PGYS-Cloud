@@ -24,6 +24,7 @@ import { ProductsModule } from "./products/products.module";
 import { ProvisioningModule } from "./provisioning/provisioning.module";
 import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
+import { UnitsModule } from "./units/units.module";
 import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({
@@ -51,6 +52,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ProvisioningModule,
     ServiceCatalogModule,
     SubscriptionsModule,
+    UnitsModule,
     WorkspaceModule,
     AuthModule,
   ],

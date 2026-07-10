@@ -17,6 +17,7 @@ import { HealthModule } from "./health/health.module";
 import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { ProductsModule } from "./products/products.module";
 import { ProvisioningModule } from "./provisioning/provisioning.module";
 import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
@@ -40,6 +41,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     FeaturesModule,
     OffersModule,
     PricingModule,
+    ProductsModule,
     ProvisioningModule,
     ServiceCatalogModule,
     SubscriptionsModule,

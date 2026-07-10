@@ -45,6 +45,16 @@ enum ServiceType {
   MAIL
 }
 
+enum ProductType {
+  PRODUCT
+  SERVICE
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
 enum ServiceStatus {
   REQUESTED
   PROVISIONING
@@ -118,6 +128,7 @@ model Workspace {
   subscriptions        Subscription[]
   services             Service[]
   workspaceServices    WorkspaceService[]
+  products             Product[]
   businessPartnerRoles BusinessPartnerRole[]
   businessPartnerTags  BusinessPartnerTag[]
   businessPartnerCategories BusinessPartnerCategory[]
@@ -207,16 +218,23 @@ model Member {
 }
 
 model Product {
-  id          String      @id @default(uuid()) @db.Uuid
-  code        String      @unique
+  id          String        @id @default(uuid()) @db.Uuid
+  workspaceId String        @db.Uuid
+  code        String
   name        String
   description String?
-  serviceType ServiceType
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  type        ProductType
+  status      ProductStatus @default(ACTIVE)
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  @@index([serviceType, isActive])
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([code])
+  @@index([name])
+  @@index([type])
+  @@index([status])
 }
 
 model ServiceDefinition {

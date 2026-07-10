@@ -133,6 +133,7 @@ model Workspace {
   brands               Brand[]
   manufacturers        Manufacturer[]
   units                Unit[]
+  taxes                Tax[]
   businessPartnerRoles BusinessPartnerRole[]
   businessPartnerTags  BusinessPartnerTag[]
   businessPartnerCategories BusinessPartnerCategory[]
@@ -315,6 +316,26 @@ model Unit {
   @@index([code])
   @@index([symbol])
   @@index([name])
+  @@index([isActive])
+}
+
+model Tax {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  code        String
+  name        String
+  rate        Decimal
+  isDefault   Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([code])
+  @@index([rate])
+  @@index([isDefault])
   @@index([isActive])
 }
 
@@ -704,7 +725,7 @@ model Service {
   type           ServiceType
   status         ServiceStatus    @default(REQUESTED)
   version        Int              @default(1)
-  /// Configuration non secrète, validée par l'API avant écriture.
+  /// Configuration non secrÃ¨te, validÃ©e par l'API avant Ã©criture.
   config         Json
   workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   accounts       ServiceAccount[]

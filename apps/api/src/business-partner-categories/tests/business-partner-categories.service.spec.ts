@@ -1,10 +1,10 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { CustomerCategoriesRepository } from "../customer-categories.repository";
-import { CustomerCategoriesService } from "../customer-categories.service";
+import { BusinessPartnerCategoriesRepository } from "../business-partner-categories.repository";
+import { BusinessPartnerCategoriesService } from "../business-partner-categories.service";
 
-describe("CustomerCategoriesService", () => {
-  let repository: jest.Mocked<CustomerCategoriesRepository>;
-  let service: CustomerCategoriesService;
+describe("BusinessPartnerCategoriesService", () => {
+  let repository: jest.Mocked<BusinessPartnerCategoriesRepository>;
+  let service: BusinessPartnerCategoriesService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
   const category = {
@@ -28,9 +28,9 @@ describe("CustomerCategoriesService", () => {
       }),
       findByWorkspace: jest.fn().mockResolvedValue([category]),
       findByWorkspaceAndCode: jest.fn().mockResolvedValue(category),
-    } as unknown as jest.Mocked<CustomerCategoriesRepository>;
+    } as unknown as jest.Mocked<BusinessPartnerCategoriesRepository>;
 
-    service = new CustomerCategoriesService(repository);
+    service = new BusinessPartnerCategoriesService(repository);
   });
 
   it("creates a customer category", async () => {

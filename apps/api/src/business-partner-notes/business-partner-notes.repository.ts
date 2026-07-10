@@ -7,7 +7,7 @@ export type BusinessPartnerNoteRecord =
 
 export interface CreateBusinessPartnerNoteData {
   workspaceId: string;
-  customerId: string;
+  businessPartnerId: string;
   title?: string;
   content: string;
   createdBy?: string;
@@ -16,7 +16,7 @@ export interface CreateBusinessPartnerNoteData {
 
 export type UpdateBusinessPartnerNoteData = Omit<
   Partial<CreateBusinessPartnerNoteData>,
-  "workspaceId" | "customerId" | "createdBy"
+  "workspaceId" | "businessPartnerId" | "createdBy"
 >;
 
 @Injectable()
@@ -29,7 +29,7 @@ export class BusinessPartnerNotesRepository {
 
   update(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
     data: UpdateBusinessPartnerNoteData,
   ): Promise<BusinessPartnerNoteRecord> {
@@ -37,7 +37,7 @@ export class BusinessPartnerNotesRepository {
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data,
     });
@@ -45,38 +45,38 @@ export class BusinessPartnerNotesRepository {
 
   delete(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
   ): Promise<BusinessPartnerNoteRecord> {
     return this.prisma.businessPartnerNote.delete({
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }
 
-  findByCustomer(
+  findByBusinessPartner(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerNoteRecord[]> {
     return this.prisma.businessPartnerNote.findMany({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ createdAt: "desc" }],
     });
   }
 
   findById(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
   ): Promise<BusinessPartnerNoteRecord | null> {
     return this.prisma.businessPartnerNote.findFirst({
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }

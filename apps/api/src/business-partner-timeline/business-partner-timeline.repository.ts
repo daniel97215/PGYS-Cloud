@@ -7,7 +7,7 @@ export type BusinessPartnerTimelineEntryRecord =
 
 export interface CreateBusinessPartnerTimelineEntryData {
   workspaceId: string;
-  customerId: string;
+  businessPartnerId: string;
   eventType: string;
   title: string;
   description?: string;
@@ -27,26 +27,26 @@ export class BusinessPartnerTimelineRepository {
     return this.prisma.businessPartnerTimelineEntry.create({ data });
   }
 
-  findByCustomer(
+  findByBusinessPartner(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerTimelineEntryRecord[]> {
     return this.prisma.businessPartnerTimelineEntry.findMany({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ occurredAt: "desc" }, { createdAt: "desc" }],
     });
   }
 
   findById(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     entryId: string,
   ): Promise<BusinessPartnerTimelineEntryRecord | null> {
     return this.prisma.businessPartnerTimelineEntry.findFirst({
       where: {
         id: entryId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }

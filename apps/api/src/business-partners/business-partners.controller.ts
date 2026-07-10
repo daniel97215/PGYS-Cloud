@@ -24,29 +24,29 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { CustomersService } from "./customers.service";
-import { CreateCustomerDto } from "./dto/create-customer.dto";
-import { UpdateCustomerDto } from "./dto/update-customer.dto";
+import { BusinessPartnersService } from "./business-partners.service";
+import { CreateBusinessPartnerDto } from "./dto/create-business-partner.dto";
+import { UpdateBusinessPartnerDto } from "./dto/update-business-partner.dto";
 
 @ApiTags("Customers")
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: "Access token missing or invalid" })
 @UseGuards(JwtAuthGuard)
 @Controller("workspaces/:workspaceId/customers")
-export class CustomersController {
-  constructor(private readonly customersService: CustomersService) {}
+export class BusinessPartnersController {
+  constructor(private readonly businessPartnersService: BusinessPartnersService) {}
 
   @ApiOperation({ summary: "Create a customer, prospect, partner or supplier" })
   @ApiParam({ name: "workspaceId", format: "uuid" })
-  @ApiBody({ type: CreateCustomerDto })
+  @ApiBody({ type: CreateBusinessPartnerDto })
   @ApiCreatedResponse({ description: "Customer created" })
   @Post()
   create(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
-    @Body() data: CreateCustomerDto,
+    @Body() data: CreateBusinessPartnerDto,
   ) {
-    return this.customersService.createCustomer(workspaceId, data);
+    return this.businessPartnersService.createBusinessPartner(workspaceId, data);
   }
 
   @ApiOperation({ summary: "List workspace customers" })
@@ -57,7 +57,7 @@ export class CustomersController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
   ) {
-    return this.customersService.listWorkspaceCustomers(workspaceId);
+    return this.businessPartnersService.listWorkspaceBusinessPartners(workspaceId);
   }
 
   @ApiOperation({ summary: "Get a customer by code" })
@@ -71,13 +71,13 @@ export class CustomersController {
     workspaceId: string,
     @Param("code") code: string,
   ) {
-    return this.customersService.getCustomer(workspaceId, code);
+    return this.businessPartnersService.getBusinessPartner(workspaceId, code);
   }
 
   @ApiOperation({ summary: "Update a customer" })
   @ApiParam({ name: "workspaceId", format: "uuid" })
   @ApiParam({ name: "code" })
-  @ApiBody({ type: UpdateCustomerDto })
+  @ApiBody({ type: UpdateBusinessPartnerDto })
   @ApiOkResponse({ description: "Customer updated" })
   @ApiNotFoundResponse({ description: "Customer not found" })
   @Patch(":code")
@@ -85,9 +85,9 @@ export class CustomersController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("code") code: string,
-    @Body() data: UpdateCustomerDto,
+    @Body() data: UpdateBusinessPartnerDto,
   ) {
-    return this.customersService.updateCustomer(workspaceId, code, data);
+    return this.businessPartnersService.updateBusinessPartner(workspaceId, code, data);
   }
 
   @ApiOperation({ summary: "Archive a customer" })
@@ -102,6 +102,6 @@ export class CustomersController {
     workspaceId: string,
     @Param("code") code: string,
   ): Promise<void> {
-    await this.customersService.archiveCustomer(workspaceId, code);
+    await this.businessPartnersService.archiveBusinessPartner(workspaceId, code);
   }
 }

@@ -20,9 +20,9 @@ const businessPartnerSearchInclude = {
       businessPartnerTag: true,
     },
   },
-} satisfies Prisma.CustomerInclude;
+} satisfies Prisma.BusinessPartnerInclude;
 
-export type BusinessPartnerSearchRecord = Prisma.CustomerGetPayload<{
+export type BusinessPartnerSearchRecord = Prisma.BusinessPartnerGetPayload<{
   include: typeof businessPartnerSearchInclude;
 }>;
 
@@ -62,14 +62,14 @@ export class BusinessPartnerSearchRepository {
     const orderBy = this.buildOrderBy(criteria.sort, criteria.order);
 
     const [items, total] = await Promise.all([
-      this.prisma.customer.findMany({
+      this.prisma.businessPartner.findMany({
         where,
         include: businessPartnerSearchInclude,
         orderBy,
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
-      this.prisma.customer.count({ where }),
+      this.prisma.businessPartner.count({ where }),
     ]);
 
     return {
@@ -83,8 +83,8 @@ export class BusinessPartnerSearchRepository {
   private buildWhere(
     workspaceId: string,
     criteria: BusinessPartnerSearchCriteria,
-  ): Prisma.CustomerWhereInput {
-    const and: Prisma.CustomerWhereInput[] = [{ workspaceId }];
+  ): Prisma.BusinessPartnerWhereInput {
+    const and: Prisma.BusinessPartnerWhereInput[] = [{ workspaceId }];
 
     if (criteria.code) {
       and.push({
@@ -180,7 +180,7 @@ export class BusinessPartnerSearchRepository {
   private buildOrderBy(
     sort: BusinessPartnerSearchSortField = "name",
     order: BusinessPartnerSearchOrder = "asc",
-  ): Prisma.CustomerOrderByWithRelationInput[] {
+  ): Prisma.BusinessPartnerOrderByWithRelationInput[] {
     return [{ [sort]: order }, { code: "asc" }];
   }
 }

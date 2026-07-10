@@ -7,12 +7,12 @@ describe("BusinessPartnerAddressesService", () => {
   let service: BusinessPartnerAddressesService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const addressId = "30000000-0000-4000-8000-000000000001";
   const address = {
     id: addressId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     label: "Head office",
     addressLine1: "10 rue de la Paix",
     addressLine2: "Batiment A",
@@ -30,7 +30,7 @@ describe("BusinessPartnerAddressesService", () => {
       create: jest.fn().mockResolvedValue(address),
       update: jest.fn().mockResolvedValue(address),
       delete: jest.fn().mockResolvedValue(address),
-      findByCustomer: jest.fn().mockResolvedValue([address]),
+      findByBusinessPartner: jest.fn().mockResolvedValue([address]),
       findById: jest.fn().mockResolvedValue(address),
     } as unknown as jest.Mocked<BusinessPartnerAddressesRepository>;
 
@@ -38,7 +38,7 @@ describe("BusinessPartnerAddressesService", () => {
   });
 
   it("creates a business partner address", async () => {
-    const result = await service.createAddress(workspaceId, customerId, {
+    const result = await service.createAddress(workspaceId, businessPartnerId, {
       label: address.label,
       addressLine1: address.addressLine1,
       addressLine2: address.addressLine2,
@@ -52,7 +52,7 @@ describe("BusinessPartnerAddressesService", () => {
     expect(result).toEqual(address);
     expect(repository.create).toHaveBeenCalledWith({
       workspaceId,
-      customerId,
+      businessPartnerId,
       label: address.label,
       addressLine1: address.addressLine1,
       addressLine2: address.addressLine2,
@@ -65,26 +65,26 @@ describe("BusinessPartnerAddressesService", () => {
   });
 
   it("lists customer business partner addresses", async () => {
-    const result = await service.listCustomerAddresses(workspaceId, customerId);
+    const result = await service.listBusinessPartnerAddresses(workspaceId, businessPartnerId);
 
     expect(result).toEqual([address]);
-    expect(repository.findByCustomer).toHaveBeenCalledWith(
+    expect(repository.findByBusinessPartner).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   });
 
   it("gets a business partner address", async () => {
     const result = await service.getAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
 
     expect(result).toEqual(address);
     expect(repository.findById).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
   });
@@ -92,7 +92,7 @@ describe("BusinessPartnerAddressesService", () => {
   it("updates a business partner address", async () => {
     const result = await service.updateAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
       {
         city: "Lyon",
@@ -102,7 +102,7 @@ describe("BusinessPartnerAddressesService", () => {
     expect(result).toEqual(address);
     expect(repository.update).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
       {
         city: "Lyon",
@@ -113,14 +113,14 @@ describe("BusinessPartnerAddressesService", () => {
   it("deletes a business partner address", async () => {
     const result = await service.deleteAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
 
     expect(result).toEqual(address);
     expect(repository.delete).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
   });
@@ -129,7 +129,7 @@ describe("BusinessPartnerAddressesService", () => {
     repository.findById.mockResolvedValueOnce(null);
 
     await expect(
-      service.getAddress(workspaceId, customerId, addressId),
+      service.getAddress(workspaceId, businessPartnerId, addressId),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

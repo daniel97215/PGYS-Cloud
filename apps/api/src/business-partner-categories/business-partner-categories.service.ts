@@ -4,23 +4,23 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import {
-  CustomerCategoriesRepository,
-  CustomerCategoryRecord,
-} from "./customer-categories.repository";
-import { CreateCustomerCategoryDto } from "./dto/create-customer-category.dto";
-import { UpdateCustomerCategoryDto } from "./dto/update-customer-category.dto";
+  BusinessPartnerCategoriesRepository,
+  BusinessPartnerCategoryRecord,
+} from "./business-partner-categories.repository";
+import { CreateBusinessPartnerCategoryDto } from "./dto/create-business-partner-category.dto";
+import { UpdateBusinessPartnerCategoryDto } from "./dto/update-business-partner-category.dto";
 
 @Injectable()
-export class CustomerCategoriesService {
+export class BusinessPartnerCategoriesService {
   constructor(
-    private readonly customerCategoriesRepository: CustomerCategoriesRepository,
+    private readonly businessPartnerCategoriesRepository: BusinessPartnerCategoriesRepository,
   ) {}
 
   createCategory(
     workspaceId: string,
-    data: CreateCustomerCategoryDto,
-  ): Promise<CustomerCategoryRecord> {
-    return this.customerCategoriesRepository.create({
+    data: CreateBusinessPartnerCategoryDto,
+  ): Promise<BusinessPartnerCategoryRecord> {
+    return this.businessPartnerCategoriesRepository.create({
       ...data,
       workspaceId,
       code: this.normalizeCode(data.code),
@@ -29,26 +29,26 @@ export class CustomerCategoriesService {
 
   listWorkspaceCategories(
     workspaceId: string,
-  ): Promise<CustomerCategoryRecord[]> {
-    return this.customerCategoriesRepository.findByWorkspace(workspaceId);
+  ): Promise<BusinessPartnerCategoryRecord[]> {
+    return this.businessPartnerCategoriesRepository.findByWorkspace(workspaceId);
   }
 
   async getCategory(
     workspaceId: string,
     code: string,
-  ): Promise<CustomerCategoryRecord> {
+  ): Promise<BusinessPartnerCategoryRecord> {
     return this.requireCategory(workspaceId, code);
   }
 
   async updateCategory(
     workspaceId: string,
     code: string,
-    data: UpdateCustomerCategoryDto,
-  ): Promise<CustomerCategoryRecord> {
+    data: UpdateBusinessPartnerCategoryDto,
+  ): Promise<BusinessPartnerCategoryRecord> {
     const normalizedCode = this.normalizeCode(code);
     await this.requireCategory(workspaceId, normalizedCode);
 
-    return this.customerCategoriesRepository.update(
+    return this.businessPartnerCategoriesRepository.update(
       workspaceId,
       normalizedCode,
       data,
@@ -58,20 +58,20 @@ export class CustomerCategoriesService {
   async disableCategory(
     workspaceId: string,
     code: string,
-  ): Promise<CustomerCategoryRecord> {
+  ): Promise<BusinessPartnerCategoryRecord> {
     const normalizedCode = this.normalizeCode(code);
     await this.requireCategory(workspaceId, normalizedCode);
 
-    return this.customerCategoriesRepository.disable(workspaceId, normalizedCode);
+    return this.businessPartnerCategoriesRepository.disable(workspaceId, normalizedCode);
   }
 
   private async requireCategory(
     workspaceId: string,
     code: string,
-  ): Promise<CustomerCategoryRecord> {
+  ): Promise<BusinessPartnerCategoryRecord> {
     const normalizedCode = this.normalizeCode(code);
     const category =
-      await this.customerCategoriesRepository.findByWorkspaceAndCode(
+      await this.businessPartnerCategoriesRepository.findByWorkspaceAndCode(
         workspaceId,
         normalizedCode,
       );

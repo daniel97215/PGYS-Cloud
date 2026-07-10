@@ -3,12 +3,12 @@ import { BusinessPartnerDocumentsRepository } from "../business-partner-document
 
 describe("BusinessPartnerDocumentsRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const documentId = "30000000-0000-4000-8000-000000000001";
   const document = {
     id: documentId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     name: "Signed contract",
     documentType: "CONTRACT",
     fileName: "contract.pdf",
@@ -27,7 +27,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
 
     const result = await repository.create({
       workspaceId,
-      customerId,
+      businessPartnerId,
       name: document.name,
       documentType: document.documentType,
       fileName: document.fileName,
@@ -40,7 +40,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
     expect(create).toHaveBeenCalledWith({
       data: {
         workspaceId,
-        customerId,
+        businessPartnerId,
         name: document.name,
         documentType: document.documentType,
         fileName: document.fileName,
@@ -59,7 +59,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
 
     const result = await repository.update(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
       {
         name: "Updated contract",
@@ -71,7 +71,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data: { name: "Updated contract" },
     });
@@ -85,7 +85,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
 
     const result = await repository.delete(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
 
@@ -94,7 +94,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });
@@ -105,11 +105,11 @@ describe("BusinessPartnerDocumentsRepository", () => {
       createPrismaMock({ findMany }),
     );
 
-    const result = await repository.findByCustomer(workspaceId, customerId);
+    const result = await repository.findByBusinessPartner(workspaceId, businessPartnerId);
 
     expect(result).toEqual([document]);
     expect(findMany).toHaveBeenCalledWith({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ createdAt: "desc" }, { name: "asc" }],
     });
   });
@@ -122,7 +122,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
 
     const result = await repository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
 
@@ -131,7 +131,7 @@ describe("BusinessPartnerDocumentsRepository", () => {
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });

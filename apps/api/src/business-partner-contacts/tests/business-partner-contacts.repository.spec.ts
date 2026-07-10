@@ -3,12 +3,12 @@ import { BusinessPartnerContactsRepository } from "../business-partner-contacts.
 
 describe("BusinessPartnerContactsRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const contactId = "30000000-0000-4000-8000-000000000001";
   const contact = {
     id: contactId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     firstName: "Marie",
     lastName: "Durand",
     jobTitle: "Chief Financial Officer",
@@ -29,7 +29,7 @@ describe("BusinessPartnerContactsRepository", () => {
 
     const result = await repository.create({
       workspaceId,
-      customerId,
+      businessPartnerId,
       firstName: contact.firstName,
       lastName: contact.lastName,
       jobTitle: contact.jobTitle,
@@ -44,7 +44,7 @@ describe("BusinessPartnerContactsRepository", () => {
     expect(create).toHaveBeenCalledWith({
       data: {
         workspaceId,
-        customerId,
+        businessPartnerId,
         firstName: contact.firstName,
         lastName: contact.lastName,
         jobTitle: contact.jobTitle,
@@ -63,7 +63,7 @@ describe("BusinessPartnerContactsRepository", () => {
       createPrismaMock({ update }),
     );
 
-    const result = await repository.update(workspaceId, customerId, contactId, {
+    const result = await repository.update(workspaceId, businessPartnerId, contactId, {
       jobTitle: "Finance Director",
     });
 
@@ -72,7 +72,7 @@ describe("BusinessPartnerContactsRepository", () => {
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data: { jobTitle: "Finance Director" },
     });
@@ -84,14 +84,14 @@ describe("BusinessPartnerContactsRepository", () => {
       createPrismaMock({ delete: deleteContact }),
     );
 
-    const result = await repository.delete(workspaceId, customerId, contactId);
+    const result = await repository.delete(workspaceId, businessPartnerId, contactId);
 
     expect(result).toEqual(contact);
     expect(deleteContact).toHaveBeenCalledWith({
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });
@@ -102,11 +102,11 @@ describe("BusinessPartnerContactsRepository", () => {
       createPrismaMock({ findMany }),
     );
 
-    const result = await repository.findByCustomer(workspaceId, customerId);
+    const result = await repository.findByBusinessPartner(workspaceId, businessPartnerId);
 
     expect(result).toEqual([contact]);
     expect(findMany).toHaveBeenCalledWith({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [
         { isPrimary: "desc" },
         { lastName: "asc" },
@@ -123,7 +123,7 @@ describe("BusinessPartnerContactsRepository", () => {
 
     const result = await repository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
 
@@ -132,7 +132,7 @@ describe("BusinessPartnerContactsRepository", () => {
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });

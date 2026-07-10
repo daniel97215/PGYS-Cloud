@@ -3,13 +3,13 @@ import { BusinessPartnerNotesRepository } from "../business-partner-notes.reposi
 
 describe("BusinessPartnerNotesRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const noteId = "30000000-0000-4000-8000-000000000001";
   const userId = "40000000-0000-4000-8000-000000000001";
   const note = {
     id: noteId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     title: "Internal context",
     content: "Customer prefers monthly operational reviews.",
     createdBy: userId,
@@ -26,7 +26,7 @@ describe("BusinessPartnerNotesRepository", () => {
 
     const result = await repository.create({
       workspaceId,
-      customerId,
+      businessPartnerId,
       title: note.title,
       content: note.content,
       createdBy: note.createdBy,
@@ -37,7 +37,7 @@ describe("BusinessPartnerNotesRepository", () => {
     expect(create).toHaveBeenCalledWith({
       data: {
         workspaceId,
-        customerId,
+        businessPartnerId,
         title: note.title,
         content: note.content,
         createdBy: note.createdBy,
@@ -52,7 +52,7 @@ describe("BusinessPartnerNotesRepository", () => {
       createPrismaMock({ update }),
     );
 
-    const result = await repository.update(workspaceId, customerId, noteId, {
+    const result = await repository.update(workspaceId, businessPartnerId, noteId, {
       content: "Updated internal context.",
       updatedBy: userId,
     });
@@ -62,7 +62,7 @@ describe("BusinessPartnerNotesRepository", () => {
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data: {
         content: "Updated internal context.",
@@ -77,14 +77,14 @@ describe("BusinessPartnerNotesRepository", () => {
       createPrismaMock({ delete: deleteNote }),
     );
 
-    const result = await repository.delete(workspaceId, customerId, noteId);
+    const result = await repository.delete(workspaceId, businessPartnerId, noteId);
 
     expect(result).toEqual(note);
     expect(deleteNote).toHaveBeenCalledWith({
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });
@@ -95,11 +95,11 @@ describe("BusinessPartnerNotesRepository", () => {
       createPrismaMock({ findMany }),
     );
 
-    const result = await repository.findByCustomer(workspaceId, customerId);
+    const result = await repository.findByBusinessPartner(workspaceId, businessPartnerId);
 
     expect(result).toEqual([note]);
     expect(findMany).toHaveBeenCalledWith({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ createdAt: "desc" }],
     });
   });
@@ -110,14 +110,14 @@ describe("BusinessPartnerNotesRepository", () => {
       createPrismaMock({ findFirst }),
     );
 
-    const result = await repository.findById(workspaceId, customerId, noteId);
+    const result = await repository.findById(workspaceId, businessPartnerId, noteId);
 
     expect(result).toEqual(note);
     expect(findFirst).toHaveBeenCalledWith({
       where: {
         id: noteId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });

@@ -7,12 +7,12 @@ describe("BusinessPartnerDocumentsService", () => {
   let service: BusinessPartnerDocumentsService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const documentId = "30000000-0000-4000-8000-000000000001";
   const document = {
     id: documentId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     name: "Signed contract",
     documentType: "CONTRACT",
     fileName: "contract.pdf",
@@ -28,7 +28,7 @@ describe("BusinessPartnerDocumentsService", () => {
       create: jest.fn().mockResolvedValue(document),
       update: jest.fn().mockResolvedValue(document),
       delete: jest.fn().mockResolvedValue(document),
-      findByCustomer: jest.fn().mockResolvedValue([document]),
+      findByBusinessPartner: jest.fn().mockResolvedValue([document]),
       findById: jest.fn().mockResolvedValue(document),
     } as unknown as jest.Mocked<BusinessPartnerDocumentsRepository>;
 
@@ -36,7 +36,7 @@ describe("BusinessPartnerDocumentsService", () => {
   });
 
   it("creates a business partner document", async () => {
-    const result = await service.createDocument(workspaceId, customerId, {
+    const result = await service.createDocument(workspaceId, businessPartnerId, {
       name: document.name,
       documentType: document.documentType,
       fileName: document.fileName,
@@ -48,7 +48,7 @@ describe("BusinessPartnerDocumentsService", () => {
     expect(result).toEqual(document);
     expect(repository.create).toHaveBeenCalledWith({
       workspaceId,
-      customerId,
+      businessPartnerId,
       name: document.name,
       documentType: document.documentType,
       fileName: document.fileName,
@@ -59,26 +59,26 @@ describe("BusinessPartnerDocumentsService", () => {
   });
 
   it("lists customer business partner documents", async () => {
-    const result = await service.listCustomerDocuments(workspaceId, customerId);
+    const result = await service.listBusinessPartnerDocuments(workspaceId, businessPartnerId);
 
     expect(result).toEqual([document]);
-    expect(repository.findByCustomer).toHaveBeenCalledWith(
+    expect(repository.findByBusinessPartner).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   });
 
   it("gets a business partner document", async () => {
     const result = await service.getDocument(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
 
     expect(result).toEqual(document);
     expect(repository.findById).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
   });
@@ -86,7 +86,7 @@ describe("BusinessPartnerDocumentsService", () => {
   it("updates a business partner document", async () => {
     const result = await service.updateDocument(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
       {
         name: "Updated contract",
@@ -96,7 +96,7 @@ describe("BusinessPartnerDocumentsService", () => {
     expect(result).toEqual(document);
     expect(repository.update).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
       {
         name: "Updated contract",
@@ -107,14 +107,14 @@ describe("BusinessPartnerDocumentsService", () => {
   it("deletes a business partner document", async () => {
     const result = await service.deleteDocument(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
 
     expect(result).toEqual(document);
     expect(repository.delete).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
   });
@@ -123,7 +123,7 @@ describe("BusinessPartnerDocumentsService", () => {
     repository.findById.mockResolvedValueOnce(null);
 
     await expect(
-      service.getDocument(workspaceId, customerId, documentId),
+      service.getDocument(workspaceId, businessPartnerId, documentId),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

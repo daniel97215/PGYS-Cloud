@@ -3,13 +3,13 @@ import { BusinessPartnerTimelineRepository } from "../business-partner-timeline.
 
 describe("BusinessPartnerTimelineRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const entryId = "30000000-0000-4000-8000-000000000001";
   const occurredAt = new Date("2026-01-01T00:00:00.000Z");
   const entry = {
     id: entryId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     eventType: "NOTE_CREATED",
     title: "Internal note created",
     description: "A new internal note was added.",
@@ -28,7 +28,7 @@ describe("BusinessPartnerTimelineRepository", () => {
 
     const result = await repository.create({
       workspaceId,
-      customerId,
+      businessPartnerId,
       eventType: entry.eventType,
       title: entry.title,
       description: entry.description,
@@ -42,7 +42,7 @@ describe("BusinessPartnerTimelineRepository", () => {
     expect(create).toHaveBeenCalledWith({
       data: {
         workspaceId,
-        customerId,
+        businessPartnerId,
         eventType: entry.eventType,
         title: entry.title,
         description: entry.description,
@@ -60,11 +60,11 @@ describe("BusinessPartnerTimelineRepository", () => {
       createPrismaMock({ findMany }),
     );
 
-    const result = await repository.findByCustomer(workspaceId, customerId);
+    const result = await repository.findByBusinessPartner(workspaceId, businessPartnerId);
 
     expect(result).toEqual([entry]);
     expect(findMany).toHaveBeenCalledWith({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ occurredAt: "desc" }, { createdAt: "desc" }],
     });
   });
@@ -75,14 +75,14 @@ describe("BusinessPartnerTimelineRepository", () => {
       createPrismaMock({ findFirst }),
     );
 
-    const result = await repository.findById(workspaceId, customerId, entryId);
+    const result = await repository.findById(workspaceId, businessPartnerId, entryId);
 
     expect(result).toEqual(entry);
     expect(findFirst).toHaveBeenCalledWith({
       where: {
         id: entryId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });

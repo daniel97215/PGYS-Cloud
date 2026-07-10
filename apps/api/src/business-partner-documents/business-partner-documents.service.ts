@@ -14,45 +14,45 @@ export class BusinessPartnerDocumentsService {
 
   createDocument(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     data: CreateBusinessPartnerDocumentDto,
   ): Promise<BusinessPartnerDocumentRecord> {
     return this.businessPartnerDocumentsRepository.create({
       ...data,
       workspaceId,
-      customerId,
+      businessPartnerId,
     });
   }
 
-  listCustomerDocuments(
+  listBusinessPartnerDocuments(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerDocumentRecord[]> {
-    return this.businessPartnerDocumentsRepository.findByCustomer(
+    return this.businessPartnerDocumentsRepository.findByBusinessPartner(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
   async getDocument(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
   ): Promise<BusinessPartnerDocumentRecord> {
-    return this.requireDocument(workspaceId, customerId, documentId);
+    return this.requireDocument(workspaceId, businessPartnerId, documentId);
   }
 
   async updateDocument(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
     data: UpdateBusinessPartnerDocumentDto,
   ): Promise<BusinessPartnerDocumentRecord> {
-    await this.requireDocument(workspaceId, customerId, documentId);
+    await this.requireDocument(workspaceId, businessPartnerId, documentId);
 
     return this.businessPartnerDocumentsRepository.update(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
       data,
     );
@@ -60,26 +60,26 @@ export class BusinessPartnerDocumentsService {
 
   async deleteDocument(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
   ): Promise<BusinessPartnerDocumentRecord> {
-    await this.requireDocument(workspaceId, customerId, documentId);
+    await this.requireDocument(workspaceId, businessPartnerId, documentId);
 
     return this.businessPartnerDocumentsRepository.delete(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
   }
 
   private async requireDocument(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
   ): Promise<BusinessPartnerDocumentRecord> {
     const document = await this.businessPartnerDocumentsRepository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       documentId,
     );
 

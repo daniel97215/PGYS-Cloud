@@ -7,7 +7,7 @@ export type BusinessPartnerContactRecord =
 
 export interface CreateBusinessPartnerContactData {
   workspaceId: string;
-  customerId: string;
+  businessPartnerId: string;
   firstName: string;
   lastName: string;
   jobTitle?: string;
@@ -20,7 +20,7 @@ export interface CreateBusinessPartnerContactData {
 
 export type UpdateBusinessPartnerContactData = Omit<
   Partial<CreateBusinessPartnerContactData>,
-  "workspaceId" | "customerId"
+  "workspaceId" | "businessPartnerId"
 >;
 
 @Injectable()
@@ -35,7 +35,7 @@ export class BusinessPartnerContactsRepository {
 
   update(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
     data: UpdateBusinessPartnerContactData,
   ): Promise<BusinessPartnerContactRecord> {
@@ -43,7 +43,7 @@ export class BusinessPartnerContactsRepository {
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data,
     });
@@ -51,24 +51,24 @@ export class BusinessPartnerContactsRepository {
 
   delete(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
   ): Promise<BusinessPartnerContactRecord> {
     return this.prisma.businessPartnerContact.delete({
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }
 
-  findByCustomer(
+  findByBusinessPartner(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerContactRecord[]> {
     return this.prisma.businessPartnerContact.findMany({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [
         { isPrimary: "desc" },
         { lastName: "asc" },
@@ -79,14 +79,14 @@ export class BusinessPartnerContactsRepository {
 
   findById(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
   ): Promise<BusinessPartnerContactRecord | null> {
     return this.prisma.businessPartnerContact.findFirst({
       where: {
         id: contactId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }

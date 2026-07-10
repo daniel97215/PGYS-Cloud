@@ -8,21 +8,21 @@ import {
   MinLength,
 } from "class-validator";
 import {
-  CustomerStatus,
-  CUSTOMER_STATUSES,
-} from "../enums/customer-status.enum";
-import { CustomerType, CUSTOMER_TYPES } from "../enums/customer-type.enum";
+  BusinessPartnerStatus,
+  BUSINESS_PARTNER_STATUSES,
+} from "../enums/business-partner-status.enum";
+import { BusinessPartnerType, BUSINESS_PARTNER_TYPES } from "../enums/business-partner-type.enum";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
 
-export class UpdateCustomerDto {
-  @ApiPropertyOptional({ enum: CUSTOMER_TYPES, example: CustomerType.PROSPECT })
+export class UpdateBusinessPartnerDto {
+  @ApiPropertyOptional({ enum: BUSINESS_PARTNER_TYPES, example: BusinessPartnerType.PROSPECT })
   @Transform(normalizeText)
   @IsOptional()
   @IsString()
-  @IsEnum(CustomerType)
-  type?: CustomerType;
+  @IsEnum(BusinessPartnerType)
+  type?: BusinessPartnerType;
 
   @ApiPropertyOptional({ example: "ACME France", maxLength: 160 })
   @Transform(normalizeText)
@@ -40,14 +40,14 @@ export class UpdateCustomerDto {
   legalName?: string;
 
   @ApiPropertyOptional({
-    enum: CUSTOMER_STATUSES,
-    example: CustomerStatus.INACTIVE,
+    enum: BUSINESS_PARTNER_STATUSES,
+    example: BusinessPartnerStatus.INACTIVE,
   })
   @Transform(normalizeText)
   @IsOptional()
   @IsString()
-  @IsEnum(CustomerStatus)
-  status?: CustomerStatus;
+  @IsEnum(BusinessPartnerStatus)
+  status?: BusinessPartnerStatus;
 
   @ApiPropertyOptional({ example: "Strategic customer", maxLength: 1000 })
   @Transform(normalizeText)

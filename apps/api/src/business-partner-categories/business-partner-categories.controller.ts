@@ -24,31 +24,31 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { CustomerCategoriesService } from "./customer-categories.service";
-import { CreateCustomerCategoryDto } from "./dto/create-customer-category.dto";
-import { UpdateCustomerCategoryDto } from "./dto/update-customer-category.dto";
+import { BusinessPartnerCategoriesService } from "./business-partner-categories.service";
+import { CreateBusinessPartnerCategoryDto } from "./dto/create-business-partner-category.dto";
+import { UpdateBusinessPartnerCategoryDto } from "./dto/update-business-partner-category.dto";
 
 @ApiTags("Customer Categories")
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: "Access token missing or invalid" })
 @UseGuards(JwtAuthGuard)
 @Controller("workspaces/:workspaceId/customer-categories")
-export class CustomerCategoriesController {
+export class BusinessPartnerCategoriesController {
   constructor(
-    private readonly customerCategoriesService: CustomerCategoriesService,
+    private readonly businessPartnerCategoriesService: BusinessPartnerCategoriesService,
   ) {}
 
   @ApiOperation({ summary: "Create a customer category" })
   @ApiParam({ name: "workspaceId", format: "uuid" })
-  @ApiBody({ type: CreateCustomerCategoryDto })
+  @ApiBody({ type: CreateBusinessPartnerCategoryDto })
   @ApiCreatedResponse({ description: "Customer category created" })
   @Post()
   create(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
-    @Body() data: CreateCustomerCategoryDto,
+    @Body() data: CreateBusinessPartnerCategoryDto,
   ) {
-    return this.customerCategoriesService.createCategory(workspaceId, data);
+    return this.businessPartnerCategoriesService.createCategory(workspaceId, data);
   }
 
   @ApiOperation({ summary: "List workspace customer categories" })
@@ -59,7 +59,7 @@ export class CustomerCategoriesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
   ) {
-    return this.customerCategoriesService.listWorkspaceCategories(workspaceId);
+    return this.businessPartnerCategoriesService.listWorkspaceCategories(workspaceId);
   }
 
   @ApiOperation({ summary: "Get a customer category by code" })
@@ -73,13 +73,13 @@ export class CustomerCategoriesController {
     workspaceId: string,
     @Param("code") code: string,
   ) {
-    return this.customerCategoriesService.getCategory(workspaceId, code);
+    return this.businessPartnerCategoriesService.getCategory(workspaceId, code);
   }
 
   @ApiOperation({ summary: "Update a customer category" })
   @ApiParam({ name: "workspaceId", format: "uuid" })
   @ApiParam({ name: "code" })
-  @ApiBody({ type: UpdateCustomerCategoryDto })
+  @ApiBody({ type: UpdateBusinessPartnerCategoryDto })
   @ApiOkResponse({ description: "Customer category updated" })
   @ApiNotFoundResponse({ description: "Customer category not found" })
   @Patch(":code")
@@ -87,9 +87,9 @@ export class CustomerCategoriesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("code") code: string,
-    @Body() data: UpdateCustomerCategoryDto,
+    @Body() data: UpdateBusinessPartnerCategoryDto,
   ) {
-    return this.customerCategoriesService.updateCategory(
+    return this.businessPartnerCategoriesService.updateCategory(
       workspaceId,
       code,
       data,
@@ -108,6 +108,6 @@ export class CustomerCategoriesController {
     workspaceId: string,
     @Param("code") code: string,
   ): Promise<void> {
-    await this.customerCategoriesService.disableCategory(workspaceId, code);
+    await this.businessPartnerCategoriesService.disableCategory(workspaceId, code);
   }
 }

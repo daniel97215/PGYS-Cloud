@@ -7,12 +7,12 @@ describe("BusinessPartnerContactsService", () => {
   let service: BusinessPartnerContactsService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const contactId = "30000000-0000-4000-8000-000000000001";
   const contact = {
     id: contactId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     firstName: "Marie",
     lastName: "Durand",
     jobTitle: "Chief Financial Officer",
@@ -30,7 +30,7 @@ describe("BusinessPartnerContactsService", () => {
       create: jest.fn().mockResolvedValue(contact),
       update: jest.fn().mockResolvedValue(contact),
       delete: jest.fn().mockResolvedValue(contact),
-      findByCustomer: jest.fn().mockResolvedValue([contact]),
+      findByBusinessPartner: jest.fn().mockResolvedValue([contact]),
       findById: jest.fn().mockResolvedValue(contact),
     } as unknown as jest.Mocked<BusinessPartnerContactsRepository>;
 
@@ -38,7 +38,7 @@ describe("BusinessPartnerContactsService", () => {
   });
 
   it("creates a business partner contact", async () => {
-    const result = await service.createContact(workspaceId, customerId, {
+    const result = await service.createContact(workspaceId, businessPartnerId, {
       firstName: contact.firstName,
       lastName: contact.lastName,
       jobTitle: contact.jobTitle,
@@ -52,7 +52,7 @@ describe("BusinessPartnerContactsService", () => {
     expect(result).toEqual(contact);
     expect(repository.create).toHaveBeenCalledWith({
       workspaceId,
-      customerId,
+      businessPartnerId,
       firstName: contact.firstName,
       lastName: contact.lastName,
       jobTitle: contact.jobTitle,
@@ -65,22 +65,22 @@ describe("BusinessPartnerContactsService", () => {
   });
 
   it("lists customer business partner contacts", async () => {
-    const result = await service.listCustomerContacts(workspaceId, customerId);
+    const result = await service.listBusinessPartnerContacts(workspaceId, businessPartnerId);
 
     expect(result).toEqual([contact]);
-    expect(repository.findByCustomer).toHaveBeenCalledWith(
+    expect(repository.findByBusinessPartner).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   });
 
   it("gets a business partner contact", async () => {
-    const result = await service.getContact(workspaceId, customerId, contactId);
+    const result = await service.getContact(workspaceId, businessPartnerId, contactId);
 
     expect(result).toEqual(contact);
     expect(repository.findById).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
   });
@@ -88,7 +88,7 @@ describe("BusinessPartnerContactsService", () => {
   it("updates a business partner contact", async () => {
     const result = await service.updateContact(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
       {
         jobTitle: "Finance Director",
@@ -98,7 +98,7 @@ describe("BusinessPartnerContactsService", () => {
     expect(result).toEqual(contact);
     expect(repository.update).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
       {
         jobTitle: "Finance Director",
@@ -109,14 +109,14 @@ describe("BusinessPartnerContactsService", () => {
   it("deletes a business partner contact", async () => {
     const result = await service.deleteContact(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
 
     expect(result).toEqual(contact);
     expect(repository.delete).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
   });
@@ -125,7 +125,7 @@ describe("BusinessPartnerContactsService", () => {
     repository.findById.mockResolvedValueOnce(null);
 
     await expect(
-      service.getContact(workspaceId, customerId, contactId),
+      service.getContact(workspaceId, businessPartnerId, contactId),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

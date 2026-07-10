@@ -48,12 +48,12 @@ export class BusinessPartnerAddressesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Body() data: CreateBusinessPartnerAddressDto,
   ) {
     return this.businessPartnerAddressesService.createAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       data,
     );
   }
@@ -67,11 +67,11 @@ export class BusinessPartnerAddressesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
   ) {
-    return this.businessPartnerAddressesService.listCustomerAddresses(
+    return this.businessPartnerAddressesService.listBusinessPartnerAddresses(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
@@ -86,13 +86,13 @@ export class BusinessPartnerAddressesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("addressId", new ParseUUIDPipe({ version: "4" }))
     addressId: string,
   ) {
     return this.businessPartnerAddressesService.getAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
   }
@@ -109,14 +109,14 @@ export class BusinessPartnerAddressesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("addressId", new ParseUUIDPipe({ version: "4" }))
     addressId: string,
     @Body() data: UpdateBusinessPartnerAddressDto,
   ) {
     return this.businessPartnerAddressesService.updateAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
       data,
     );
@@ -134,13 +134,13 @@ export class BusinessPartnerAddressesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("addressId", new ParseUUIDPipe({ version: "4" }))
     addressId: string,
   ): Promise<void> {
     await this.businessPartnerAddressesService.deleteAddress(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
   }

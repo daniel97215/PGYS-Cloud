@@ -1,7 +1,7 @@
 import { PrismaService } from "../../prisma/prisma.service";
-import { CustomerCategoriesRepository } from "../customer-categories.repository";
+import { BusinessPartnerCategoriesRepository } from "../business-partner-categories.repository";
 
-describe("CustomerCategoriesRepository", () => {
+describe("BusinessPartnerCategoriesRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
   const category = {
     id: "20000000-0000-4000-8000-000000000001",
@@ -16,7 +16,7 @@ describe("CustomerCategoriesRepository", () => {
 
   it("creates a customer category through Prisma", async () => {
     const create = jest.fn().mockResolvedValue(category);
-    const repository = new CustomerCategoriesRepository(
+    const repository = new BusinessPartnerCategoriesRepository(
       createPrismaMock({ create }),
     );
 
@@ -40,7 +40,7 @@ describe("CustomerCategoriesRepository", () => {
 
   it("updates a customer category through Prisma", async () => {
     const update = jest.fn().mockResolvedValue(category);
-    const repository = new CustomerCategoriesRepository(
+    const repository = new BusinessPartnerCategoriesRepository(
       createPrismaMock({ update }),
     );
 
@@ -65,7 +65,7 @@ describe("CustomerCategoriesRepository", () => {
       ...category,
       isActive: false,
     });
-    const repository = new CustomerCategoriesRepository(
+    const repository = new BusinessPartnerCategoriesRepository(
       createPrismaMock({ update }),
     );
 
@@ -85,7 +85,7 @@ describe("CustomerCategoriesRepository", () => {
 
   it("lists customer categories for a workspace through Prisma", async () => {
     const findMany = jest.fn().mockResolvedValue([category]);
-    const repository = new CustomerCategoriesRepository(
+    const repository = new BusinessPartnerCategoriesRepository(
       createPrismaMock({ findMany }),
     );
 
@@ -100,7 +100,7 @@ describe("CustomerCategoriesRepository", () => {
 
   it("finds a customer category by workspace and code through Prisma", async () => {
     const findUnique = jest.fn().mockResolvedValue(category);
-    const repository = new CustomerCategoriesRepository(
+    const repository = new BusinessPartnerCategoriesRepository(
       createPrismaMock({ findUnique }),
     );
 
@@ -128,7 +128,7 @@ function createPrismaMock(methods: {
   findUnique?: jest.Mock;
 }): PrismaService {
   const prisma = {
-    customerCategory: {
+    businessPartnerCategory: {
       create: methods.create ?? jest.fn(),
       update: methods.update ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),

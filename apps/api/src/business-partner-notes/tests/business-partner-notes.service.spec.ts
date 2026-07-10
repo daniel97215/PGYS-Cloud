@@ -7,13 +7,13 @@ describe("BusinessPartnerNotesService", () => {
   let service: BusinessPartnerNotesService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const noteId = "30000000-0000-4000-8000-000000000001";
   const userId = "40000000-0000-4000-8000-000000000001";
   const note = {
     id: noteId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     title: "Internal context",
     content: "Customer prefers monthly operational reviews.",
     createdBy: userId,
@@ -27,7 +27,7 @@ describe("BusinessPartnerNotesService", () => {
       create: jest.fn().mockResolvedValue(note),
       update: jest.fn().mockResolvedValue(note),
       delete: jest.fn().mockResolvedValue(note),
-      findByCustomer: jest.fn().mockResolvedValue([note]),
+      findByBusinessPartner: jest.fn().mockResolvedValue([note]),
       findById: jest.fn().mockResolvedValue(note),
     } as unknown as jest.Mocked<BusinessPartnerNotesRepository>;
 
@@ -35,7 +35,7 @@ describe("BusinessPartnerNotesService", () => {
   });
 
   it("creates a business partner note", async () => {
-    const result = await service.createNote(workspaceId, customerId, {
+    const result = await service.createNote(workspaceId, businessPartnerId, {
       title: note.title,
       content: note.content,
       createdBy: note.createdBy,
@@ -45,7 +45,7 @@ describe("BusinessPartnerNotesService", () => {
     expect(result).toEqual(note);
     expect(repository.create).toHaveBeenCalledWith({
       workspaceId,
-      customerId,
+      businessPartnerId,
       title: note.title,
       content: note.content,
       createdBy: note.createdBy,
@@ -54,28 +54,28 @@ describe("BusinessPartnerNotesService", () => {
   });
 
   it("lists customer business partner notes", async () => {
-    const result = await service.listCustomerNotes(workspaceId, customerId);
+    const result = await service.listBusinessPartnerNotes(workspaceId, businessPartnerId);
 
     expect(result).toEqual([note]);
-    expect(repository.findByCustomer).toHaveBeenCalledWith(
+    expect(repository.findByBusinessPartner).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   });
 
   it("gets a business partner note", async () => {
-    const result = await service.getNote(workspaceId, customerId, noteId);
+    const result = await service.getNote(workspaceId, businessPartnerId, noteId);
 
     expect(result).toEqual(note);
     expect(repository.findById).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
   });
 
   it("updates a business partner note", async () => {
-    const result = await service.updateNote(workspaceId, customerId, noteId, {
+    const result = await service.updateNote(workspaceId, businessPartnerId, noteId, {
       content: "Updated internal context.",
       updatedBy: userId,
     });
@@ -83,7 +83,7 @@ describe("BusinessPartnerNotesService", () => {
     expect(result).toEqual(note);
     expect(repository.update).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
       {
         content: "Updated internal context.",
@@ -93,12 +93,12 @@ describe("BusinessPartnerNotesService", () => {
   });
 
   it("deletes a business partner note", async () => {
-    const result = await service.deleteNote(workspaceId, customerId, noteId);
+    const result = await service.deleteNote(workspaceId, businessPartnerId, noteId);
 
     expect(result).toEqual(note);
     expect(repository.delete).toHaveBeenCalledWith(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
   });
@@ -107,7 +107,7 @@ describe("BusinessPartnerNotesService", () => {
     repository.findById.mockResolvedValueOnce(null);
 
     await expect(
-      service.getNote(workspaceId, customerId, noteId),
+      service.getNote(workspaceId, businessPartnerId, noteId),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

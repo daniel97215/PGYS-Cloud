@@ -14,45 +14,45 @@ export class BusinessPartnerAddressesService {
 
   createAddress(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     data: CreateBusinessPartnerAddressDto,
   ): Promise<BusinessPartnerAddressRecord> {
     return this.businessPartnerAddressesRepository.create({
       ...data,
       workspaceId,
-      customerId,
+      businessPartnerId,
     });
   }
 
-  listCustomerAddresses(
+  listBusinessPartnerAddresses(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerAddressRecord[]> {
-    return this.businessPartnerAddressesRepository.findByCustomer(
+    return this.businessPartnerAddressesRepository.findByBusinessPartner(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
   async getAddress(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
   ): Promise<BusinessPartnerAddressRecord> {
-    return this.requireAddress(workspaceId, customerId, addressId);
+    return this.requireAddress(workspaceId, businessPartnerId, addressId);
   }
 
   async updateAddress(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
     data: UpdateBusinessPartnerAddressDto,
   ): Promise<BusinessPartnerAddressRecord> {
-    await this.requireAddress(workspaceId, customerId, addressId);
+    await this.requireAddress(workspaceId, businessPartnerId, addressId);
 
     return this.businessPartnerAddressesRepository.update(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
       data,
     );
@@ -60,26 +60,26 @@ export class BusinessPartnerAddressesService {
 
   async deleteAddress(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
   ): Promise<BusinessPartnerAddressRecord> {
-    await this.requireAddress(workspaceId, customerId, addressId);
+    await this.requireAddress(workspaceId, businessPartnerId, addressId);
 
     return this.businessPartnerAddressesRepository.delete(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
   }
 
   private async requireAddress(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
   ): Promise<BusinessPartnerAddressRecord> {
     const address = await this.businessPartnerAddressesRepository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
 

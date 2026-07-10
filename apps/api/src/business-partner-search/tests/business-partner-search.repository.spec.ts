@@ -185,7 +185,7 @@ function createPrismaMock(methods: {
   count?: jest.Mock;
 }): PrismaService {
   const prisma = {
-    customer: {
+    businessPartner: {
       findMany: methods.findMany ?? jest.fn(),
       count: methods.count ?? jest.fn(),
     },

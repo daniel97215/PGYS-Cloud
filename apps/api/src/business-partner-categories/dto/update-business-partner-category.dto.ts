@@ -11,7 +11,7 @@ import {
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
 
-export class UpdateCustomerCategoryDto {
+export class UpdateBusinessPartnerCategoryDto {
   @ApiPropertyOptional({ example: "Grand Compte", maxLength: 120 })
   @Transform(normalizeText)
   @IsOptional()

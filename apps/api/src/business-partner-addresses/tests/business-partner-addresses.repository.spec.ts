@@ -3,12 +3,12 @@ import { BusinessPartnerAddressesRepository } from "../business-partner-addresse
 
 describe("BusinessPartnerAddressesRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
-  const customerId = "20000000-0000-4000-8000-000000000001";
+  const businessPartnerId = "20000000-0000-4000-8000-000000000001";
   const addressId = "30000000-0000-4000-8000-000000000001";
   const address = {
     id: addressId,
     workspaceId,
-    customerId,
+    businessPartnerId,
     label: "Head office",
     addressLine1: "10 rue de la Paix",
     addressLine2: "Batiment A",
@@ -29,7 +29,7 @@ describe("BusinessPartnerAddressesRepository", () => {
 
     const result = await repository.create({
       workspaceId,
-      customerId,
+      businessPartnerId,
       label: address.label,
       addressLine1: address.addressLine1,
       addressLine2: address.addressLine2,
@@ -44,7 +44,7 @@ describe("BusinessPartnerAddressesRepository", () => {
     expect(create).toHaveBeenCalledWith({
       data: {
         workspaceId,
-        customerId,
+        businessPartnerId,
         label: address.label,
         addressLine1: address.addressLine1,
         addressLine2: address.addressLine2,
@@ -63,7 +63,7 @@ describe("BusinessPartnerAddressesRepository", () => {
       createPrismaMock({ update }),
     );
 
-    const result = await repository.update(workspaceId, customerId, addressId, {
+    const result = await repository.update(workspaceId, businessPartnerId, addressId, {
       city: "Lyon",
     });
 
@@ -72,7 +72,7 @@ describe("BusinessPartnerAddressesRepository", () => {
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data: { city: "Lyon" },
     });
@@ -84,14 +84,14 @@ describe("BusinessPartnerAddressesRepository", () => {
       createPrismaMock({ delete: deleteAddress }),
     );
 
-    const result = await repository.delete(workspaceId, customerId, addressId);
+    const result = await repository.delete(workspaceId, businessPartnerId, addressId);
 
     expect(result).toEqual(address);
     expect(deleteAddress).toHaveBeenCalledWith({
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });
@@ -102,11 +102,11 @@ describe("BusinessPartnerAddressesRepository", () => {
       createPrismaMock({ findMany }),
     );
 
-    const result = await repository.findByCustomer(workspaceId, customerId);
+    const result = await repository.findByBusinessPartner(workspaceId, businessPartnerId);
 
     expect(result).toEqual([address]);
     expect(findMany).toHaveBeenCalledWith({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ isDefault: "desc" }, { label: "asc" }, { createdAt: "asc" }],
     });
   });
@@ -119,7 +119,7 @@ describe("BusinessPartnerAddressesRepository", () => {
 
     const result = await repository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       addressId,
     );
 
@@ -128,7 +128,7 @@ describe("BusinessPartnerAddressesRepository", () => {
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   });

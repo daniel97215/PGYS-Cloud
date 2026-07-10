@@ -14,45 +14,45 @@ export class BusinessPartnerContactsService {
 
   createContact(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     data: CreateBusinessPartnerContactDto,
   ): Promise<BusinessPartnerContactRecord> {
     return this.businessPartnerContactsRepository.create({
       ...data,
       workspaceId,
-      customerId,
+      businessPartnerId,
     });
   }
 
-  listCustomerContacts(
+  listBusinessPartnerContacts(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerContactRecord[]> {
-    return this.businessPartnerContactsRepository.findByCustomer(
+    return this.businessPartnerContactsRepository.findByBusinessPartner(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
   async getContact(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
   ): Promise<BusinessPartnerContactRecord> {
-    return this.requireContact(workspaceId, customerId, contactId);
+    return this.requireContact(workspaceId, businessPartnerId, contactId);
   }
 
   async updateContact(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
     data: UpdateBusinessPartnerContactDto,
   ): Promise<BusinessPartnerContactRecord> {
-    await this.requireContact(workspaceId, customerId, contactId);
+    await this.requireContact(workspaceId, businessPartnerId, contactId);
 
     return this.businessPartnerContactsRepository.update(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
       data,
     );
@@ -60,26 +60,26 @@ export class BusinessPartnerContactsService {
 
   async deleteContact(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
   ): Promise<BusinessPartnerContactRecord> {
-    await this.requireContact(workspaceId, customerId, contactId);
+    await this.requireContact(workspaceId, businessPartnerId, contactId);
 
     return this.businessPartnerContactsRepository.delete(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
   }
 
   private async requireContact(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     contactId: string,
   ): Promise<BusinessPartnerContactRecord> {
     const contact = await this.businessPartnerContactsRepository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       contactId,
     );
 

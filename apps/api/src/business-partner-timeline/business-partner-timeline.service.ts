@@ -14,36 +14,36 @@ export class BusinessPartnerTimelineService {
 
   createEntry(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     data: CreateBusinessPartnerTimelineEntryDto,
   ): Promise<BusinessPartnerTimelineEntryRecord> {
     return this.businessPartnerTimelineRepository.create({
       ...data,
       workspaceId,
-      customerId,
+      businessPartnerId,
       metadata: data.metadata as Prisma.InputJsonObject | undefined,
       occurredAt: new Date(data.occurredAt),
     });
   }
 
-  listCustomerEntries(
+  listBusinessPartnerEntries(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerTimelineEntryRecord[]> {
-    return this.businessPartnerTimelineRepository.findByCustomer(
+    return this.businessPartnerTimelineRepository.findByBusinessPartner(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
   async getEntry(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     entryId: string,
   ): Promise<BusinessPartnerTimelineEntryRecord> {
     const entry = await this.businessPartnerTimelineRepository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       entryId,
     );
 

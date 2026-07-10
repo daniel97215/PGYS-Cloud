@@ -120,8 +120,8 @@ model Workspace {
   workspaceServices    WorkspaceService[]
   businessPartnerRoles BusinessPartnerRole[]
   businessPartnerTags  BusinessPartnerTag[]
-  customerCategories   CustomerCategory[]
-  customers            Customer[]
+  businessPartnerCategories BusinessPartnerCategory[]
+  businessPartners     BusinessPartner[]
   invoices             Invoice[]
   tickets              Ticket[]
   activities           Activity[]
@@ -364,7 +364,7 @@ model Subscription {
   @@index([renewalDate])
 }
 
-model Customer {
+model BusinessPartner {
   id              String                          @id @default(uuid()) @db.Uuid
   workspaceId     String                          @db.Uuid
   code            String
@@ -393,7 +393,7 @@ model Customer {
 model BusinessPartnerAddress {
   id           String   @id @default(uuid()) @db.Uuid
   workspaceId  String   @db.Uuid
-  customerId   String   @db.Uuid
+  businessPartnerId   String   @db.Uuid
   label        String
   addressLine1 String
   addressLine2 String?
@@ -404,10 +404,10 @@ model BusinessPartnerAddress {
   isDefault    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([postalCode])
   @@index([city])
   @@index([countryCode])
@@ -416,7 +416,7 @@ model BusinessPartnerAddress {
 model BusinessPartnerContact {
   id          String   @id @default(uuid()) @db.Uuid
   workspaceId String   @db.Uuid
-  customerId  String   @db.Uuid
+  businessPartnerId  String   @db.Uuid
   firstName   String
   lastName    String
   jobTitle    String?
@@ -427,10 +427,10 @@ model BusinessPartnerContact {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([email])
   @@index([lastName])
   @@index([isActive])
@@ -439,24 +439,24 @@ model BusinessPartnerContact {
 model BusinessPartnerNote {
   id          String   @id @default(uuid()) @db.Uuid
   workspaceId String   @db.Uuid
-  customerId  String   @db.Uuid
+  businessPartnerId  String   @db.Uuid
   title       String?
   content     String
   createdBy   String?
   updatedBy   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([createdAt])
 }
 
 model BusinessPartnerDocument {
   id           String   @id @default(uuid()) @db.Uuid
   workspaceId  String   @db.Uuid
-  customerId   String   @db.Uuid
+  businessPartnerId   String   @db.Uuid
   name         String
   documentType String
   fileName     String
@@ -465,10 +465,10 @@ model BusinessPartnerDocument {
   storageKey   String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([documentType])
   @@index([createdAt])
 }
@@ -495,22 +495,22 @@ model BusinessPartnerTag {
 model BusinessPartnerTagAssignment {
   id                   String             @id @default(uuid()) @db.Uuid
   workspaceId          String             @db.Uuid
-  customerId           String             @db.Uuid
+  businessPartnerId           String             @db.Uuid
   businessPartnerTagId String             @db.Uuid
   assignedAt           DateTime           @default(now())
-  customer             Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner      BusinessPartner           @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
   businessPartnerTag   BusinessPartnerTag @relation(fields: [businessPartnerTagId], references: [id], onDelete: Cascade)
 
-  @@unique([customerId, businessPartnerTagId])
+  @@unique([businessPartnerId, businessPartnerTagId])
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([businessPartnerTagId])
 }
 
 model BusinessPartnerTimelineEntry {
   id           String   @id @default(uuid()) @db.Uuid
   workspaceId  String   @db.Uuid
-  customerId   String   @db.Uuid
+  businessPartnerId   String   @db.Uuid
   eventType    String
   title        String
   description  String?
@@ -519,16 +519,16 @@ model BusinessPartnerTimelineEntry {
   metadata     Json?
   occurredAt   DateTime
   createdAt    DateTime @default(now())
-  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([eventType])
   @@index([sourceModule])
   @@index([occurredAt])
 }
 
-model CustomerCategory {
+model BusinessPartnerCategory {
   id          String    @id @default(uuid()) @db.Uuid
   workspaceId String    @db.Uuid
   code        String
@@ -567,16 +567,16 @@ model BusinessPartnerRole {
 model BusinessPartnerRoleAssignment {
   id                    String              @id @default(uuid()) @db.Uuid
   workspaceId           String              @db.Uuid
-  customerId            String              @db.Uuid
+  businessPartnerId            String              @db.Uuid
   businessPartnerRoleId String              @db.Uuid
   assignedAt            DateTime            @default(now())
   assignedBy            String?
-  customer              Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartner       BusinessPartner            @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
   businessPartnerRole   BusinessPartnerRole @relation(fields: [businessPartnerRoleId], references: [id], onDelete: Cascade)
 
-  @@unique([customerId, businessPartnerRoleId])
+  @@unique([businessPartnerId, businessPartnerRoleId])
   @@index([workspaceId])
-  @@index([customerId])
+  @@index([businessPartnerId])
   @@index([businessPartnerRoleId])
 }
 

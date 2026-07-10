@@ -7,7 +7,7 @@ export type BusinessPartnerAddressRecord =
 
 export interface CreateBusinessPartnerAddressData {
   workspaceId: string;
-  customerId: string;
+  businessPartnerId: string;
   label: string;
   addressLine1: string;
   addressLine2?: string;
@@ -20,7 +20,7 @@ export interface CreateBusinessPartnerAddressData {
 
 export type UpdateBusinessPartnerAddressData = Omit<
   Partial<CreateBusinessPartnerAddressData>,
-  "workspaceId" | "customerId"
+  "workspaceId" | "businessPartnerId"
 >;
 
 @Injectable()
@@ -35,7 +35,7 @@ export class BusinessPartnerAddressesRepository {
 
   update(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
     data: UpdateBusinessPartnerAddressData,
   ): Promise<BusinessPartnerAddressRecord> {
@@ -43,7 +43,7 @@ export class BusinessPartnerAddressesRepository {
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data,
     });
@@ -51,38 +51,38 @@ export class BusinessPartnerAddressesRepository {
 
   delete(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
   ): Promise<BusinessPartnerAddressRecord> {
     return this.prisma.businessPartnerAddress.delete({
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }
 
-  findByCustomer(
+  findByBusinessPartner(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerAddressRecord[]> {
     return this.prisma.businessPartnerAddress.findMany({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ isDefault: "desc" }, { label: "asc" }, { createdAt: "asc" }],
     });
   }
 
   findById(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     addressId: string,
   ): Promise<BusinessPartnerAddressRecord | null> {
     return this.prisma.businessPartnerAddress.findFirst({
       where: {
         id: addressId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }

@@ -48,12 +48,12 @@ export class BusinessPartnerNotesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Body() data: CreateBusinessPartnerNoteDto,
   ) {
     return this.businessPartnerNotesService.createNote(
       workspaceId,
-      customerId,
+      businessPartnerId,
       data,
     );
   }
@@ -67,11 +67,11 @@ export class BusinessPartnerNotesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
   ) {
-    return this.businessPartnerNotesService.listCustomerNotes(
+    return this.businessPartnerNotesService.listBusinessPartnerNotes(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
@@ -86,13 +86,13 @@ export class BusinessPartnerNotesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("noteId", new ParseUUIDPipe({ version: "4" }))
     noteId: string,
   ) {
     return this.businessPartnerNotesService.getNote(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
   }
@@ -109,14 +109,14 @@ export class BusinessPartnerNotesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("noteId", new ParseUUIDPipe({ version: "4" }))
     noteId: string,
     @Body() data: UpdateBusinessPartnerNoteDto,
   ) {
     return this.businessPartnerNotesService.updateNote(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
       data,
     );
@@ -134,13 +134,13 @@ export class BusinessPartnerNotesController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("noteId", new ParseUUIDPipe({ version: "4" }))
     noteId: string,
   ): Promise<void> {
     await this.businessPartnerNotesService.deleteNote(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
   }

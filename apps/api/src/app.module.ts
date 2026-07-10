@@ -10,8 +10,8 @@ import { BusinessPartnerSearchModule } from "./business-partner-search/business-
 import { BusinessPartnerTagsModule } from "./business-partner-tags/business-partner-tags.module";
 import { BusinessPartnerTimelineModule } from "./business-partner-timeline/business-partner-timeline.module";
 import { validateEnvironment } from "./config/environment";
-import { CustomerCategoriesModule } from "./customer-categories/customer-categories.module";
-import { CustomersModule } from "./customers/customers.module";
+import { BusinessPartnerCategoriesModule } from "./business-partner-categories/business-partner-categories.module";
+import { BusinessPartnersModule } from "./business-partners/business-partners.module";
 import { FeaturesModule } from "./features/features.module";
 import { HealthModule } from "./health/health.module";
 import { OffersModule } from "./offers/offers.module";
@@ -35,8 +35,8 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     BusinessPartnerSearchModule,
     BusinessPartnerTagsModule,
     BusinessPartnerTimelineModule,
-    CustomerCategoriesModule,
-    CustomersModule,
+    BusinessPartnerCategoriesModule,
+    BusinessPartnersModule,
     FeaturesModule,
     OffersModule,
     PricingModule,

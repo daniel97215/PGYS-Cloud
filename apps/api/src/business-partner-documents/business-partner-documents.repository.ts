@@ -7,7 +7,7 @@ export type BusinessPartnerDocumentRecord =
 
 export interface CreateBusinessPartnerDocumentData {
   workspaceId: string;
-  customerId: string;
+  businessPartnerId: string;
   name: string;
   documentType: string;
   fileName: string;
@@ -18,7 +18,7 @@ export interface CreateBusinessPartnerDocumentData {
 
 export type UpdateBusinessPartnerDocumentData = Omit<
   Partial<CreateBusinessPartnerDocumentData>,
-  "workspaceId" | "customerId"
+  "workspaceId" | "businessPartnerId"
 >;
 
 @Injectable()
@@ -33,7 +33,7 @@ export class BusinessPartnerDocumentsRepository {
 
   update(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
     data: UpdateBusinessPartnerDocumentData,
   ): Promise<BusinessPartnerDocumentRecord> {
@@ -41,7 +41,7 @@ export class BusinessPartnerDocumentsRepository {
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
       data,
     });
@@ -49,38 +49,38 @@ export class BusinessPartnerDocumentsRepository {
 
   delete(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
   ): Promise<BusinessPartnerDocumentRecord> {
     return this.prisma.businessPartnerDocument.delete({
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }
 
-  findByCustomer(
+  findByBusinessPartner(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerDocumentRecord[]> {
     return this.prisma.businessPartnerDocument.findMany({
-      where: { workspaceId, customerId },
+      where: { workspaceId, businessPartnerId },
       orderBy: [{ createdAt: "desc" }, { name: "asc" }],
     });
   }
 
   findById(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     documentId: string,
   ): Promise<BusinessPartnerDocumentRecord | null> {
     return this.prisma.businessPartnerDocument.findFirst({
       where: {
         id: documentId,
         workspaceId,
-        customerId,
+        businessPartnerId,
       },
     });
   }

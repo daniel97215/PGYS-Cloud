@@ -15,7 +15,7 @@ const normalizeText = ({ value }: { value: unknown }) =>
 const normalizeCode = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim().toUpperCase() : value;
 
-export class CreateCustomerCategoryDto {
+export class CreateBusinessPartnerCategoryDto {
   @ApiProperty({ example: "GRAND-COMPTE", maxLength: 40 })
   @Transform(normalizeCode)
   @IsString()

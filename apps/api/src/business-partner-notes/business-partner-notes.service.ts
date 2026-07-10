@@ -14,45 +14,45 @@ export class BusinessPartnerNotesService {
 
   createNote(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     data: CreateBusinessPartnerNoteDto,
   ): Promise<BusinessPartnerNoteRecord> {
     return this.businessPartnerNotesRepository.create({
       ...data,
       workspaceId,
-      customerId,
+      businessPartnerId,
     });
   }
 
-  listCustomerNotes(
+  listBusinessPartnerNotes(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
   ): Promise<BusinessPartnerNoteRecord[]> {
-    return this.businessPartnerNotesRepository.findByCustomer(
+    return this.businessPartnerNotesRepository.findByBusinessPartner(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
   async getNote(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
   ): Promise<BusinessPartnerNoteRecord> {
-    return this.requireNote(workspaceId, customerId, noteId);
+    return this.requireNote(workspaceId, businessPartnerId, noteId);
   }
 
   async updateNote(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
     data: UpdateBusinessPartnerNoteDto,
   ): Promise<BusinessPartnerNoteRecord> {
-    await this.requireNote(workspaceId, customerId, noteId);
+    await this.requireNote(workspaceId, businessPartnerId, noteId);
 
     return this.businessPartnerNotesRepository.update(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
       data,
     );
@@ -60,26 +60,26 @@ export class BusinessPartnerNotesService {
 
   async deleteNote(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
   ): Promise<BusinessPartnerNoteRecord> {
-    await this.requireNote(workspaceId, customerId, noteId);
+    await this.requireNote(workspaceId, businessPartnerId, noteId);
 
     return this.businessPartnerNotesRepository.delete(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
   }
 
   private async requireNote(
     workspaceId: string,
-    customerId: string,
+    businessPartnerId: string,
     noteId: string,
   ): Promise<BusinessPartnerNoteRecord> {
     const note = await this.businessPartnerNotesRepository.findById(
       workspaceId,
-      customerId,
+      businessPartnerId,
       noteId,
     );
 

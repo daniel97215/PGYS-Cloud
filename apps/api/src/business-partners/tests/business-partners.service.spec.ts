@@ -1,22 +1,22 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { CustomersRepository } from "../customers.repository";
-import { CustomersService } from "../customers.service";
-import { CustomerStatus } from "../enums/customer-status.enum";
-import { CustomerType } from "../enums/customer-type.enum";
+import { BusinessPartnersRepository } from "../business-partners.repository";
+import { BusinessPartnersService } from "../business-partners.service";
+import { BusinessPartnerStatus } from "../enums/business-partner-status.enum";
+import { BusinessPartnerType } from "../enums/business-partner-type.enum";
 
-describe("CustomersService", () => {
-  let repository: jest.Mocked<CustomersRepository>;
-  let service: CustomersService;
+describe("BusinessPartnersService", () => {
+  let repository: jest.Mocked<BusinessPartnersRepository>;
+  let service: BusinessPartnersService;
 
   const workspaceId = "10000000-0000-4000-8000-000000000001";
   const customer = {
     id: "20000000-0000-4000-8000-000000000001",
     workspaceId,
     code: "CUST-001",
-    type: CustomerType.CUSTOMER,
+    type: BusinessPartnerType.CUSTOMER,
     name: "ACME France",
     legalName: "ACME France SAS",
-    status: CustomerStatus.ACTIVE,
+    status: BusinessPartnerStatus.ACTIVE,
     notes: "Strategic customer",
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -28,19 +28,19 @@ describe("CustomersService", () => {
       update: jest.fn().mockResolvedValue(customer),
       archive: jest.fn().mockResolvedValue({
         ...customer,
-        status: CustomerStatus.ARCHIVED,
+        status: BusinessPartnerStatus.ARCHIVED,
       }),
       findByWorkspace: jest.fn().mockResolvedValue([customer]),
       findByWorkspaceAndCode: jest.fn().mockResolvedValue(customer),
-    } as unknown as jest.Mocked<CustomersRepository>;
+    } as unknown as jest.Mocked<BusinessPartnersRepository>;
 
-    service = new CustomersService(repository);
+    service = new BusinessPartnersService(repository);
   });
 
   it("creates a customer", async () => {
-    const result = await service.createCustomer(workspaceId, {
+    const result = await service.createBusinessPartner(workspaceId, {
       code: "cust-001",
-      type: CustomerType.CUSTOMER,
+      type: BusinessPartnerType.CUSTOMER,
       name: customer.name,
       legalName: customer.legalName,
       notes: customer.notes,
@@ -59,14 +59,14 @@ describe("CustomersService", () => {
   });
 
   it("lists workspace customers", async () => {
-    const result = await service.listWorkspaceCustomers(workspaceId);
+    const result = await service.listWorkspaceBusinessPartners(workspaceId);
 
     expect(result).toEqual([customer]);
     expect(repository.findByWorkspace).toHaveBeenCalledWith(workspaceId);
   });
 
   it("gets a customer by code", async () => {
-    const result = await service.getCustomer(workspaceId, "cust-001");
+    const result = await service.getBusinessPartner(workspaceId, "cust-001");
 
     expect(result).toEqual(customer);
     expect(repository.findByWorkspaceAndCode).toHaveBeenCalledWith(
@@ -76,23 +76,23 @@ describe("CustomersService", () => {
   });
 
   it("updates a customer", async () => {
-    const result = await service.updateCustomer(workspaceId, customer.code, {
+    const result = await service.updateBusinessPartner(workspaceId, customer.code, {
       name: "ACME Europe",
-      status: CustomerStatus.INACTIVE,
+      status: BusinessPartnerStatus.INACTIVE,
     });
 
     expect(result).toEqual(customer);
     expect(repository.update).toHaveBeenCalledWith(workspaceId, customer.code, {
       name: "ACME Europe",
-      status: CustomerStatus.INACTIVE,
+      status: BusinessPartnerStatus.INACTIVE,
       type: undefined,
     });
   });
 
   it("archives a customer", async () => {
-    const result = await service.archiveCustomer(workspaceId, customer.code);
+    const result = await service.archiveBusinessPartner(workspaceId, customer.code);
 
-    expect(result.status).toBe(CustomerStatus.ARCHIVED);
+    expect(result.status).toBe(BusinessPartnerStatus.ARCHIVED);
     expect(repository.archive).toHaveBeenCalledWith(workspaceId, customer.code);
   });
 
@@ -100,12 +100,12 @@ describe("CustomersService", () => {
     repository.findByWorkspaceAndCode.mockResolvedValueOnce(null);
 
     await expect(
-      service.getCustomer(workspaceId, "unknown"),
+      service.getBusinessPartner(workspaceId, "unknown"),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it("throws BadRequestException when code is blank", async () => {
-    await expect(service.getCustomer(workspaceId, " ")).rejects.toBeInstanceOf(
+    await expect(service.getBusinessPartner(workspaceId, " ")).rejects.toBeInstanceOf(
       BadRequestException,
     );
   });

@@ -42,12 +42,12 @@ export class BusinessPartnerTimelineController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Body() data: CreateBusinessPartnerTimelineEntryDto,
   ) {
     return this.businessPartnerTimelineService.createEntry(
       workspaceId,
-      customerId,
+      businessPartnerId,
       data,
     );
   }
@@ -61,11 +61,11 @@ export class BusinessPartnerTimelineController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
   ) {
-    return this.businessPartnerTimelineService.listCustomerEntries(
+    return this.businessPartnerTimelineService.listBusinessPartnerEntries(
       workspaceId,
-      customerId,
+      businessPartnerId,
     );
   }
 
@@ -82,13 +82,13 @@ export class BusinessPartnerTimelineController {
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
     @Param("customerId", new ParseUUIDPipe({ version: "4" }))
-    customerId: string,
+    businessPartnerId: string,
     @Param("entryId", new ParseUUIDPipe({ version: "4" }))
     entryId: string,
   ) {
     return this.businessPartnerTimelineService.getEntry(
       workspaceId,
-      customerId,
+      businessPartnerId,
       entryId,
     );
   }

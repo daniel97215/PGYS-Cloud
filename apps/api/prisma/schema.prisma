@@ -119,6 +119,7 @@ model Workspace {
   services             Service[]
   workspaceServices    WorkspaceService[]
   businessPartnerRoles BusinessPartnerRole[]
+  businessPartnerTags  BusinessPartnerTag[]
   customerCategories   CustomerCategory[]
   customers            Customer[]
   invoices             Invoice[]
@@ -380,6 +381,7 @@ model Customer {
   documents       BusinessPartnerDocument[]
   partnerNotes    BusinessPartnerNote[]
   roleAssignments BusinessPartnerRoleAssignment[]
+  tagAssignments  BusinessPartnerTagAssignment[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -468,6 +470,40 @@ model BusinessPartnerDocument {
   @@index([customerId])
   @@index([documentType])
   @@index([createdAt])
+}
+
+model BusinessPartnerTag {
+  id          String                         @id @default(uuid()) @db.Uuid
+  workspaceId String                         @db.Uuid
+  code        String
+  name        String
+  color       String?
+  isSystem    Boolean                        @default(false)
+  isActive    Boolean                        @default(true)
+  createdAt   DateTime                       @default(now())
+  updatedAt   DateTime                       @updatedAt
+  workspace   Workspace                      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignments BusinessPartnerTagAssignment[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([code])
+  @@index([isActive])
+}
+
+model BusinessPartnerTagAssignment {
+  id                   String             @id @default(uuid()) @db.Uuid
+  workspaceId          String             @db.Uuid
+  customerId           String             @db.Uuid
+  businessPartnerTagId String             @db.Uuid
+  assignedAt           DateTime           @default(now())
+  customer             Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessPartnerTag   BusinessPartnerTag @relation(fields: [businessPartnerTagId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, businessPartnerTagId])
+  @@index([workspaceId])
+  @@index([customerId])
+  @@index([businessPartnerTagId])
 }
 
 model CustomerCategory {

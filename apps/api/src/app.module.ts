@@ -6,6 +6,7 @@ import { BusinessPartnerContactsModule } from "./business-partner-contacts/busin
 import { BusinessPartnerDocumentsModule } from "./business-partner-documents/business-partner-documents.module";
 import { BusinessPartnerNotesModule } from "./business-partner-notes/business-partner-notes.module";
 import { BusinessPartnerRolesModule } from "./business-partner-roles/business-partner-roles.module";
+import { BusinessPartnerTagsModule } from "./business-partner-tags/business-partner-tags.module";
 import { validateEnvironment } from "./config/environment";
 import { CustomerCategoriesModule } from "./customer-categories/customer-categories.module";
 import { CustomersModule } from "./customers/customers.module";
@@ -29,6 +30,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     BusinessPartnerDocumentsModule,
     BusinessPartnerNotesModule,
     BusinessPartnerRolesModule,
+    BusinessPartnerTagsModule,
     CustomerCategoriesModule,
     CustomersModule,
     FeaturesModule,

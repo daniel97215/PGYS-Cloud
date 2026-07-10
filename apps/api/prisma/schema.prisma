@@ -233,6 +233,7 @@ model Product {
   workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   variants    ProductVariant[]
   barcodes    ProductBarcode[]
+  media       ProductMedia[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -255,6 +256,7 @@ model ProductVariant {
   isActive    Boolean  @default(true)
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   barcodes    ProductBarcode[]
+  media       ProductMedia[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -285,6 +287,32 @@ model ProductBarcode {
   @@index([productVariantId])
   @@index([barcode])
   @@index([isPrimary])
+}
+
+model ProductMedia {
+  id               String          @id @default(uuid()) @db.Uuid
+  workspaceId      String          @db.Uuid
+  productId        String?         @db.Uuid
+  productVariantId String?         @db.Uuid
+  name             String
+  mediaType        String
+  fileName         String
+  mimeType         String
+  fileSize         Int
+  storageKey       String
+  isPrimary        Boolean         @default(false)
+  sortOrder        Int             @default(0)
+  product          Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([workspaceId])
+  @@index([productId])
+  @@index([productVariantId])
+  @@index([mediaType])
+  @@index([isPrimary])
+  @@index([sortOrder])
 }
 
 model ProductCategory {

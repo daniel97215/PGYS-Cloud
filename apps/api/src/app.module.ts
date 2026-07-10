@@ -21,6 +21,7 @@ import { PricingModule } from "./pricing/pricing.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
 import { ProductBarcodesModule } from "./product-barcodes/product-barcodes.module";
+import { ProductMediaModule } from "./product-media/product-media.module";
 import { ProductsModule } from "./products/products.module";
 import { ProductVariantsModule } from "./product-variants/product-variants.module";
 import { ProvisioningModule } from "./provisioning/provisioning.module";
@@ -52,6 +53,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     PricingModule,
     ProductCategoriesModule,
     ProductBarcodesModule,
+    ProductMediaModule,
     ProductsModule,
     ProductVariantsModule,
     ProvisioningModule,

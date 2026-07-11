@@ -18,6 +18,7 @@ import { HealthModule } from "./health/health.module";
 import { ManufacturersModule } from "./manufacturers/manufacturers.module";
 import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
+import { PriceListsModule } from "./price-lists/price-lists.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
 import { ProductAttributesModule } from "./product-attributes/product-attributes.module";
@@ -52,6 +53,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ManufacturersModule,
     OffersModule,
     PricingModule,
+    PriceListsModule,
     ProductCategoriesModule,
     ProductAttributesModule,
     ProductBarcodesModule,

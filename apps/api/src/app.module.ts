@@ -20,6 +20,7 @@ import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
+import { ProductAttributesModule } from "./product-attributes/product-attributes.module";
 import { ProductBarcodesModule } from "./product-barcodes/product-barcodes.module";
 import { ProductMediaModule } from "./product-media/product-media.module";
 import { ProductsModule } from "./products/products.module";
@@ -52,6 +53,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     OffersModule,
     PricingModule,
     ProductCategoriesModule,
+    ProductAttributesModule,
     ProductBarcodesModule,
     ProductMediaModule,
     ProductsModule,

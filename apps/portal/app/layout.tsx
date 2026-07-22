@@ -10,8 +10,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Portail client | PGYS",
-  description: "Espace de gestion des services numériques PGYS.",
+  title: "Administration | PROGYS",
+  description: "Accès centralisé aux services numériques PROGYS.",
   robots: {
     index: false,
     follow: false,
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#F8FAFC",
+  themeColor: "#064bb7",
   colorScheme: "light",
 };
 

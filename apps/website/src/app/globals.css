@@ -3,6 +3,9 @@
 
 :root {
   --font-sans: var(--font-geist);
+  --pgys-brand: #064bb7;
+  --pgys-brand-dark: #06378c;
+  --pgys-brand-soft: #eaf2ff;
 }
 
 * {
@@ -36,18 +39,27 @@ summary {
   outline-offset: 4px;
 }
 
-.hero-grid {
-  background-image:
-    linear-gradient(to right, rgb(37 99 235 / 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(37 99 235 / 0.055) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, black 35%, transparent 95%);
+.brand-logo {
+  display: inline-flex;
+  border-radius: 0.5rem;
+  outline-offset: 4px;
 }
 
-.soft-glow {
-  background:
-    radial-gradient(circle at 22% 20%, rgb(219 234 254 / 0.9), transparent 34%),
-    radial-gradient(circle at 78% 36%, rgb(204 251 241 / 0.58), transparent 28%);
+.brand-logo-crop {
+  position: relative;
+  display: block;
+  width: 10.75rem;
+  height: 3.2rem;
+  overflow: hidden;
+}
+
+.brand-logo-image {
+  position: absolute;
+  width: 13.8rem;
+  max-width: none;
+  height: auto;
+  left: -1.55rem;
+  top: -2.85rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

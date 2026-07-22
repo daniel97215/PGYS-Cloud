@@ -1,170 +1,90 @@
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  Footer,
-  Heading,
-  Icon,
-  Navbar,
-  Section,
-} from "@pgys/ui";
-import type { IconName } from "@pgys/ui";
+import Image from "next/image";
+import { Button, Container, Icon, Section } from "@pgys/ui";
 import type { CloudPlan, Link, Service } from "@/content/landing";
+import { ContactForm } from "./contact-form";
 
-type HeaderProps = {
-  brandLabel: string;
-  homeLabel: string;
-  navigationLabel: string;
-  mobileMenuLabel: string;
-  links: Link[];
-  cta: Link;
-};
-
-export function SiteHeader({
-  brandLabel,
-  homeLabel,
-  navigationLabel,
-  mobileMenuLabel,
-  links,
-  cta,
-}: HeaderProps) {
+export function BrandLogo({ inverse = false }: { inverse?: boolean }) {
   return (
-    <Navbar
-      brandLabel={brandLabel}
-      homeHref="#"
-      homeLabel={homeLabel}
-      navigationLabel={navigationLabel}
-      menuLabel={mobileMenuLabel}
-      links={links}
-      action={cta}
-    />
+    <a href="#" aria-label="PROGYS, retour à l’accueil" className="brand-logo">
+      <span className="brand-logo-crop" aria-hidden="true">
+        <Image
+          src="/brand/progys-logo.png"
+          alt=""
+          width={1693}
+          height={963}
+          priority
+          className={inverse ? "brand-logo-image brightness-0 invert" : "brand-logo-image"}
+        />
+      </span>
+    </a>
   );
 }
 
-type HeroProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  primaryCta: Link;
-  secondaryCta: Link;
-  proofPoints: string[];
-  panelLabel: string;
-  panelStatus: string;
-  panelItems: Array<Pick<Service, "name" | "tagline" | "icon">>;
-};
-
-export function HeroSection({
-  eyebrow,
-  title,
-  description,
-  primaryCta,
-  secondaryCta,
-  proofPoints,
-  panelLabel,
-  panelStatus,
-  panelItems,
-}: HeroProps) {
+export function SiteHeader({ links, cta }: { links: Link[]; cta: Link }) {
   return (
-    <section
-      className="soft-glow relative overflow-hidden border-b border-border"
-      aria-labelledby="hero-title"
-    >
-      <div className="hero-grid absolute inset-0" aria-hidden="true" />
-      <Container className="relative grid items-center gap-14 py-20 sm:py-24 lg:grid-cols-[1.05fr_.95fr] lg:py-30">
-        <div>
-          <Badge variant="brand" className="mb-6 px-4 py-2 shadow-pgys-sm">
-            {eyebrow}
-          </Badge>
-          <h1
-            id="hero-title"
-            className="max-w-3xl text-balance text-4xl font-black leading-[1.08] tracking-[-0.055em] text-content sm:text-5xl lg:text-6xl xl:text-7xl"
-          >
-            {title}
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
+      <Container className="flex min-h-20 items-center justify-between gap-6">
+        <BrandLogo />
+        <nav aria-label="Navigation principale" className="hidden items-center gap-8 lg:flex">
+          {links.map((link) => (
+            <a key={link.href} href={link.href} className="text-sm font-semibold text-slate-600 hover:text-blue-800">
+              {link.label}
+            </a>
+          ))}
+          <Button href={cta.href} className="bg-orange-500 shadow-none hover:bg-orange-600">
+            {cta.label}
+          </Button>
+        </nav>
+        <details className="relative lg:hidden">
+          <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-slate-200 marker:content-none">
+            <Icon name="menu" label="Ouvrir le menu" />
+          </summary>
+          <nav className="absolute right-0 top-14 grid w-72 gap-1 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl">
+            {links.map((link) => <a key={link.href} href={link.href} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-slate-50">{link.label}</a>)}
+            <Button href={cta.href} className="mt-2 bg-orange-500 hover:bg-orange-600">{cta.label}</Button>
+          </nav>
+        </details>
+      </Container>
+    </header>
+  );
+}
+
+export function HeroSection({ title, description, primaryCta, secondaryCta }: { title: string; description: string; primaryCta: Link; secondaryCta: Link }) {
+  return (
+    <section className="overflow-hidden border-b border-slate-200 bg-white">
+      <Container className="grid min-h-[43rem] items-center gap-12 py-14 lg:grid-cols-[1.04fr_.96fr] lg:py-0">
+        <div className="max-w-3xl py-8">
+          <h1 aria-label={title} className="text-balance text-5xl font-black leading-[1.02] tracking-[-0.055em] text-slate-950 sm:text-6xl xl:text-7xl">
+            Votre informatique, <span className="text-blue-800">simplement</span> <span className="text-orange-500">maîtrisée.</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-content-muted sm:text-xl">
-            {description}
-          </p>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">{description}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button href={primaryCta.href} size="lg">
-              {primaryCta.label}
-              <Icon name="arrowRight" size="sm" />
-            </Button>
-            <Button href={secondaryCta.href} variant="secondary" size="lg">
-              {secondaryCta.label}
-            </Button>
+            <Button href={primaryCta.href} size="lg" className="bg-orange-500 shadow-[0_14px_32px_rgb(249_115_22/.2)] hover:bg-orange-600">{primaryCta.label}<Icon name="arrowRight" size="sm" /></Button>
+            <Button href={secondaryCta.href} variant="secondary" size="lg" className="border-blue-700 text-blue-800">{secondaryCta.label}</Button>
           </div>
-          <ul
-            className="mt-9 flex flex-wrap gap-x-6 gap-y-3"
-            aria-label="Engagements PGYS"
-          >
-            {proofPoints.map((point) => (
-              <li
-                key={point}
-                className="flex items-center gap-2 text-sm font-semibold text-content-muted"
-              >
-                <Icon name="check" className="text-success" />
-                {point}
-              </li>
-            ))}
-          </ul>
         </div>
-        <div className="relative mx-auto w-full max-w-xl lg:mx-0 lg:justify-self-end">
-          <div
-            className="absolute -inset-5 rotate-2 rounded-[2rem] bg-brand/10"
-            aria-hidden="true"
-          />
-          <Card className="relative overflow-hidden border-white/80 p-3 backdrop-blur">
-            <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
-              <p className="font-bold text-content">{panelLabel}</p>
-              <Badge variant="success">
-                <span className="size-2 rounded-full bg-success" />
-                {panelStatus}
-              </Badge>
-            </div>
-            <div className="grid gap-2 p-2 sm:grid-cols-2">
-              {panelItems.map((item) => (
-                <Card key={item.name} variant="muted" className="p-4 sm:p-5">
-                  <ServiceIcon name={item.icon} size="small" />
-                  <p className="mt-4 font-bold text-content">{item.name}</p>
-                  <p className="mt-1 text-sm leading-6 text-content-muted">
-                    {item.tagline}
-                  </p>
-                </Card>
-              ))}
-            </div>
-          </Card>
+        <div className="relative h-[32rem] overflow-hidden rounded-t-[2rem] lg:h-[43rem] lg:self-end lg:rounded-t-[2.5rem]">
+          <Image src="/brand/hero-business.png" alt="Professionnelle analysant des documents dans son bureau" fill priority sizes="(min-width: 1024px) 48vw, 100vw" className="object-cover object-[50%_28%]" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />
         </div>
       </Container>
     </section>
   );
 }
 
-type ServicesProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  services: Service[];
-};
-
-export function ServicesSection({
-  eyebrow,
-  title,
-  description,
-  services,
-}: ServicesProps) {
+export function ServicesSection({ title, description, items }: { title: string; description: string; items: Service[] }) {
   return (
-    <Section id="services" aria-labelledby="services-title">
+    <Section id="services" aria-labelledby="services-title" className="bg-white">
       <Container>
-        <Heading
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-          id="services-title"
-        />
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
-          {services.map((service) => (
-            <ServiceCard key={service.name} service={service} />
+        <div className="mx-auto max-w-3xl text-center"><h2 id="services-title" className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{title}</h2><p className="mt-4 text-lg leading-8 text-slate-600">{description}</p></div>
+        <div className="mt-12 grid overflow-hidden rounded-2xl border border-slate-200 md:grid-cols-2 xl:grid-cols-5">
+          {items.map((service) => (
+            <article key={service.name} className="border-b border-slate-200 p-7 last:border-b-0 md:border-r xl:border-b-0">
+              <span className="grid size-11 place-items-center rounded-xl bg-blue-50 text-blue-800"><Icon name={service.icon} size="lg" /></span>
+              <h3 className="mt-6 text-lg font-bold text-slate-950">{service.name}</h3>
+              <p className="mt-2 text-sm font-semibold text-blue-800">{service.tagline}</p>
+              <p className="mt-4 text-sm leading-6 text-slate-600">{service.description}</p>
+            </article>
           ))}
         </div>
       </Container>
@@ -172,268 +92,23 @@ export function ServicesSection({
   );
 }
 
-function ServiceCard({ service }: { service: Service }) {
+export function ValueBand({ values }: { values: Array<{ title: string; description: string }> }) {
+  return <section id="solutions" className="bg-blue-900 py-12 text-white"><Container><div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">{values.map((value) => <div key={value.title} className="border-l border-white/25 pl-5"><p className="font-bold">{value.title}</p><p className="mt-2 text-sm leading-6 text-blue-100">{value.description}</p></div>)}</div></Container></section>;
+}
+
+export function PricingSection({ title, description, plans }: { title: string; description: string; plans: CloudPlan[] }) {
   return (
-    <Card
-      as="article"
-      className="group p-6 transition duration-300 hover:-translate-y-1 hover:border-blue-200 sm:p-8"
-    >
-      <ServiceIcon name={service.icon} />
-      <p className="mt-6 text-sm font-bold text-brand">{service.tagline}</p>
-      <h3 className="mt-2 text-2xl font-bold tracking-tight text-content">
-        {service.name}
-      </h3>
-      <p className="mt-4 leading-7 text-content-muted">{service.description}</p>
-      <ul
-        className="mt-6 grid gap-3 border-t border-border pt-6 sm:grid-cols-3"
-        aria-label={`Points clés de ${service.name}`}
-      >
-        {service.features.map((feature) => (
-          <li
-            key={feature}
-            className="flex gap-2 text-sm font-semibold text-content"
-          >
-            <Icon name="check" className="text-success" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <Section id="tarifs" className="bg-slate-50" aria-labelledby="pricing-title"><Container>
+      <div className="max-w-2xl"><h2 id="pricing-title" className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{title}</h2><p className="mt-4 text-lg leading-8 text-slate-600">{description}</p></div>
+      <div className="mt-10 grid gap-5 lg:grid-cols-3">{plans.map((plan) => <article key={plan.name} className={plan.featured ? "rounded-2xl border-2 border-orange-500 bg-white p-7 shadow-xl" : "rounded-2xl border border-slate-200 bg-white p-7"}><p className="text-lg font-bold text-slate-950">{plan.name}</p><p className="mt-5 text-4xl font-black text-blue-900">{plan.storage}</p><p className="mt-2 font-bold text-orange-600">{plan.price}</p><p className="mt-5 min-h-14 text-sm leading-6 text-slate-600">{plan.description}</p><ul className="mt-6 space-y-3 border-t border-slate-200 pt-6">{plan.features.map((feature) => <li key={feature} className="flex gap-2 text-sm font-semibold"><Icon name="check" className="text-emerald-600" />{feature}</li>)}</ul><Button href="#contact" variant={plan.featured ? "primary" : "secondary"} className={plan.featured ? "mt-8 w-full bg-orange-500 hover:bg-orange-600" : "mt-8 w-full"}>Choisir cette offre</Button></article>)}</div>
+    </Container></Section>
   );
 }
 
-type ValueProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  points: Array<{ number: string; title: string; description: string }>;
-};
-
-export function ValueSection({
-  eyebrow,
-  title,
-  description,
-  points,
-}: ValueProps) {
-  return (
-    <Section
-      id="pourquoi-pgys"
-      aria-labelledby="why-title"
-      tone="dark"
-    >
-      <Container>
-        <Heading
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-          id="why-title"
-          inverse
-        />
-        <ol className="mt-14 grid gap-px overflow-hidden rounded-pgys-xl border border-white/10 bg-white/10 sm:grid-cols-2 xl:grid-cols-4">
-          {points.map((point) => (
-            <li key={point.number} className="bg-slate-950 p-7 sm:p-9">
-              <span className="text-sm font-black tracking-[0.2em] text-blue-300">
-                {point.number}
-              </span>
-              <h3 className="mt-8 text-xl font-bold text-white">{point.title}</h3>
-              <p className="mt-3 leading-7 text-slate-300">{point.description}</p>
-            </li>
-          ))}
-        </ol>
-      </Container>
-    </Section>
-  );
+export function ContactSection() {
+  return <Section id="contact" aria-labelledby="contact-title" className="bg-white"><Container className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><h2 id="contact-title" className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Parlez-nous de votre projet</h2><p className="mt-5 text-lg leading-8 text-slate-600">Décrivez-nous votre besoin, même s’il est encore imprécis. Nous vous répondrons avec une prochaine étape claire, sans jargon inutile.</p><div className="mt-8 border-l-4 border-orange-500 pl-5"><p className="font-bold text-slate-950">Une réponse humaine</p><p className="mt-2 text-sm leading-6 text-slate-600">Votre demande est lue par l’équipe PROGYS, pas par un robot commercial.</p></div></div><ContactForm /></Container></Section>;
 }
 
-type PricingProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  plans: CloudPlan[];
-};
-
-export function PricingSection({
-  eyebrow,
-  title,
-  description,
-  plans,
-}: PricingProps) {
-  return (
-    <Section
-      id="offres-cloud"
-      aria-labelledby="pricing-title"
-      tone="muted"
-    >
-      <Container>
-        <Heading
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-          id="pricing-title"
-          align="center"
-        />
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {plans.map((plan) => (
-            <PricingCard key={plan.name} plan={plan} />
-          ))}
-        </div>
-      </Container>
-    </Section>
-  );
-}
-
-function PricingCard({ plan }: { plan: CloudPlan }) {
-  return (
-    <Card
-      as="article"
-      className={plan.featured ? "relative p-7 ring-2 ring-brand md:-translate-y-3" : "relative p-7"}
-    >
-      {plan.badge ? (
-        <Badge variant="brand" className="absolute right-5 top-5">
-          {plan.badge}
-        </Badge>
-      ) : null}
-      <p className="text-lg font-bold text-content">{plan.name}</p>
-      <p className="mt-5 text-4xl font-black tracking-[-0.04em] text-brand-dark">
-        {plan.storage}
-      </p>
-      <p className="mt-2 text-content-muted">
-        <span className="font-bold text-content">{plan.price}</span> {plan.period}
-      </p>
-      <p className="mt-5 min-h-14 leading-7 text-content-muted">
-        {plan.description}
-      </p>
-      <ul
-        className="mt-7 flex-1 space-y-3 border-t border-border pt-6"
-        aria-label={`Inclus dans l’offre ${plan.name}`}
-      >
-        {plan.features.map((feature) => (
-          <li
-            key={feature}
-            className="flex gap-2 text-sm font-semibold text-content"
-          >
-            <Icon name="check" className="text-success" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-      <Button
-        href={plan.cta.href}
-        variant={plan.featured ? "primary" : "secondary"}
-        className="mt-8 w-full"
-      >
-        {plan.cta.label}
-      </Button>
-    </Card>
-  );
-}
-
-type CtaProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  primaryCta: Link;
-  secondaryText: string;
-};
-
-export function CtaSection({
-  eyebrow,
-  title,
-  description,
-  primaryCta,
-  secondaryText,
-}: CtaProps) {
-  return (
-    <Section id="contact" aria-labelledby="contact-title">
-      <Container>
-        <div className="relative overflow-hidden rounded-[2rem] bg-brand px-6 py-12 text-center shadow-pgys-brand sm:px-12 sm:py-16 lg:px-20">
-          <div
-            className="absolute -right-24 -top-32 size-80 rounded-full border-[60px] border-white/10"
-            aria-hidden="true"
-          />
-          <div className="relative mx-auto max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-100">
-              {eyebrow}
-            </p>
-            <h2
-              id="contact-title"
-              className="mt-4 text-balance text-3xl font-bold tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl"
-            >
-              {title}
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-100">
-              {description}
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button href={primaryCta.href} variant="light" size="lg">
-                {primaryCta.label}
-                <Icon name="arrowRight" size="sm" />
-              </Button>
-              <p className="text-sm font-semibold text-blue-100">
-                {secondaryText}
-              </p>
-            </div>
-          </div>
-        </div>
-      </Container>
-    </Section>
-  );
-}
-
-type FooterProps = {
-  brandLabel: string;
-  description: string;
-  navigationLabel: string;
-  columns: Array<{ title: string; links: Link[] }>;
-  contactTitle: string;
-  email: string;
-  location: string;
-  legalNote: string;
-  copyright: string;
-};
-
-export function SiteFooter({
-  brandLabel,
-  description,
-  navigationLabel,
-  columns,
-  contactTitle,
-  email,
-  location,
-  legalNote,
-  copyright,
-}: FooterProps) {
-  return (
-    <Footer
-      brandLabel={brandLabel}
-      homeHref="#"
-      description={description}
-      navigationLabel={navigationLabel}
-      columns={columns}
-      contact={{ title: contactTitle, email, location }}
-      copyright={copyright}
-      legalNote={legalNote}
-    />
-  );
-}
-
-function ServiceIcon({
-  name,
-  size = "large",
-}: {
-  name: IconName;
-  size?: "small" | "large";
-}) {
-  return (
-    <span
-      className={
-        size === "small"
-          ? "grid size-9 place-items-center rounded-pgys-md bg-brand-soft text-brand"
-          : "grid size-12 place-items-center rounded-pgys-lg bg-brand-soft text-brand"
-      }
-      aria-hidden="true"
-    >
-      <Icon name={name} size={size === "small" ? "md" : "lg"} />
-    </span>
-  );
+export function SiteFooter() {
+  return <footer className="bg-slate-950 py-12 text-slate-300"><Container className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]"><div><BrandLogo inverse /><p className="mt-5 max-w-sm text-sm leading-6 text-slate-400">Votre informatique, simplement maîtrisée.</p></div><div><p className="font-bold text-white">Services</p><div className="mt-4 grid gap-2 text-sm text-slate-400"><a href="#services">Cloud privé</a><a href="#services">Applications métier</a><a href="#services">Hébergement & maintenance</a></div></div><div><p className="font-bold text-white">Contact</p><a href="mailto:contact@pgys.fr" className="mt-4 block text-sm text-slate-400">contact@pgys.fr</a><p className="mt-2 text-sm text-slate-400">France</p></div><p className="border-t border-white/10 pt-6 text-xs text-slate-500 md:col-span-3">© {new Date().getFullYear()} PROGYS Services Informatiques. Tous droits réservés.</p></Container></footer>;
 }

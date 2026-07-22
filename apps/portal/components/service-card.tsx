@@ -1,4 +1,4 @@
-import { Badge, Card, Icon } from "@pgys/ui";
+import { Badge, Button, Card, Icon } from "@pgys/ui";
 import type { PortalService } from "@/lib/mock";
 
 type ServiceCardProps = {
@@ -6,8 +6,6 @@ type ServiceCardProps = {
 };
 
 export function ServiceCard({ service }: ServiceCardProps) {
-  const statusVariant = service.status === "Disponible" ? "brand" : "success";
-
   return (
     <Card
       as="article"
@@ -17,15 +15,27 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <span className="grid size-12 place-items-center rounded-pgys-lg bg-brand-soft text-brand">
           <Icon name={service.icon} size="lg" />
         </span>
-        <Badge variant={statusVariant}>{service.status}</Badge>
+        <Badge variant={service.status === "Disponible" ? "success" : "neutral"}>
+          {service.status}
+        </Badge>
       </div>
-      <h3 className="mt-6 text-xl font-bold text-content">{service.title}</h3>
+      <h2 className="mt-6 text-xl font-bold text-content">{service.title}</h2>
       <p className="mt-3 flex-1 text-sm leading-6 text-content-muted">
         {service.description}
       </p>
-      <p className="mt-6 border-t border-border pt-4 text-xs font-semibold text-content-muted">
-        {service.detail}
+      <p className="mt-5 truncate text-xs font-semibold text-content-muted">
+        {service.url.replace("https://", "")}
       </p>
+      <Button
+        href={service.url}
+        target="_blank"
+        rel="noreferrer"
+        variant="secondary"
+        className="mt-4 w-full"
+      >
+        Ouvrir le service
+        <Icon name="arrowRight" size="sm" />
+      </Button>
     </Card>
   );
 }

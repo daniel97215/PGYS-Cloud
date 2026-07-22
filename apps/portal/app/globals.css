@@ -4,6 +4,10 @@
 
 :root {
   --font-sans: var(--font-geist);
+  --pgys-brand: #064bb7;
+  --pgys-brand-strong: #06378c;
+  --pgys-brand-soft: #eaf2ff;
+  --pgys-accent: #ff7900;
 }
 
 * {

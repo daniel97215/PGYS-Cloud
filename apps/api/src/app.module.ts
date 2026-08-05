@@ -34,6 +34,7 @@ import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
 import { SalesQuotesModule } from "./sales-quotes/sales-quotes.module";
 import { SalesOrdersModule } from "./sales-orders/sales-orders.module";
 import { SalesDeliveriesModule } from "./sales-deliveries/sales-deliveries.module";
+import { SalesInvoicesModule } from "./sales-invoices/sales-invoices.module";
 import { StorageLocationsModule } from "./storage-locations/storage-locations.module";
 import { StockMovementsModule } from "./stock-movements/stock-movements.module";
 import { StockReservationsModule } from "./stock-reservations/stock-reservations.module";
@@ -79,6 +80,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     SalesQuotesModule,
     SalesOrdersModule,
     SalesDeliveriesModule,
+    SalesInvoicesModule,
     StorageLocationsModule,
     StockMovementsModule,
     StockReservationsModule,

@@ -99,6 +99,15 @@ enum SalesDeliveryStatus {
   CANCELLED
 }
 
+enum SalesInvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -293,6 +302,7 @@ model Product {
   inventoryItems InventoryItem[]
   salesQuoteLines SalesQuoteLine[]
   salesOrderLines SalesOrderLine[]
+  salesInvoiceLines SalesInvoiceLine[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -320,6 +330,7 @@ model ProductVariant {
   inventoryItems InventoryItem[]
   salesQuoteLines SalesQuoteLine[]
   salesOrderLines SalesOrderLine[]
+  salesInvoiceLines SalesInvoiceLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -870,6 +881,7 @@ model BusinessPartner {
   timelineEntries BusinessPartnerTimelineEntry[]
   salesQuotes      SalesQuote[]
   salesOrders      SalesOrder[]
+  salesInvoices    SalesInvoice[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -927,6 +939,7 @@ model SalesOrder {
   salesQuote      SalesQuote?     @relation(fields: [salesQuoteId], references: [id])
   lines           SalesOrderLine[]
   deliveries      SalesDelivery[]
+  salesInvoice     SalesInvoice?
 
   @@unique([workspaceId, number])
   @@unique([salesQuoteId])
@@ -934,6 +947,68 @@ model SalesOrder {
   @@index([businessPartnerId])
   @@index([status])
   @@index([orderDate])
+}
+
+model SalesInvoice {
+  id                String             @id @default(uuid()) @db.Uuid
+  workspaceId       String             @db.Uuid
+  number            String
+  businessPartnerId String             @db.Uuid
+  salesOrderId      String?            @db.Uuid
+  status            SalesInvoiceStatus @default(DRAFT)
+  issueDate         DateTime
+  dueDate           DateTime?
+  currencyCode      String
+  notes             String?
+  subtotalAmount    Decimal            @default(0) @db.Decimal(18, 4)
+  taxAmount         Decimal            @default(0) @db.Decimal(18, 4)
+  totalAmount       Decimal            @default(0) @db.Decimal(18, 4)
+  paidAmount        Decimal            @default(0) @db.Decimal(18, 4)
+  issuedAt          DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  businessPartner BusinessPartner   @relation(fields: [businessPartnerId], references: [id])
+  salesOrder      SalesOrder?       @relation(fields: [salesOrderId], references: [id])
+  lines           SalesInvoiceLine[]
+
+  @@unique([workspaceId, number])
+  @@unique([salesOrderId])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([status])
+  @@index([issueDate])
+  @@index([dueDate])
+}
+
+model SalesInvoiceLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  salesInvoiceId   String   @db.Uuid
+  salesOrderLineId String?  @db.Uuid
+  productId        String   @db.Uuid
+  productVariantId String?  @db.Uuid
+  description      String
+  quantity         Decimal  @db.Decimal(18, 4)
+  unitPrice        Decimal  @db.Decimal(18, 4)
+  taxRate          Decimal  @default(0) @db.Decimal(8, 4)
+  subtotalAmount   Decimal  @db.Decimal(18, 4)
+  taxAmount        Decimal  @db.Decimal(18, 4)
+  totalAmount      Decimal  @db.Decimal(18, 4)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  salesInvoice  SalesInvoice    @relation(fields: [salesInvoiceId], references: [id], onDelete: Cascade)
+  salesOrderLine SalesOrderLine? @relation(fields: [salesOrderLineId], references: [id])
+  product       Product         @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@index([workspaceId])
+  @@index([salesInvoiceId])
+  @@index([salesOrderLineId])
+  @@index([productId])
 }
 
 model SalesDelivery {
@@ -1000,6 +1075,7 @@ model SalesOrderLine {
   product       Product         @relation(fields: [productId], references: [id])
   productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
   salesDeliveryLines SalesDeliveryLine[]
+  salesInvoiceLines SalesInvoiceLine[]
 
   @@index([workspaceId])
   @@index([salesOrderId])

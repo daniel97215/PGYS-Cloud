@@ -30,6 +30,7 @@ import { ProductVariantsModule } from "./product-variants/product-variants.modul
 import { ProvisioningModule } from "./provisioning/provisioning.module";
 import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
 import { StorageLocationsModule } from "./storage-locations/storage-locations.module";
+import { StockMovementsModule } from "./stock-movements/stock-movements.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import { TaxesModule } from "./taxes/taxes.module";
 import { UnitsModule } from "./units/units.module";
@@ -67,6 +68,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ProvisioningModule,
     ServiceCatalogModule,
     StorageLocationsModule,
+    StockMovementsModule,
     SubscriptionsModule,
     TaxesModule,
     UnitsModule,

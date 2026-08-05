@@ -55,6 +55,11 @@ enum ProductStatus {
   INACTIVE
 }
 
+enum StockMovementDirection {
+  IN
+  OUT
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -531,6 +536,7 @@ model InventoryItem {
   storageLocation StorageLocation @relation(fields: [storageLocationId], references: [id])
   product         Product         @relation(fields: [productId], references: [id])
   productVariant  ProductVariant? @relation(fields: [productVariantId], references: [id])
+  stockMovements  StockMovement[]
 
   @@unique([storageLocationId, productId, productVariantId])
   @@index([workspaceId])
@@ -539,6 +545,29 @@ model InventoryItem {
   @@index([productId])
   @@index([productVariantId])
   @@index([isActive])
+}
+
+model StockMovement {
+  id              String                 @id @default(uuid()) @db.Uuid
+  workspaceId     String                 @db.Uuid
+  inventoryItemId String                 @db.Uuid
+  direction       StockMovementDirection
+  quantity        Decimal                @db.Decimal(18, 4)
+  quantityBefore  Decimal                @db.Decimal(18, 4)
+  quantityAfter   Decimal                @db.Decimal(18, 4)
+  reason          String?
+  referenceType   String?
+  referenceId     String?
+  occurredAt      DateTime               @default(now())
+  createdAt       DateTime               @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@index([workspaceId])
+  @@index([inventoryItemId])
+  @@index([direction])
+  @@index([referenceType, referenceId])
+  @@index([occurredAt])
 }
 
 model Tax {

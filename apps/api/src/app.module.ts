@@ -31,6 +31,7 @@ import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 import { TaxesModule } from "./taxes/taxes.module";
 import { UnitsModule } from "./units/units.module";
+import { WarehousesModule } from "./warehouses/warehouses.module";
 import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({
@@ -65,6 +66,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     SubscriptionsModule,
     TaxesModule,
     UnitsModule,
+    WarehousesModule,
     WorkspaceModule,
     AuthModule,
   ],

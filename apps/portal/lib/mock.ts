@@ -8,10 +8,11 @@ export type PortalNavigationItem = {
 };
 
 export type PortalService = {
+  audience: "Client" | "Public" | "Privé";
   description: string;
   icon: IconName;
   id: "cloud" | "apps" | "status" | "api" | "website";
-  status: "Disponible" | "À configurer";
+  status: "En ligne" | "Prévu" | "À déployer";
   title: string;
   url: string;
 };
@@ -32,7 +33,8 @@ export const portalMock = {
       id: "cloud",
       title: "PROGYS Cloud",
       description: "Accéder aux fichiers, partages et espaces collaboratifs.",
-      status: "Disponible",
+      audience: "Client",
+      status: "En ligne",
       icon: "cloud",
       url: "https://cloud.pgys.fr",
     },
@@ -40,7 +42,8 @@ export const portalMock = {
       id: "apps",
       title: "Applications métier",
       description: "Ouvrir le catalogue des applications et outils PROGYS.",
-      status: "À configurer",
+      audience: "Client",
+      status: "Prévu",
       icon: "apps",
       url: "https://apps.pgys.fr",
     },
@@ -48,7 +51,8 @@ export const portalMock = {
       id: "status",
       title: "État des services",
       description: "Consulter la disponibilité des services et infrastructures.",
-      status: "Disponible",
+      audience: "Public",
+      status: "En ligne",
       icon: "hosting",
       url: "https://status.pgys.fr",
     },
@@ -56,7 +60,8 @@ export const portalMock = {
       id: "api",
       title: "API PROGYS",
       description: "Accéder au point d’entrée de la plateforme API.",
-      status: "À configurer",
+      audience: "Privé",
+      status: "Prévu",
       icon: "settings",
       url: "https://api.pgys.fr",
     },
@@ -64,7 +69,8 @@ export const portalMock = {
       id: "website",
       title: "Site public",
       description: "Revenir sur le site institutionnel PROGYS.",
-      status: "Disponible",
+      audience: "Public",
+      status: "À déployer",
       icon: "hosting",
       url: "https://pgys.fr",
     },

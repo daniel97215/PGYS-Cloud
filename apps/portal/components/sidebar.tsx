@@ -11,13 +11,13 @@ type SidebarProps = {
 function BrandLogo() {
   return (
     <Link href="/" aria-label="PROGYS, administration" className="block w-40">
-      <span className="block h-12 overflow-hidden">
+      <span className="portal-logo-crop">
         <Image
           src="/brand/progys-logo.png"
           alt="PROGYS"
-          width={1694}
-          height={953}
-          className="h-auto w-full -translate-y-[28%]"
+          width={1693}
+          height={963}
+          className="portal-logo-image"
           priority
         />
       </span>

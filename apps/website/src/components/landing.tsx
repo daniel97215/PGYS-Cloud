@@ -1,22 +1,23 @@
 import Image from "next/image";
+import NextLink from "next/link";
 import { Button, Container, Icon, Section } from "@pgys/ui";
 import type { CloudPlan, Link, Service } from "@/content/landing";
 import { ContactForm } from "./contact-form";
 
 export function BrandLogo({ inverse = false }: { inverse?: boolean }) {
   return (
-    <a href="#" aria-label="PROGYS, retour à l’accueil" className="brand-logo">
-      <span className="brand-logo-crop" aria-hidden="true">
+    <NextLink href="/" aria-label="PROGYS, retour à l’accueil" className="brand-logo">
+      <span className={inverse ? "brand-logo-crop brand-logo-crop-footer" : "brand-logo-crop"} aria-hidden="true">
         <Image
           src="/brand/progys-logo.png"
           alt=""
           width={1693}
           height={963}
           priority
-          className={inverse ? "brand-logo-image brightness-0 invert" : "brand-logo-image"}
+          className="brand-logo-image"
         />
       </span>
-    </a>
+    </NextLink>
   );
 }
 

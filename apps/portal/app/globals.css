@@ -19,6 +19,23 @@ body {
   min-height: 100%;
 }
 
+.portal-logo-crop {
+  position: relative;
+  display: block;
+  width: 10rem;
+  height: 3rem;
+  overflow: hidden;
+}
+
+.portal-logo-image {
+  position: absolute;
+  width: 12.5rem;
+  max-width: none;
+  height: auto;
+  left: -1.15rem;
+  top: -2.05rem;
+}
+
 html {
   background: var(--pgys-background);
 }

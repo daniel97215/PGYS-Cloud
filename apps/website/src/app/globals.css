@@ -41,8 +41,18 @@ summary {
 
 .brand-logo {
   display: inline-flex;
+  align-items: center;
   border-radius: 0.5rem;
   outline-offset: 4px;
+}
+
+.brand-logo-image {
+  position: absolute;
+  width: 13.4rem;
+  max-width: none;
+  height: auto;
+  left: -1.25rem;
+  top: -2.2rem;
 }
 
 .brand-logo-crop {
@@ -53,13 +63,9 @@ summary {
   overflow: hidden;
 }
 
-.brand-logo-image {
-  position: absolute;
-  width: 13.8rem;
-  max-width: none;
-  height: auto;
-  left: -1.55rem;
-  top: -2.85rem;
+.brand-logo-crop-footer {
+  border-radius: 0.65rem;
+  background: white;
 }
 
 @media (prefers-reduced-motion: reduce) {

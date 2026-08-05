@@ -24,7 +24,7 @@ export const landingContent = {
       { label: "Tarifs", href: "#tarifs" },
       { label: "Contact", href: "#contact" },
     ] satisfies Link[],
-    cta: { label: "Espace client", href: "https://admin.pgys.fr" },
+    cta: { label: "Portail PROGYS", href: "/portail" },
   },
   hero: {
     title: "Votre informatique, simplement maîtrisée.",

@@ -24,8 +24,8 @@ export default function DashboardPage() {
       </section>
 
       <Alert variant="info" title="Interface initiale">
-        Cette première version centralise les accès. Les fonctions de gestion et
-        les droits administrateur seront ajoutés progressivement.
+        Cette interface est privée. Elle distingue les services publics, les
+        accès clients et les outils internes avant leur mise en production.
       </Alert>
 
       <section id="services" aria-labelledby="services-title">

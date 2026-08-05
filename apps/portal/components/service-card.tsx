@@ -6,6 +6,8 @@ type ServiceCardProps = {
 };
 
 export function ServiceCard({ service }: ServiceCardProps) {
+  const isOnline = service.status === "En ligne";
+
   return (
     <Card
       as="article"
@@ -15,7 +17,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <span className="grid size-12 place-items-center rounded-pgys-lg bg-brand-soft text-brand">
           <Icon name={service.icon} size="lg" />
         </span>
-        <Badge variant={service.status === "Disponible" ? "success" : "neutral"}>
+        <Badge variant={isOnline ? "success" : "neutral"}>
           {service.status}
         </Badge>
       </div>
@@ -23,19 +25,28 @@ export function ServiceCard({ service }: ServiceCardProps) {
       <p className="mt-3 flex-1 text-sm leading-6 text-content-muted">
         {service.description}
       </p>
-      <p className="mt-5 truncate text-xs font-semibold text-content-muted">
-        {service.url.replace("https://", "")}
-      </p>
-      <Button
-        href={service.url}
-        target="_blank"
-        rel="noreferrer"
-        variant="secondary"
-        className="mt-4 w-full"
-      >
-        Ouvrir le service
-        <Icon name="arrowRight" size="sm" />
-      </Button>
+      <div className="mt-5 flex items-center justify-between gap-3 text-xs font-semibold text-content-muted">
+        <span className="truncate">{service.url.replace("https://", "")}</span>
+        <span className={service.audience === "Privé" ? "text-orange-700" : "text-brand"}>
+          {service.audience}
+        </span>
+      </div>
+      {isOnline ? (
+        <Button
+          href={service.url}
+          target="_blank"
+          rel="noreferrer"
+          variant="secondary"
+          className="mt-4 w-full"
+        >
+          Ouvrir le service
+          <Icon name="arrowRight" size="sm" />
+        </Button>
+      ) : (
+        <Button disabled variant="secondary" className="mt-4 w-full">
+          Non disponible
+        </Button>
+      )}
     </Card>
   );
 }

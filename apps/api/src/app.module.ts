@@ -16,6 +16,7 @@ import { BusinessPartnersModule } from "./business-partners/business-partners.mo
 import { FeaturesModule } from "./features/features.module";
 import { HealthModule } from "./health/health.module";
 import { InventoryAdjustmentsModule } from "./inventory-adjustments/inventory-adjustments.module";
+import { InventoryCountsModule } from "./inventory-counts/inventory-counts.module";
 import { InventoryItemsModule } from "./inventory-items/inventory-items.module";
 import { ManufacturersModule } from "./manufacturers/manufacturers.module";
 import { OffersModule } from "./offers/offers.module";
@@ -57,6 +58,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     BusinessPartnersModule,
     FeaturesModule,
     InventoryAdjustmentsModule,
+    InventoryCountsModule,
     InventoryItemsModule,
     ManufacturersModule,
     OffersModule,

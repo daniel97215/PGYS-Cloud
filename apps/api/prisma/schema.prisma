@@ -60,6 +60,13 @@ enum StockMovementDirection {
   OUT
 }
 
+enum InventoryCountStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -486,6 +493,7 @@ model Warehouse {
   workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   storageLocations StorageLocation[]
   inventoryItems    InventoryItem[]
+  inventoryCounts   InventoryCount[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -510,6 +518,7 @@ model StorageLocation {
   updatedAt    DateTime  @updatedAt
   warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   inventoryItems InventoryItem[]
+  inventoryCounts InventoryCount[]
 
   @@unique([warehouseId, code])
   @@index([workspaceId])
@@ -537,6 +546,7 @@ model InventoryItem {
   product         Product         @relation(fields: [productId], references: [id])
   productVariant  ProductVariant? @relation(fields: [productVariantId], references: [id])
   stockMovements  StockMovement[]
+  inventoryCountLines InventoryCountLine[]
 
   @@unique([storageLocationId, productId, productVariantId])
   @@index([workspaceId])
@@ -568,6 +578,49 @@ model StockMovement {
   @@index([direction])
   @@index([referenceType, referenceId])
   @@index([occurredAt])
+}
+
+model InventoryCount {
+  id                String               @id @default(uuid()) @db.Uuid
+  workspaceId       String               @db.Uuid
+  warehouseId       String               @db.Uuid
+  storageLocationId String               @db.Uuid
+  code              String
+  status            InventoryCountStatus @default(DRAFT)
+  description       String?
+  completedAt       DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  warehouse       Warehouse            @relation(fields: [warehouseId], references: [id])
+  storageLocation StorageLocation      @relation(fields: [storageLocationId], references: [id])
+  lines           InventoryCountLine[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([warehouseId])
+  @@index([storageLocationId])
+  @@index([status])
+}
+
+model InventoryCountLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  inventoryCountId String   @db.Uuid
+  inventoryItemId  String   @db.Uuid
+  expectedQuantity Decimal  @db.Decimal(18, 4)
+  countedQuantity  Decimal? @db.Decimal(18, 4)
+  variance         Decimal? @db.Decimal(18, 4)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  inventoryCount InventoryCount @relation(fields: [inventoryCountId], references: [id], onDelete: Cascade)
+  inventoryItem  InventoryItem  @relation(fields: [inventoryItemId], references: [id])
+
+  @@unique([inventoryCountId, inventoryItemId])
+  @@index([workspaceId])
+  @@index([inventoryCountId])
+  @@index([inventoryItemId])
 }
 
 model Tax {

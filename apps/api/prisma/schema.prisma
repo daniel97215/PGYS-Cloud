@@ -83,6 +83,14 @@ enum SalesQuoteStatus {
   CANCELLED
 }
 
+enum SalesOrderStatus {
+  DRAFT
+  CONFIRMED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -276,6 +284,7 @@ model Product {
   attributeValues ProductAttributeValue[]
   inventoryItems InventoryItem[]
   salesQuoteLines SalesQuoteLine[]
+  salesOrderLines SalesOrderLine[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -302,6 +311,7 @@ model ProductVariant {
   attributeValues ProductAttributeValue[]
   inventoryItems InventoryItem[]
   salesQuoteLines SalesQuoteLine[]
+  salesOrderLines SalesOrderLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -850,6 +860,7 @@ model BusinessPartner {
   tagAssignments  BusinessPartnerTagAssignment[]
   timelineEntries BusinessPartnerTimelineEntry[]
   salesQuotes      SalesQuote[]
+  salesOrders      SalesOrder[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -875,12 +886,71 @@ model SalesQuote {
 
   businessPartner BusinessPartner  @relation(fields: [businessPartnerId], references: [id])
   lines           SalesQuoteLine[]
+  salesOrder      SalesOrder?
 
   @@unique([workspaceId, number])
   @@index([workspaceId])
   @@index([businessPartnerId])
   @@index([status])
   @@index([issueDate])
+}
+
+model SalesOrder {
+  id                String           @id @default(uuid()) @db.Uuid
+  workspaceId       String           @db.Uuid
+  number            String
+  businessPartnerId String           @db.Uuid
+  salesQuoteId      String?          @db.Uuid
+  status            SalesOrderStatus @default(DRAFT)
+  orderDate         DateTime
+  requestedDate     DateTime?
+  currencyCode      String
+  notes             String?
+  subtotalAmount    Decimal          @default(0) @db.Decimal(18, 4)
+  taxAmount         Decimal          @default(0) @db.Decimal(18, 4)
+  totalAmount       Decimal          @default(0) @db.Decimal(18, 4)
+  confirmedAt       DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id])
+  salesQuote      SalesQuote?     @relation(fields: [salesQuoteId], references: [id])
+  lines           SalesOrderLine[]
+
+  @@unique([workspaceId, number])
+  @@unique([salesQuoteId])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([status])
+  @@index([orderDate])
+}
+
+model SalesOrderLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  salesOrderId     String   @db.Uuid
+  productId        String   @db.Uuid
+  productVariantId String?  @db.Uuid
+  description      String
+  quantity         Decimal  @db.Decimal(18, 4)
+  unitPrice        Decimal  @db.Decimal(18, 4)
+  taxRate          Decimal  @default(0) @db.Decimal(8, 4)
+  subtotalAmount   Decimal  @db.Decimal(18, 4)
+  taxAmount        Decimal  @db.Decimal(18, 4)
+  totalAmount      Decimal  @db.Decimal(18, 4)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  salesOrder    SalesOrder      @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  product       Product         @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@index([workspaceId])
+  @@index([salesOrderId])
+  @@index([productId])
+  @@index([productVariantId])
 }
 
 model SalesQuoteLine {

@@ -468,23 +468,45 @@ model PriceList {
 }
 
 model Warehouse {
-  id          String    @id @default(uuid()) @db.Uuid
-  workspaceId String    @db.Uuid
-  code        String
-  name        String
-  description String?
-  address     Json?
-  isDefault   Boolean   @default(false)
-  isActive    Boolean   @default(true)
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id               String            @id @default(uuid()) @db.Uuid
+  workspaceId      String            @db.Uuid
+  code             String
+  name             String
+  description      String?
+  address          Json?
+  isDefault        Boolean           @default(false)
+  isActive         Boolean           @default(true)
+  workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  storageLocations StorageLocation[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([code])
   @@index([name])
   @@index([isDefault])
+  @@index([isActive])
+}
+
+model StorageLocation {
+  id           String    @id @default(uuid()) @db.Uuid
+  workspaceId  String    @db.Uuid
+  warehouseId  String    @db.Uuid
+  code         String
+  name         String
+  description  String?
+  locationType String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([warehouseId, code])
+  @@index([workspaceId])
+  @@index([warehouseId])
+  @@index([code])
+  @@index([name])
   @@index([isActive])
 }
 

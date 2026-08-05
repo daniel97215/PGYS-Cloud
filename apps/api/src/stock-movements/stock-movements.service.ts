@@ -9,8 +9,18 @@ import {
   StockMovementInventoryItem,
   StockMovementRecord,
   StockMovementsRepository,
+  StockTransferMovements,
+  StockTransferRejectedError,
   StockUpdateRejectedError,
 } from "./stock-movements.repository";
+
+export interface CreateStockTransferCommand {
+  sourceInventoryItemId: string;
+  destinationInventoryItemId: string;
+  quantity: number;
+  referenceId: string;
+  reason?: string;
+}
 
 @Injectable()
 export class StockMovementsService {
@@ -78,6 +88,68 @@ export class StockMovementsService {
     }
 
     return movement;
+  }
+
+  async createTransfer(
+    workspaceId: string,
+    data: CreateStockTransferCommand,
+  ): Promise<StockTransferMovements> {
+    if (data.sourceInventoryItemId === data.destinationInventoryItemId) {
+      throw new BadRequestException(
+        "Source and destination inventory items must be different",
+      );
+    }
+
+    const quantity = new Prisma.Decimal(data.quantity);
+
+    if (quantity.lessThanOrEqualTo(0)) {
+      throw new BadRequestException("Transfer quantity must be positive");
+    }
+
+    const [source, destination] = await Promise.all([
+      this.requireInventoryItem(workspaceId, data.sourceInventoryItemId),
+      this.requireInventoryItem(workspaceId, data.destinationInventoryItemId),
+    ]);
+
+    if (!source.isActive || !destination.isActive) {
+      throw new BadRequestException(
+        "Source and destination inventory items must be active",
+      );
+    }
+
+    if (
+      source.productId !== destination.productId ||
+      source.productVariantId !== destination.productVariantId
+    ) {
+      throw new BadRequestException(
+        "Source and destination must reference the same product and variant",
+      );
+    }
+
+    if (quantity.greaterThan(source.quantityOnHand)) {
+      throw new BadRequestException("Insufficient source stock");
+    }
+
+    const reason = data.reason?.trim();
+
+    try {
+      return await this.stockMovementsRepository.createTransferAndUpdateStock({
+        workspaceId,
+        sourceInventoryItemId: data.sourceInventoryItemId,
+        destinationInventoryItemId: data.destinationInventoryItemId,
+        quantity,
+        referenceId: data.referenceId,
+        ...(reason ? { reason } : {}),
+      });
+    } catch (error) {
+      if (error instanceof StockTransferRejectedError) {
+        throw new BadRequestException(
+          "Transfer rejected because an item is inactive or source stock is insufficient",
+        );
+      }
+
+      throw error;
+    }
   }
 
   async listByInventoryItem(

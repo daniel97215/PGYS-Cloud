@@ -2,6 +2,7 @@ import { Prisma, StockMovementDirection } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import {
   StockMovementsRepository,
+  StockTransferRejectedError,
   StockUpdateRejectedError,
 } from "../stock-movements.repository";
 
@@ -102,6 +103,109 @@ describe("StockMovementsRepository", () => {
       }),
     ).rejects.toBeInstanceOf(StockUpdateRejectedError);
     expect(create).not.toHaveBeenCalled();
+  });
+
+  it("atomically transfers stock with two linked movements", async () => {
+    const destinationInventoryItemId =
+      "20000000-0000-4000-8000-000000000002";
+    const referenceId = "40000000-0000-4000-8000-000000000001";
+    const updateManyAndReturn = jest
+      .fn()
+      .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(7) }])
+      .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(8) }]);
+    const outMovement = createMovement({
+      direction: StockMovementDirection.OUT,
+      quantity: 3,
+      quantityBefore: 10,
+      quantityAfter: 7,
+    });
+    const inMovement = {
+      ...createMovement({
+        direction: StockMovementDirection.IN,
+        quantity: 3,
+        quantityBefore: 5,
+        quantityAfter: 8,
+      }),
+      id: "30000000-0000-4000-8000-000000000002",
+      inventoryItemId: destinationInventoryItemId,
+    };
+    const create = jest
+      .fn()
+      .mockResolvedValueOnce(outMovement)
+      .mockResolvedValueOnce(inMovement);
+    const prisma = createPrismaMock({
+      transaction: createTransactionMock({ updateManyAndReturn, create }),
+    });
+    const repository = new StockMovementsRepository(prisma);
+
+    const result = await repository.createTransferAndUpdateStock({
+      workspaceId,
+      sourceInventoryItemId: inventoryItemId,
+      destinationInventoryItemId,
+      quantity: new Prisma.Decimal(3),
+      referenceId,
+      reason: "Replenishment",
+    });
+
+    expect(result).toEqual({ outMovement, inMovement });
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(updateManyAndReturn).toHaveBeenNthCalledWith(1, {
+      where: {
+        id: inventoryItemId,
+        workspaceId,
+        isActive: true,
+        quantityOnHand: { gte: new Prisma.Decimal(3) },
+      },
+      data: { quantityOnHand: { decrement: new Prisma.Decimal(3) } },
+      select: { quantityOnHand: true },
+    });
+    expect(updateManyAndReturn).toHaveBeenNthCalledWith(2, {
+      where: {
+        id: destinationInventoryItemId,
+        workspaceId,
+        isActive: true,
+      },
+      data: { quantityOnHand: { increment: new Prisma.Decimal(3) } },
+      select: { quantityOnHand: true },
+    });
+    const outData = create.mock.calls[0][0].data;
+    const inData = create.mock.calls[1][0].data;
+    expect(outData.direction).toBe(StockMovementDirection.OUT);
+    expect(inData.direction).toBe(StockMovementDirection.IN);
+    expect(outData.referenceType).toBe("STOCK_TRANSFER");
+    expect(inData.referenceType).toBe("STOCK_TRANSFER");
+    expect(outData.referenceId).toBe(referenceId);
+    expect(inData.referenceId).toBe(referenceId);
+    expect(outData.quantityBefore.toString()).toBe("10");
+    expect(outData.quantityAfter.toString()).toBe("7");
+    expect(inData.quantityBefore.toString()).toBe("5");
+    expect(inData.quantityAfter.toString()).toBe("8");
+    expect(outData.occurredAt).toBe(inData.occurredAt);
+  });
+
+  it("rejects the whole transaction when the destination update fails", async () => {
+    const updateManyAndReturn = jest
+      .fn()
+      .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(7) }])
+      .mockResolvedValueOnce([]);
+    const create = jest.fn().mockResolvedValue(createMovement({}));
+    const repository = new StockMovementsRepository(
+      createPrismaMock({
+        transaction: createTransactionMock({ updateManyAndReturn, create }),
+      }),
+    );
+
+    await expect(
+      repository.createTransferAndUpdateStock({
+        workspaceId,
+        sourceInventoryItemId: inventoryItemId,
+        destinationInventoryItemId:
+          "20000000-0000-4000-8000-000000000002",
+        quantity: new Prisma.Decimal(3),
+        referenceId: "40000000-0000-4000-8000-000000000001",
+      }),
+    ).rejects.toBeInstanceOf(StockTransferRejectedError);
+    expect(create).toHaveBeenCalledTimes(1);
   });
 
   it("finds a movement by id and workspace", async () => {

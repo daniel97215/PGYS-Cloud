@@ -16,10 +16,31 @@ export interface CreateStockMovementData {
   occurredAt?: Date;
 }
 
+export interface CreateStockTransferData {
+  workspaceId: string;
+  sourceInventoryItemId: string;
+  destinationInventoryItemId: string;
+  quantity: Prisma.Decimal;
+  referenceId: string;
+  reason?: string;
+}
+
+export interface StockTransferMovements {
+  outMovement: StockMovementRecord;
+  inMovement: StockMovementRecord;
+}
+
 export class StockUpdateRejectedError extends Error {
   constructor() {
     super("Inventory item stock update was rejected");
     this.name = "StockUpdateRejectedError";
+  }
+}
+
+export class StockTransferRejectedError extends Error {
+  constructor() {
+    super("Stock transfer update was rejected");
+    this.name = "StockTransferRejectedError";
   }
 }
 
@@ -80,6 +101,80 @@ export class StockMovementsRepository {
             : { occurredAt: data.occurredAt }),
         },
       });
+    });
+  }
+
+  createTransferAndUpdateStock(
+    data: CreateStockTransferData,
+  ): Promise<StockTransferMovements> {
+    return this.prisma.$transaction(async (transaction) => {
+      const updatedSources =
+        await transaction.inventoryItem.updateManyAndReturn({
+          where: {
+            id: data.sourceInventoryItemId,
+            workspaceId: data.workspaceId,
+            isActive: true,
+            quantityOnHand: { gte: data.quantity },
+          },
+          data: { quantityOnHand: { decrement: data.quantity } },
+          select: { quantityOnHand: true },
+        });
+      const updatedSource = updatedSources[0];
+
+      if (!updatedSource) {
+        throw new StockTransferRejectedError();
+      }
+
+      const occurredAt = new Date();
+      const outQuantityAfter = updatedSource.quantityOnHand;
+      const outMovement = await transaction.stockMovement.create({
+        data: {
+          workspaceId: data.workspaceId,
+          inventoryItemId: data.sourceInventoryItemId,
+          direction: StockMovementDirection.OUT,
+          quantity: data.quantity,
+          quantityBefore: outQuantityAfter.plus(data.quantity),
+          quantityAfter: outQuantityAfter,
+          referenceType: "STOCK_TRANSFER",
+          referenceId: data.referenceId,
+          occurredAt,
+          ...(data.reason === undefined ? {} : { reason: data.reason }),
+        },
+      });
+
+      const updatedDestinations =
+        await transaction.inventoryItem.updateManyAndReturn({
+          where: {
+            id: data.destinationInventoryItemId,
+            workspaceId: data.workspaceId,
+            isActive: true,
+          },
+          data: { quantityOnHand: { increment: data.quantity } },
+          select: { quantityOnHand: true },
+        });
+      const updatedDestination = updatedDestinations[0];
+
+      if (!updatedDestination) {
+        throw new StockTransferRejectedError();
+      }
+
+      const inQuantityAfter = updatedDestination.quantityOnHand;
+      const inMovement = await transaction.stockMovement.create({
+        data: {
+          workspaceId: data.workspaceId,
+          inventoryItemId: data.destinationInventoryItemId,
+          direction: StockMovementDirection.IN,
+          quantity: data.quantity,
+          quantityBefore: inQuantityAfter.minus(data.quantity),
+          quantityAfter: inQuantityAfter,
+          referenceType: "STOCK_TRANSFER",
+          referenceId: data.referenceId,
+          occurredAt,
+          ...(data.reason === undefined ? {} : { reason: data.reason }),
+        },
+      });
+
+      return { outMovement, inMovement };
     });
   }
 

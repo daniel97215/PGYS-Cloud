@@ -185,10 +185,14 @@ export class InventoryCountsRepository {
                 isActive: true,
               },
               data: { quantityOnHand: countedQuantity },
-              select: { id: true },
+              select: { id: true, quantityReserved: true },
             });
 
           if (!updatedItems[0]) {
+            throw new InventoryCountStockUpdateError();
+          }
+
+          if (countedQuantity.lessThan(updatedItems[0].quantityReserved)) {
             throw new InventoryCountStockUpdateError();
           }
 

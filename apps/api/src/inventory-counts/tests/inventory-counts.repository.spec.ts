@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "../../prisma/prisma.service";
 import {
   IncompleteInventoryCountError,
+  InventoryCountStockUpdateError,
   InventoryCountsRepository,
 } from "../inventory-counts.repository";
 
@@ -124,8 +125,14 @@ describe("InventoryCountsRepository", () => {
     const findLines = jest.fn().mockResolvedValue(lines);
     const updateItems = jest
       .fn()
-      .mockResolvedValueOnce([{ id: lines[0].inventoryItemId }])
-      .mockResolvedValueOnce([{ id: lines[1].inventoryItemId }]);
+      .mockResolvedValueOnce([{
+        id: lines[0].inventoryItemId,
+        quantityReserved: new Prisma.Decimal(0),
+      }])
+      .mockResolvedValueOnce([{
+        id: lines[1].inventoryItemId,
+        quantityReserved: new Prisma.Decimal(0),
+      }]);
     const createMovement = jest.fn().mockResolvedValue({});
     const completed = createCount(InventoryCountStatus.COMPLETED, lines);
     const findUniqueOrThrow = jest.fn().mockResolvedValue(completed);
@@ -194,6 +201,32 @@ describe("InventoryCountsRepository", () => {
       repository.complete(workspaceId, inventoryCountId),
     ).rejects.toBeInstanceOf(IncompleteInventoryCountError);
     expect(updateItems).not.toHaveBeenCalled();
+    expect(createMovement).not.toHaveBeenCalled();
+  });
+
+  it("rolls back a count that would reduce stock below reservations", async () => {
+    const lines = [createLine(inventoryItemId, 5, 3)];
+    const claim = jest.fn().mockResolvedValue([{ id: inventoryCountId }]);
+    const updateItems = jest.fn().mockResolvedValue([{
+      id: inventoryItemId,
+      quantityReserved: new Prisma.Decimal(4),
+    }]);
+    const createMovement = jest.fn();
+    const transaction = jest.fn(async (callback: (value: unknown) => unknown) =>
+      callback({
+        inventoryCount: { updateManyAndReturn: claim },
+        inventoryCountLine: { findMany: jest.fn().mockResolvedValue(lines) },
+        inventoryItem: { updateManyAndReturn: updateItems },
+        stockMovement: { create: createMovement },
+      }),
+    );
+    const repository = new InventoryCountsRepository(
+      createPrismaMock({ transaction }),
+    );
+
+    await expect(
+      repository.complete(workspaceId, inventoryCountId),
+    ).rejects.toBeInstanceOf(InventoryCountStockUpdateError);
     expect(createMovement).not.toHaveBeenCalled();
   });
 

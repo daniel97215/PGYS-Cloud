@@ -67,6 +67,13 @@ enum InventoryCountStatus {
   CANCELLED
 }
 
+enum StockReservationStatus {
+  ACTIVE
+  RELEASED
+  CONSUMED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -547,6 +554,7 @@ model InventoryItem {
   productVariant  ProductVariant? @relation(fields: [productVariantId], references: [id])
   stockMovements  StockMovement[]
   inventoryCountLines InventoryCountLine[]
+  stockReservations StockReservation[]
 
   @@unique([storageLocationId, productId, productVariantId])
   @@index([workspaceId])
@@ -621,6 +629,29 @@ model InventoryCountLine {
   @@index([workspaceId])
   @@index([inventoryCountId])
   @@index([inventoryItemId])
+}
+
+model StockReservation {
+  id              String                 @id @default(uuid()) @db.Uuid
+  workspaceId     String                 @db.Uuid
+  inventoryItemId String                 @db.Uuid
+  quantity        Decimal                @db.Decimal(18, 4)
+  status          StockReservationStatus @default(ACTIVE)
+  referenceType   String?
+  referenceId     String?
+  expiresAt       DateTime?
+  releasedAt      DateTime?
+  consumedAt      DateTime?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@index([workspaceId])
+  @@index([inventoryItemId])
+  @@index([status])
+  @@index([referenceType, referenceId])
+  @@index([expiresAt])
 }
 
 model Tax {

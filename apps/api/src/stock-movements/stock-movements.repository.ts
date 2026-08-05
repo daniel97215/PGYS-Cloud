@@ -67,12 +67,19 @@ export class StockMovementsRepository {
             ? { increment: data.quantity }
             : { decrement: data.quantity },
         },
-        select: { quantityOnHand: true },
+        select: { quantityOnHand: true, quantityReserved: true },
       });
 
       const updatedItem = updatedItems[0];
 
       if (!updatedItem) {
+        throw new StockUpdateRejectedError();
+      }
+
+      if (
+        !isInbound &&
+        updatedItem.quantityOnHand.lessThan(updatedItem.quantityReserved)
+      ) {
         throw new StockUpdateRejectedError();
       }
 
@@ -117,11 +124,17 @@ export class StockMovementsRepository {
             quantityOnHand: { gte: data.quantity },
           },
           data: { quantityOnHand: { decrement: data.quantity } },
-          select: { quantityOnHand: true },
+          select: { quantityOnHand: true, quantityReserved: true },
         });
       const updatedSource = updatedSources[0];
 
       if (!updatedSource) {
+        throw new StockTransferRejectedError();
+      }
+
+      if (
+        updatedSource.quantityOnHand.lessThan(updatedSource.quantityReserved)
+      ) {
         throw new StockTransferRejectedError();
       }
 

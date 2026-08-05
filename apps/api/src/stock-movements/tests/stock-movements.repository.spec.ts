@@ -14,7 +14,10 @@ describe("StockMovementsRepository", () => {
   it("atomically creates an IN movement and increments stock", async () => {
     const updateManyAndReturn = jest
       .fn()
-      .mockResolvedValue([{ quantityOnHand: new Prisma.Decimal(15) }]);
+      .mockResolvedValue([{
+        quantityOnHand: new Prisma.Decimal(15),
+        quantityReserved: new Prisma.Decimal(0),
+      }]);
     const movement = createMovement({
       direction: StockMovementDirection.IN,
       quantity: 5,
@@ -39,7 +42,7 @@ describe("StockMovementsRepository", () => {
     expect(updateManyAndReturn).toHaveBeenCalledWith({
       where: { id: inventoryItemId, workspaceId, isActive: true },
       data: { quantityOnHand: { increment: new Prisma.Decimal(5) } },
-      select: { quantityOnHand: true },
+      select: { quantityOnHand: true, quantityReserved: true },
     });
     const createData = create.mock.calls[0][0].data;
     expect(createData.quantityBefore.toString()).toBe("10");
@@ -49,7 +52,10 @@ describe("StockMovementsRepository", () => {
   it("atomically creates an OUT movement with a non-negative guard", async () => {
     const updateManyAndReturn = jest
       .fn()
-      .mockResolvedValue([{ quantityOnHand: new Prisma.Decimal(7) }]);
+      .mockResolvedValue([{
+        quantityOnHand: new Prisma.Decimal(7),
+        quantityReserved: new Prisma.Decimal(0),
+      }]);
     const movement = createMovement({
       direction: StockMovementDirection.OUT,
       quantity: 3,
@@ -78,7 +84,7 @@ describe("StockMovementsRepository", () => {
         quantityOnHand: { gte: new Prisma.Decimal(3) },
       },
       data: { quantityOnHand: { decrement: new Prisma.Decimal(3) } },
-      select: { quantityOnHand: true },
+      select: { quantityOnHand: true, quantityReserved: true },
     });
     const createData = create.mock.calls[0][0].data;
     expect(createData.quantityBefore.toString()).toBe("10");
@@ -105,13 +111,39 @@ describe("StockMovementsRepository", () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it("rolls back an OUT movement that would consume reserved stock", async () => {
+    const updateManyAndReturn = jest.fn().mockResolvedValue([{
+      quantityOnHand: new Prisma.Decimal(6),
+      quantityReserved: new Prisma.Decimal(7),
+    }]);
+    const create = jest.fn();
+    const repository = new StockMovementsRepository(
+      createPrismaMock({
+        transaction: createTransactionMock({ updateManyAndReturn, create }),
+      }),
+    );
+
+    await expect(
+      repository.createMovementAndUpdateStock({
+        workspaceId,
+        inventoryItemId,
+        direction: StockMovementDirection.OUT,
+        quantity: new Prisma.Decimal(4),
+      }),
+    ).rejects.toBeInstanceOf(StockUpdateRejectedError);
+    expect(create).not.toHaveBeenCalled();
+  });
+
   it("atomically transfers stock with two linked movements", async () => {
     const destinationInventoryItemId =
       "20000000-0000-4000-8000-000000000002";
     const referenceId = "40000000-0000-4000-8000-000000000001";
     const updateManyAndReturn = jest
       .fn()
-      .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(7) }])
+      .mockResolvedValueOnce([{
+        quantityOnHand: new Prisma.Decimal(7),
+        quantityReserved: new Prisma.Decimal(0),
+      }])
       .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(8) }]);
     const outMovement = createMovement({
       direction: StockMovementDirection.OUT,
@@ -157,7 +189,7 @@ describe("StockMovementsRepository", () => {
         quantityOnHand: { gte: new Prisma.Decimal(3) },
       },
       data: { quantityOnHand: { decrement: new Prisma.Decimal(3) } },
-      select: { quantityOnHand: true },
+      select: { quantityOnHand: true, quantityReserved: true },
     });
     expect(updateManyAndReturn).toHaveBeenNthCalledWith(2, {
       where: {
@@ -186,7 +218,10 @@ describe("StockMovementsRepository", () => {
   it("rejects the whole transaction when the destination update fails", async () => {
     const updateManyAndReturn = jest
       .fn()
-      .mockResolvedValueOnce([{ quantityOnHand: new Prisma.Decimal(7) }])
+      .mockResolvedValueOnce([{
+        quantityOnHand: new Prisma.Decimal(7),
+        quantityReserved: new Prisma.Decimal(0),
+      }])
       .mockResolvedValueOnce([]);
     const create = jest.fn().mockResolvedValue(createMovement({}));
     const repository = new StockMovementsRepository(
@@ -206,6 +241,31 @@ describe("StockMovementsRepository", () => {
       }),
     ).rejects.toBeInstanceOf(StockTransferRejectedError);
     expect(create).toHaveBeenCalledTimes(1);
+  });
+
+  it("rolls back a transfer that would consume reserved source stock", async () => {
+    const updateManyAndReturn = jest.fn().mockResolvedValueOnce([{
+      quantityOnHand: new Prisma.Decimal(6),
+      quantityReserved: new Prisma.Decimal(7),
+    }]);
+    const create = jest.fn();
+    const repository = new StockMovementsRepository(
+      createPrismaMock({
+        transaction: createTransactionMock({ updateManyAndReturn, create }),
+      }),
+    );
+
+    await expect(
+      repository.createTransferAndUpdateStock({
+        workspaceId,
+        sourceInventoryItemId: inventoryItemId,
+        destinationInventoryItemId:
+          "20000000-0000-4000-8000-000000000002",
+        quantity: new Prisma.Decimal(4),
+        referenceId: "40000000-0000-4000-8000-000000000001",
+      }),
+    ).rejects.toBeInstanceOf(StockTransferRejectedError);
+    expect(create).not.toHaveBeenCalled();
   });
 
   it("finds a movement by id and workspace", async () => {

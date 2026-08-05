@@ -74,6 +74,15 @@ enum StockReservationStatus {
   CANCELLED
 }
 
+enum SalesQuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -266,6 +275,7 @@ model Product {
   media       ProductMedia[]
   attributeValues ProductAttributeValue[]
   inventoryItems InventoryItem[]
+  salesQuoteLines SalesQuoteLine[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -291,6 +301,7 @@ model ProductVariant {
   media       ProductMedia[]
   attributeValues ProductAttributeValue[]
   inventoryItems InventoryItem[]
+  salesQuoteLines SalesQuoteLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -838,11 +849,65 @@ model BusinessPartner {
   roleAssignments BusinessPartnerRoleAssignment[]
   tagAssignments  BusinessPartnerTagAssignment[]
   timelineEntries BusinessPartnerTimelineEntry[]
+  salesQuotes      SalesQuote[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([status])
   @@index([name])
+}
+
+model SalesQuote {
+  id                String           @id @default(uuid()) @db.Uuid
+  workspaceId       String           @db.Uuid
+  number            String
+  businessPartnerId String           @db.Uuid
+  status            SalesQuoteStatus @default(DRAFT)
+  issueDate         DateTime
+  validUntil        DateTime?
+  currencyCode      String
+  notes             String?
+  subtotalAmount    Decimal          @default(0) @db.Decimal(18, 4)
+  taxAmount         Decimal          @default(0) @db.Decimal(18, 4)
+  totalAmount       Decimal          @default(0) @db.Decimal(18, 4)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  businessPartner BusinessPartner  @relation(fields: [businessPartnerId], references: [id])
+  lines           SalesQuoteLine[]
+
+  @@unique([workspaceId, number])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([status])
+  @@index([issueDate])
+}
+
+model SalesQuoteLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  salesQuoteId     String   @db.Uuid
+  productId        String   @db.Uuid
+  productVariantId String?  @db.Uuid
+  description      String
+  quantity         Decimal  @db.Decimal(18, 4)
+  unitPrice        Decimal  @db.Decimal(18, 4)
+  taxRate          Decimal  @default(0) @db.Decimal(8, 4)
+  subtotalAmount   Decimal  @db.Decimal(18, 4)
+  taxAmount        Decimal  @db.Decimal(18, 4)
+  totalAmount      Decimal  @db.Decimal(18, 4)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  salesQuote     SalesQuote      @relation(fields: [salesQuoteId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@index([workspaceId])
+  @@index([salesQuoteId])
+  @@index([productId])
+  @@index([productVariantId])
 }
 
 model BusinessPartnerAddress {

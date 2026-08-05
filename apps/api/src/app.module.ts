@@ -31,6 +31,7 @@ import { ProductsModule } from "./products/products.module";
 import { ProductVariantsModule } from "./product-variants/product-variants.module";
 import { ProvisioningModule } from "./provisioning/provisioning.module";
 import { ServiceCatalogModule } from "./service-catalog/service-catalog.module";
+import { SalesQuotesModule } from "./sales-quotes/sales-quotes.module";
 import { StorageLocationsModule } from "./storage-locations/storage-locations.module";
 import { StockMovementsModule } from "./stock-movements/stock-movements.module";
 import { StockReservationsModule } from "./stock-reservations/stock-reservations.module";
@@ -73,6 +74,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ProductVariantsModule,
     ProvisioningModule,
     ServiceCatalogModule,
+    SalesQuotesModule,
     StorageLocationsModule,
     StockMovementsModule,
     StockReservationsModule,

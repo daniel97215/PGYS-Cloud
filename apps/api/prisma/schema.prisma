@@ -246,6 +246,7 @@ model Product {
   barcodes    ProductBarcode[]
   media       ProductMedia[]
   attributeValues ProductAttributeValue[]
+  inventoryItems InventoryItem[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -270,6 +271,7 @@ model ProductVariant {
   barcodes    ProductBarcode[]
   media       ProductMedia[]
   attributeValues ProductAttributeValue[]
+  inventoryItems InventoryItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -478,6 +480,7 @@ model Warehouse {
   isActive         Boolean           @default(true)
   workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   storageLocations StorageLocation[]
+  inventoryItems    InventoryItem[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -501,12 +504,40 @@ model StorageLocation {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  inventoryItems InventoryItem[]
 
   @@unique([warehouseId, code])
   @@index([workspaceId])
   @@index([warehouseId])
   @@index([code])
   @@index([name])
+  @@index([isActive])
+}
+
+model InventoryItem {
+  id                String   @id @default(uuid()) @db.Uuid
+  workspaceId       String   @db.Uuid
+  warehouseId       String   @db.Uuid
+  storageLocationId String   @db.Uuid
+  productId         String   @db.Uuid
+  productVariantId  String?  @db.Uuid
+  quantityOnHand    Decimal  @default(0) @db.Decimal(18, 4)
+  quantityReserved  Decimal  @default(0) @db.Decimal(18, 4)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  warehouse       Warehouse       @relation(fields: [warehouseId], references: [id])
+  storageLocation StorageLocation @relation(fields: [storageLocationId], references: [id])
+  product         Product         @relation(fields: [productId], references: [id])
+  productVariant  ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@unique([storageLocationId, productId, productVariantId])
+  @@index([workspaceId])
+  @@index([warehouseId])
+  @@index([storageLocationId])
+  @@index([productId])
+  @@index([productVariantId])
   @@index([isActive])
 }
 

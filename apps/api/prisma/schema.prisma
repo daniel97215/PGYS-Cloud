@@ -108,6 +108,21 @@ enum SalesInvoiceStatus {
   CANCELLED
 }
 
+enum SalesPaymentStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum SalesPaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  CHECK
+  DIRECT_DEBIT
+  OTHER
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -882,6 +897,7 @@ model BusinessPartner {
   salesQuotes      SalesQuote[]
   salesOrders      SalesOrder[]
   salesInvoices    SalesInvoice[]
+  salesPayments    SalesPayment[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -972,6 +988,7 @@ model SalesInvoice {
   businessPartner BusinessPartner   @relation(fields: [businessPartnerId], references: [id])
   salesOrder      SalesOrder?       @relation(fields: [salesOrderId], references: [id])
   lines           SalesInvoiceLine[]
+  paymentAllocations SalesPaymentAllocation[]
 
   @@unique([workspaceId, number])
   @@unique([salesOrderId])
@@ -980,6 +997,51 @@ model SalesInvoice {
   @@index([status])
   @@index([issueDate])
   @@index([dueDate])
+}
+
+model SalesPayment {
+  id                String             @id @default(uuid()) @db.Uuid
+  workspaceId       String             @db.Uuid
+  number            String
+  businessPartnerId String             @db.Uuid
+  status            SalesPaymentStatus @default(DRAFT)
+  method            SalesPaymentMethod
+  amount            Decimal            @db.Decimal(18, 4)
+  currencyCode      String
+  paymentDate       DateTime
+  externalReference String?
+  notes             String?
+  confirmedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  businessPartner BusinessPartner          @relation(fields: [businessPartnerId], references: [id])
+  allocations     SalesPaymentAllocation[]
+
+  @@unique([workspaceId, number])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([status])
+  @@index([paymentDate])
+  @@index([externalReference])
+}
+
+model SalesPaymentAllocation {
+  id             String   @id @default(uuid()) @db.Uuid
+  workspaceId    String   @db.Uuid
+  salesPaymentId String   @db.Uuid
+  salesInvoiceId String   @db.Uuid
+  amount         Decimal  @db.Decimal(18, 4)
+  createdAt      DateTime @default(now())
+
+  salesPayment SalesPayment @relation(fields: [salesPaymentId], references: [id], onDelete: Cascade)
+  salesInvoice SalesInvoice @relation(fields: [salesInvoiceId], references: [id])
+
+  @@unique([salesPaymentId, salesInvoiceId])
+  @@index([workspaceId])
+  @@index([salesPaymentId])
+  @@index([salesInvoiceId])
 }
 
 model SalesInvoiceLine {

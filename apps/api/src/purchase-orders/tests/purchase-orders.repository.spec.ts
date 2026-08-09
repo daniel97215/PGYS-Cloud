@@ -161,6 +161,35 @@ describe("PurchaseOrdersRepository", () => {
     });
   });
 
+  it("updates receiving status only from confirmed receiving states", async () => {
+    const updateMany = jest.fn().mockResolvedValue({ count: 1 });
+    const repository = new PurchaseOrdersRepository(
+      createPrismaMock(jest.fn()),
+    );
+
+    const updated = await repository.updateReceivingStatusInTransaction(
+      { purchaseOrder: { updateMany } } as unknown as Prisma.TransactionClient,
+      workspaceId,
+      orderId,
+      PurchaseOrderStatus.PARTIALLY_RECEIVED,
+    );
+
+    expect(updated).toBe(true);
+    expect(updateMany).toHaveBeenCalledWith({
+      where: {
+        id: orderId,
+        workspaceId,
+        status: {
+          in: [
+            PurchaseOrderStatus.CONFIRMED,
+            PurchaseOrderStatus.PARTIALLY_RECEIVED,
+          ],
+        },
+      },
+      data: { status: PurchaseOrderStatus.PARTIALLY_RECEIVED },
+    });
+  });
+
   function amounts(subtotal: number, tax: number, total: number) {
     return {
       subtotalAmount: new Prisma.Decimal(subtotal),

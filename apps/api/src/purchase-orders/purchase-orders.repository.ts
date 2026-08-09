@@ -291,6 +291,29 @@ export class PurchaseOrdersRepository {
     });
   }
 
+  async updateReceivingStatusInTransaction(
+    transaction: Prisma.TransactionClient,
+    workspaceId: string,
+    id: string,
+    status: PurchaseOrderStatus,
+  ): Promise<boolean> {
+    const orders = await transaction.purchaseOrder.updateMany({
+      where: {
+        id,
+        workspaceId,
+        status: {
+          in: [
+            PurchaseOrderStatus.CONFIRMED,
+            PurchaseOrderStatus.PARTIALLY_RECEIVED,
+          ],
+        },
+      },
+      data: { status },
+    });
+
+    return orders.count === 1;
+  }
+
   private async claimDraftOrder(
     transaction: Prisma.TransactionClient,
     workspaceId: string,

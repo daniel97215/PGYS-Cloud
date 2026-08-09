@@ -24,6 +24,7 @@ import { PricingModule } from "./pricing/pricing.module";
 import { PriceListsModule } from "./price-lists/price-lists.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
+import { PurchaseReceiptsModule } from "./purchase-receipts/purchase-receipts.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
 import { ProductAttributesModule } from "./product-attributes/product-attributes.module";
 import { ProductBarcodesModule } from "./product-barcodes/product-barcodes.module";
@@ -72,6 +73,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     PricingModule,
     PriceListsModule,
     PurchaseOrdersModule,
+    PurchaseReceiptsModule,
     ProductCategoriesModule,
     ProductAttributesModule,
     ProductBarcodesModule,

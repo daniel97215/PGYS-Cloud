@@ -25,6 +25,16 @@ export interface CreateStockTransferData {
   reason?: string;
 }
 
+export interface CreateInboundStockMovementData {
+  workspaceId: string;
+  inventoryItemId: string;
+  quantity: Prisma.Decimal;
+  referenceType: string;
+  referenceId: string;
+  occurredAt: Date;
+  reason?: string;
+}
+
 export interface StockTransferMovements {
   outMovement: StockMovementRecord;
   inMovement: StockMovementRecord;
@@ -188,6 +198,41 @@ export class StockMovementsRepository {
       });
 
       return { outMovement, inMovement };
+    });
+  }
+
+  async createInboundMovementInTransaction(
+    transaction: Prisma.TransactionClient,
+    data: CreateInboundStockMovementData,
+  ): Promise<StockMovementRecord> {
+    const updatedItems = await transaction.inventoryItem.updateManyAndReturn({
+      where: {
+        id: data.inventoryItemId,
+        workspaceId: data.workspaceId,
+        isActive: true,
+      },
+      data: { quantityOnHand: { increment: data.quantity } },
+      select: { quantityOnHand: true },
+    });
+    const updatedItem = updatedItems[0];
+
+    if (!updatedItem) {
+      throw new StockUpdateRejectedError();
+    }
+
+    return transaction.stockMovement.create({
+      data: {
+        workspaceId: data.workspaceId,
+        inventoryItemId: data.inventoryItemId,
+        direction: StockMovementDirection.IN,
+        quantity: data.quantity,
+        quantityBefore: updatedItem.quantityOnHand.minus(data.quantity),
+        quantityAfter: updatedItem.quantityOnHand,
+        referenceType: data.referenceType,
+        referenceId: data.referenceId,
+        occurredAt: data.occurredAt,
+        ...(data.reason === undefined ? {} : { reason: data.reason }),
+      },
     });
   }
 

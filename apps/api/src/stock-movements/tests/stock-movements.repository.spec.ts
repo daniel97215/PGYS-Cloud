@@ -268,6 +268,43 @@ describe("StockMovementsRepository", () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it("creates an inbound receipt movement inside an existing transaction", async () => {
+    const updateManyAndReturn = jest.fn().mockResolvedValue([
+      { quantityOnHand: new Prisma.Decimal(12) },
+    ]);
+    const movement = createMovement({
+      direction: StockMovementDirection.IN,
+      quantity: 2,
+      quantityBefore: 10,
+      quantityAfter: 12,
+    });
+    const create = jest.fn().mockResolvedValue(movement);
+    const repository = new StockMovementsRepository(createPrismaMock({}));
+    const occurredAt = new Date("2026-08-09T00:00:00.000Z");
+
+    await repository.createInboundMovementInTransaction(
+      {
+        inventoryItem: { updateManyAndReturn },
+        stockMovement: { create },
+      } as unknown as Prisma.TransactionClient,
+      {
+        workspaceId,
+        inventoryItemId,
+        quantity: new Prisma.Decimal(2),
+        referenceType: "PURCHASE_RECEIPT",
+        referenceId: "40000000-0000-4000-8000-000000000001",
+        occurredAt,
+      },
+    );
+
+    const data = create.mock.calls[0][0].data;
+    expect(data.direction).toBe(StockMovementDirection.IN);
+    expect(data.quantityBefore.toString()).toBe("10");
+    expect(data.quantityAfter.toString()).toBe("12");
+    expect(data.referenceType).toBe("PURCHASE_RECEIPT");
+    expect(data.occurredAt).toBe(occurredAt);
+  });
+
   it("finds a movement by id and workspace", async () => {
     const movement = createMovement({});
     const findFirst = jest.fn().mockResolvedValue(movement);

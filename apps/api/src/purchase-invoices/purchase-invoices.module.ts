@@ -6,5 +6,6 @@ import { PurchaseInvoicesService } from "./purchase-invoices.service";
 @Module({
   controllers: [PurchaseInvoicesController],
   providers: [PurchaseInvoicesRepository, PurchaseInvoicesService],
+  exports: [PurchaseInvoicesRepository],
 })
 export class PurchaseInvoicesModule {}

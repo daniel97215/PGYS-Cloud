@@ -142,6 +142,69 @@ describe("PurchaseInvoicesRepository", () => {
     });
   });
 
+  it("loads only a payable invoice through the payment transaction contract", async () => {
+    const findFirst = jest.fn().mockResolvedValue(invoice());
+    const transaction = {
+      purchaseInvoice: { findFirst },
+    } as unknown as Prisma.TransactionClient;
+    const repository = new PurchaseInvoicesRepository({} as PrismaService);
+
+    await repository.findPayableInTransaction(
+      transaction,
+      workspaceId,
+      invoiceId,
+      "EUR",
+    );
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        id: invoiceId,
+        workspaceId,
+        currencyCode: "EUR",
+        status: {
+          in: [
+            PurchaseInvoiceStatus.CONFIRMED,
+            PurchaseInvoiceStatus.PARTIALLY_PAID,
+          ],
+        },
+      },
+    });
+  });
+
+  it("updates paidAmount through an optimistic transaction contract", async () => {
+    const updateManyAndReturn = jest
+      .fn()
+      .mockResolvedValue([{ id: invoiceId }]);
+    const transaction = {
+      purchaseInvoice: { updateManyAndReturn },
+    } as unknown as Prisma.TransactionClient;
+    const repository = new PurchaseInvoicesRepository({} as PrismaService);
+    const previousPaidAmount = new Prisma.Decimal(10);
+    const paidAmount = new Prisma.Decimal(24);
+
+    const updated = await repository.updatePaymentStatusInTransaction(
+      transaction,
+      workspaceId,
+      invoiceId,
+      previousPaidAmount,
+      PurchaseInvoiceStatus.PARTIALLY_PAID,
+      paidAmount,
+      PurchaseInvoiceStatus.PAID,
+    );
+
+    expect(updated).toBe(true);
+    expect(updateManyAndReturn).toHaveBeenCalledWith({
+      where: {
+        id: invoiceId,
+        workspaceId,
+        paidAmount: previousPaidAmount,
+        status: PurchaseInvoiceStatus.PARTIALLY_PAID,
+      },
+      data: { paidAmount, status: PurchaseInvoiceStatus.PAID },
+      select: { id: true },
+    });
+  });
+
   function createRepository(transaction: jest.Mock) {
     return new PurchaseInvoicesRepository({
       $transaction: transaction,

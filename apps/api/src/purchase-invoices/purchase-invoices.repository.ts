@@ -268,6 +268,50 @@ export class PurchaseInvoicesRepository {
     });
   }
 
+  findPayableInTransaction(
+    transaction: Prisma.TransactionClient,
+    workspaceId: string,
+    id: string,
+    currencyCode: string,
+  ): Promise<PurchaseInvoiceRecord | null> {
+    return transaction.purchaseInvoice.findFirst({
+      where: {
+        id,
+        workspaceId,
+        currencyCode,
+        status: {
+          in: [
+            PurchaseInvoiceStatus.CONFIRMED,
+            PurchaseInvoiceStatus.PARTIALLY_PAID,
+          ],
+        },
+      },
+    });
+  }
+
+  async updatePaymentStatusInTransaction(
+    transaction: Prisma.TransactionClient,
+    workspaceId: string,
+    id: string,
+    expectedPaidAmount: Prisma.Decimal,
+    expectedStatus: PurchaseInvoiceStatus,
+    paidAmount: Prisma.Decimal,
+    status: PurchaseInvoiceStatus,
+  ): Promise<boolean> {
+    const invoices = await transaction.purchaseInvoice.updateManyAndReturn({
+      where: {
+        id,
+        workspaceId,
+        paidAmount: expectedPaidAmount,
+        status: expectedStatus,
+      },
+      data: { paidAmount, status },
+      select: { id: true },
+    });
+
+    return invoices.length === 1;
+  }
+
   private transitionStatus(
     workspaceId: string,
     id: string,

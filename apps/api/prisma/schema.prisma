@@ -147,6 +147,21 @@ enum PurchaseInvoiceStatus {
   CANCELLED
 }
 
+enum PurchasePaymentStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum PurchasePaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  CHECK
+  DIRECT_DEBIT
+  OTHER
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -1210,6 +1225,7 @@ model PurchaseInvoice {
   supplier      BusinessPartner      @relation(fields: [supplierId], references: [id])
   purchaseOrder PurchaseOrder?       @relation(fields: [purchaseOrderId], references: [id])
   lines         PurchaseInvoiceLine[]
+  payments      PurchasePayment[]
 
   @@unique([workspaceId, number])
   @@unique([workspaceId, supplierId, supplierInvoiceNumber])
@@ -1248,6 +1264,33 @@ model PurchaseInvoiceLine {
   @@index([purchaseOrderLineId])
   @@index([productId])
   @@index([productVariantId])
+}
+
+model PurchasePayment {
+  id                String                @id @default(uuid()) @db.Uuid
+  workspaceId       String                @db.Uuid
+  number            String
+  purchaseInvoiceId String                @db.Uuid
+  amount            Decimal               @db.Decimal(18, 4)
+  currencyCode      String
+  paymentMethod     PurchasePaymentMethod
+  status            PurchasePaymentStatus @default(DRAFT)
+  paymentDate       DateTime
+  externalReference String?
+  notes             String?
+  confirmedAt       DateTime?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  purchaseInvoice PurchaseInvoice @relation(fields: [purchaseInvoiceId], references: [id])
+
+  @@unique([workspaceId, number])
+  @@index([workspaceId])
+  @@index([purchaseInvoiceId])
+  @@index([status])
+  @@index([paymentDate])
+  @@index([paymentMethod])
+  @@index([externalReference])
 }
 
 model SalesInvoiceLine {

@@ -123,6 +123,15 @@ enum SalesPaymentMethod {
   OTHER
 }
 
+enum PurchaseOrderStatus {
+  DRAFT
+  SENT
+  CONFIRMED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -318,6 +327,7 @@ model Product {
   salesQuoteLines SalesQuoteLine[]
   salesOrderLines SalesOrderLine[]
   salesInvoiceLines SalesInvoiceLine[]
+  purchaseOrderLines PurchaseOrderLine[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -346,6 +356,7 @@ model ProductVariant {
   salesQuoteLines SalesQuoteLine[]
   salesOrderLines SalesOrderLine[]
   salesInvoiceLines SalesInvoiceLine[]
+  purchaseOrderLines PurchaseOrderLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -556,6 +567,7 @@ model Warehouse {
   storageLocations StorageLocation[]
   inventoryItems    InventoryItem[]
   inventoryCounts   InventoryCount[]
+  purchaseOrders    PurchaseOrder[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
@@ -898,6 +910,7 @@ model BusinessPartner {
   salesOrders      SalesOrder[]
   salesInvoices    SalesInvoice[]
   salesPayments    SalesPayment[]
+  purchaseOrders   PurchaseOrder[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -1042,6 +1055,67 @@ model SalesPaymentAllocation {
   @@index([workspaceId])
   @@index([salesPaymentId])
   @@index([salesInvoiceId])
+}
+
+model PurchaseOrder {
+  id                String              @id @default(uuid()) @db.Uuid
+  workspaceId       String              @db.Uuid
+  number            String
+  supplierId        String              @db.Uuid
+  warehouseId       String              @db.Uuid
+  status            PurchaseOrderStatus @default(DRAFT)
+  orderDate         DateTime
+  expectedDate      DateTime?
+  currencyCode      String
+  supplierReference String?
+  notes             String?
+  subtotalAmount    Decimal             @default(0) @db.Decimal(18, 4)
+  taxAmount         Decimal             @default(0) @db.Decimal(18, 4)
+  totalAmount       Decimal             @default(0) @db.Decimal(18, 4)
+  sentAt            DateTime?
+  confirmedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  supplier  BusinessPartner    @relation(fields: [supplierId], references: [id])
+  warehouse Warehouse          @relation(fields: [warehouseId], references: [id])
+  lines     PurchaseOrderLine[]
+
+  @@unique([workspaceId, number])
+  @@index([workspaceId])
+  @@index([supplierId])
+  @@index([warehouseId])
+  @@index([status])
+  @@index([orderDate])
+  @@index([expectedDate])
+}
+
+model PurchaseOrderLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @db.Uuid
+  purchaseOrderId  String   @db.Uuid
+  productId        String   @db.Uuid
+  productVariantId String?  @db.Uuid
+  description      String
+  quantity         Decimal  @db.Decimal(18, 4)
+  unitCost         Decimal  @db.Decimal(18, 4)
+  taxRate          Decimal  @default(0) @db.Decimal(8, 4)
+  subtotalAmount   Decimal  @db.Decimal(18, 4)
+  taxAmount        Decimal  @db.Decimal(18, 4)
+  totalAmount      Decimal  @db.Decimal(18, 4)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  purchaseOrder  PurchaseOrder   @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
+
+  @@index([workspaceId])
+  @@index([purchaseOrderId])
+  @@index([productId])
+  @@index([productVariantId])
 }
 
 model SalesInvoiceLine {

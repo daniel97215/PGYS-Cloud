@@ -139,6 +139,14 @@ enum PurchaseReceiptStatus {
   CANCELLED
 }
 
+enum PurchaseInvoiceStatus {
+  DRAFT
+  CONFIRMED
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -335,6 +343,7 @@ model Product {
   salesOrderLines SalesOrderLine[]
   salesInvoiceLines SalesInvoiceLine[]
   purchaseOrderLines PurchaseOrderLine[]
+  purchaseInvoiceLines PurchaseInvoiceLine[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -364,6 +373,7 @@ model ProductVariant {
   salesOrderLines SalesOrderLine[]
   salesInvoiceLines SalesInvoiceLine[]
   purchaseOrderLines PurchaseOrderLine[]
+  purchaseInvoiceLines PurchaseInvoiceLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -920,6 +930,7 @@ model BusinessPartner {
   salesInvoices    SalesInvoice[]
   salesPayments    SalesPayment[]
   purchaseOrders   PurchaseOrder[]
+  purchaseInvoices PurchaseInvoice[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -1091,6 +1102,7 @@ model PurchaseOrder {
   warehouse Warehouse          @relation(fields: [warehouseId], references: [id])
   lines     PurchaseOrderLine[]
   receipts  PurchaseReceipt[]
+  invoices  PurchaseInvoice[]
 
   @@unique([workspaceId, number])
   @@index([workspaceId])
@@ -1122,6 +1134,7 @@ model PurchaseOrderLine {
   product        Product         @relation(fields: [productId], references: [id])
   productVariant ProductVariant? @relation(fields: [productVariantId], references: [id])
   receiptLines   PurchaseReceiptLine[]
+  invoiceLines   PurchaseInvoiceLine[]
 
   @@index([workspaceId])
   @@index([purchaseOrderId])
@@ -1172,6 +1185,69 @@ model PurchaseReceiptLine {
   @@index([purchaseReceiptId])
   @@index([purchaseOrderLineId])
   @@index([inventoryItemId])
+}
+
+model PurchaseInvoice {
+  id                    String                @id @default(uuid()) @db.Uuid
+  workspaceId           String                @db.Uuid
+  number                String
+  supplierInvoiceNumber String
+  supplierId            String                @db.Uuid
+  purchaseOrderId       String?               @db.Uuid
+  currencyCode          String
+  status                PurchaseInvoiceStatus @default(DRAFT)
+  invoiceDate           DateTime
+  dueDate               DateTime?
+  subtotalAmount        Decimal               @default(0) @db.Decimal(18, 4)
+  taxAmount             Decimal               @default(0) @db.Decimal(18, 4)
+  totalAmount           Decimal               @default(0) @db.Decimal(18, 4)
+  paidAmount            Decimal               @default(0) @db.Decimal(18, 4)
+  notes                 String?
+  confirmedAt           DateTime?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  supplier      BusinessPartner      @relation(fields: [supplierId], references: [id])
+  purchaseOrder PurchaseOrder?       @relation(fields: [purchaseOrderId], references: [id])
+  lines         PurchaseInvoiceLine[]
+
+  @@unique([workspaceId, number])
+  @@unique([workspaceId, supplierId, supplierInvoiceNumber])
+  @@index([workspaceId])
+  @@index([supplierId])
+  @@index([purchaseOrderId])
+  @@index([status])
+  @@index([invoiceDate])
+  @@index([dueDate])
+}
+
+model PurchaseInvoiceLine {
+  id                  String   @id @default(uuid()) @db.Uuid
+  workspaceId         String   @db.Uuid
+  purchaseInvoiceId   String   @db.Uuid
+  purchaseOrderLineId String?  @db.Uuid
+  productId           String?  @db.Uuid
+  productVariantId    String?  @db.Uuid
+  description         String
+  quantity            Decimal  @db.Decimal(18, 4)
+  unitPrice           Decimal  @db.Decimal(18, 4)
+  taxRate             Decimal  @default(0) @db.Decimal(8, 4)
+  subtotalAmount      Decimal  @db.Decimal(18, 4)
+  taxAmount           Decimal  @db.Decimal(18, 4)
+  totalAmount         Decimal  @db.Decimal(18, 4)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  purchaseInvoice   PurchaseInvoice   @relation(fields: [purchaseInvoiceId], references: [id], onDelete: Cascade)
+  purchaseOrderLine PurchaseOrderLine? @relation(fields: [purchaseOrderLineId], references: [id])
+  product           Product?          @relation(fields: [productId], references: [id])
+  productVariant    ProductVariant?   @relation(fields: [productVariantId], references: [id])
+
+  @@index([workspaceId])
+  @@index([purchaseInvoiceId])
+  @@index([purchaseOrderLineId])
+  @@index([productId])
+  @@index([productVariantId])
 }
 
 model SalesInvoiceLine {

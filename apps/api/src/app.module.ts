@@ -23,6 +23,7 @@ import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PriceListsModule } from "./price-lists/price-lists.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { PurchaseInvoicesModule } from "./purchase-invoices/purchase-invoices.module";
 import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
 import { PurchaseReceiptsModule } from "./purchase-receipts/purchase-receipts.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
@@ -72,6 +73,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     OffersModule,
     PricingModule,
     PriceListsModule,
+    PurchaseInvoicesModule,
     PurchaseOrdersModule,
     PurchaseReceiptsModule,
     ProductCategoriesModule,

@@ -23,7 +23,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | v0.1 Core Platform | Stabiliser le socle technique, architectural et workspace-first de PGYS. | Architecture documentee, API de base, Prisma, Workspace, Service Catalog, Workspace Services, Provisioning et vertical slice Workspace Onboarding documentes. | In Progress |
 | v0.2 Commercial Core | Poser les fondations commerciales sans facturation complete. | Offers, Features, Offer Features, Pricing et Subscriptions coherents, testes et raccordes au parcours d'onboarding. | In Progress |
 | v0.3 ERP Foundation | Demarrer les premiers modules ERP generiques. | Catalog, customers, products, inventory, sales et purchases definis avec un premier parcours exploitable. | Planned |
-| v0.4 CRM Foundation | Construire les fondations CRM reutilisables. | Contacts, pipeline, activites, historique client et premiers workflows CRM disponibles. | Planned |
+| v0.4 CRM Foundation | Construire les fondations CRM reutilisables. | Contacts, pipeline, activites, historique client et premiers workflows CRM disponibles. | In Progress |
 | v0.5 Marketing Foundation | Ajouter les capacites marketing de base. | Segments, campagnes, templates et suivi minimal des actions marketing disponibles. | Planned |
 | v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | Planned |
 | v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | Planned |
@@ -36,7 +36,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-01 | Core Platform | Socle technique, Workspace, architecture, persistence, provisioning et fondations API. | v0.1 Core Platform | In Progress |
 | EPIC-02 | Commercial Core | Offers, Features, Pricing, Subscriptions et preparation Billing. | v0.2 Commercial Core | In Progress |
 | EPIC-03 | ERP | Fondations ERP generiques. | v0.3 ERP Foundation | Planned |
-| EPIC-04 | CRM | Fondations CRM SaaS. | v0.4 CRM Foundation | Planned |
+| EPIC-04 | CRM | Fondations CRM SaaS. | v0.4 CRM Foundation | In Progress |
 | EPIC-05 | Marketing | Acquisition, campagnes et marketing automation. | v0.5 Marketing Foundation | Planned |
 | EPIC-06 | AI | Capacites IA transverses et gouvernees. | v0.6 AI Platform | Planned |
 | EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Planned |
@@ -102,7 +102,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 
 | ID | Titre | Dependances | Priorite | Etat |
 | --- | --- | --- | --- | --- |
-| PGYS-046 | CRM Domain Map | PGYS-031 | P1 | Planned |
+| PGYS-046 | CRM Domain Map | PGYS-031 | P1 | Completed |
 | PGYS-047 | Contacts Foundation | PGYS-046 | P1 | Planned |
 | PGYS-048 | Accounts Foundation | PGYS-047 | P1 | Planned |
 | PGYS-049 | Pipeline Foundation | PGYS-047 | P1 | Planned |
@@ -243,11 +243,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 77 |
-| Tickets termines | 31 |
-| Tickets planifies | 46 |
+| Tickets termines | 32 |
+| Tickets planifies | 45 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 40% |
+| Progression globale | 42% |
 
 ### Progression par EPIC
 
@@ -256,7 +256,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-01 Core Platform | 20 | 17 | 3 | 85% |
 | EPIC-02 Commercial Core | 9 | 5 | 4 | 56% |
 | EPIC-03 ERP | 8 | 1 | 7 | 13% |
-| EPIC-04 CRM | 6 | 0 | 6 | 0% |
+| EPIC-04 CRM | 6 | 1 | 5 | 17% |
 | EPIC-05 Marketing | 8 | 4 | 4 | 50% |
 | EPIC-06 AI | 5 | 1 | 4 | 20% |
 | EPIC-07 Integrations | 6 | 1 | 5 | 17% |
@@ -271,7 +271,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.1 Core Platform | 20 | 17 | In Progress |
 | v0.2 Commercial Core | 9 | 5 | In Progress |
 | v0.3 ERP Foundation | 8 | 1 | Planned |
-| v0.4 CRM Foundation | 6 | 0 | Planned |
+| v0.4 CRM Foundation | 6 | 1 | In Progress |
 | v0.5 Marketing Foundation | 8 | 4 | Planned |
 | v0.6 AI Platform | 5 | 1 | Planned |
 | v0.7 Marketplace & Integrations | 6 | 1 | Planned |

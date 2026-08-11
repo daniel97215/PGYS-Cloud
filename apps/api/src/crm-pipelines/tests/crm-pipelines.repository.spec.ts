@@ -154,6 +154,18 @@ describe("CrmPipelinesRepository", () => {
       where: { workspaceId, pipelineId, position: stage.position },
     });
   });
+
+  it("checks whether a stage is referenced by opportunities", async () => {
+    const count = jest.fn().mockResolvedValue(1);
+    const repository = new CrmPipelinesRepository(
+      createPrismaMock({ opportunityCount: count }),
+    );
+
+    await expect(
+      repository.stageHasOpportunities(workspaceId, stageId),
+    ).resolves.toBe(true);
+    expect(count).toHaveBeenCalledWith({ where: { workspaceId, stageId } });
+  });
 });
 
 function createPrismaMock(methods: {
@@ -165,6 +177,7 @@ function createPrismaMock(methods: {
   stageUpdate?: jest.Mock;
   stageFindMany?: jest.Mock;
   stageFindFirst?: jest.Mock;
+  opportunityCount?: jest.Mock;
 }): PrismaService {
   return {
     crmPipeline: {
@@ -178,6 +191,9 @@ function createPrismaMock(methods: {
       update: methods.stageUpdate ?? jest.fn(),
       findMany: methods.stageFindMany ?? jest.fn(),
       findFirst: methods.stageFindFirst ?? jest.fn(),
+    },
+    crmOpportunity: {
+      count: methods.opportunityCount ?? jest.fn(),
     },
   } as unknown as PrismaService;
 }

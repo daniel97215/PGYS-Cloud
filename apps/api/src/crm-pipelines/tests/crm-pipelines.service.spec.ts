@@ -57,6 +57,7 @@ describe("CrmPipelinesService", () => {
       findStagesByPipeline: jest.fn().mockResolvedValue([stage]),
       findStageByCode: jest.fn().mockResolvedValue(stage),
       findStageByPosition: jest.fn().mockResolvedValue(null),
+      stageHasOpportunities: jest.fn().mockResolvedValue(false),
     } as unknown as jest.Mocked<CrmPipelinesRepository>;
     service = new CrmPipelinesService(repository);
   });
@@ -193,6 +194,16 @@ describe("CrmPipelinesService", () => {
     await expect(
       service.updateStage(workspaceId, "sales", "qualified", { position: 2 }),
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it("prevents changing the type of a stage used by opportunities", async () => {
+    repository.stageHasOpportunities.mockResolvedValueOnce(true);
+    await expect(
+      service.updateStage(workspaceId, "sales", "qualified", {
+        type: CrmPipelineStageType.WON,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(repository.updateStage).not.toHaveBeenCalled();
   });
 
   it("deactivates a stage without deleting it", async () => {

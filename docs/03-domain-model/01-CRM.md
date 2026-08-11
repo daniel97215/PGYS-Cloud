@@ -126,7 +126,38 @@ Cette decision implique que :
 
 CRM Activity represente un fait ou une action utile au suivi de la relation commerciale.
 
-Les types d'activite, leur cycle de vie, leurs participants et leurs regles de confidentialite seront definis par PGYS-050.
+Une activite est planifiable et distincte de `BusinessPartnerTimelineEntry`, qui reste un historique. Elle appartient a un Business Partner et peut aussi referencer une opportunite, un contact et un membre responsable du meme Workspace.
+
+### Opportunity
+
+Opportunity represente une possibilite commerciale suivie dans un pipeline.
+
+Elle reference un Business Partner, un pipeline et une etape. Son statut `OPEN`, `WON` ou `LOST` est derive du type de son etape courante.
+
+### Decision PGYS-050 - Opportunities & Activities
+
+PGYS-050 introduit `CrmOpportunity` et `CrmActivity`.
+
+Une opportunite :
+
+- possede un code unique dans son Workspace ;
+- reference obligatoirement un Business Partner, un pipeline et une etape ;
+- peut referencer un Contact et un membre responsable du meme Workspace ;
+- peut porter un montant, une devise et une echeance ;
+- ne peut changer d'etape qu'au sein de son pipeline ;
+- devient immutable lorsque son etape lui donne le statut `WON` ou `LOST` ;
+- empeche le changement de type d'une etape deja referencee afin de conserver la coherence de son statut ;
+- ne peut ni changer de pipeline, ni etre reouverte dans la V1.
+
+Une activite CRM :
+
+- est de type `CALL`, `EMAIL`, `MEETING`, `TASK` ou `NOTE` ;
+- suit le cycle `PLANNED`, `COMPLETED` ou `CANCELLED` ;
+- reference obligatoirement un Business Partner ;
+- peut referencer une opportunite, un Contact et un membre responsable ;
+- conserve une date de planification optionnelle ;
+- recoit une date d'achevement uniquement lors de la transition vers `COMPLETED` ;
+- devient immutable lorsqu'elle est terminee ou annulee.
 
 ### Relationship History
 
@@ -145,7 +176,8 @@ Il s'appuie sur les donnees des modules qui en sont proprietaires. Il ne doit pa
 | CRM Account | Business Partners | Account CRM de reference porte par `BusinessPartner` |
 | Pipeline | CRM | Referentiel workspace-scoped des parcours commerciaux |
 | Pipeline Stage | CRM | Etape ordonnee et configurable de type `OPEN`, `WON` ou `LOST` |
-| CRM Activity | CRM | Suivi relationnel, a definir dans PGYS-050 |
+| Opportunity | CRM | Possibilite commerciale suivie dans un pipeline |
+| CRM Activity | CRM | Action relationnelle planifiable et suivie par statut |
 | Quote et Sales Order | Sales | Documents commerciaux references par contrat public si necessaire |
 | Campaign | Marketing | Action marketing consommant des contrats CRM explicites |
 | CRM Report | Reporting | Vue consolidee construite sans devenir source de verite CRM |
@@ -166,6 +198,7 @@ Workspace
           +-- Business Partner reference (Account CRM, PGYS-048)
           +-- Pipelines (PGYS-049)
           |      +-- Pipeline Stages
+          +-- Opportunities (PGYS-050)
           +-- CRM Activities (PGYS-050)
           +-- Relationship History
 ```
@@ -258,7 +291,7 @@ Les parcours suivants bornent les futurs tickets sans en definir les details tec
 
 Les evenements suivants expriment des faits possibles du domaine. Leur contrat exact n'est pas defini par PGYS-046 :
 
-- Pipeline Entry Created ;
+- CRM Opportunity Created ;
 - Pipeline Stage Changed ;
 - CRM Activity Recorded ;
 - CRM Activity Completed.
@@ -274,7 +307,7 @@ La cartographie prepare les tickets suivants sans les implementer :
 1. PGYS-047 - Contacts Foundation - complete par reutilisation de `BusinessPartnerContact` ;
 2. PGYS-048 - Accounts Foundation - complete par reutilisation de `BusinessPartner` ;
 3. PGYS-049 - Pipeline Foundation - referentiels Pipeline et PipelineStage ;
-4. PGYS-050 - CRM Activities Foundation ;
+4. PGYS-050 - CRM Opportunities & Activities Foundation ;
 5. PGYS-051 - CRM Reporting Foundation.
 
 Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses contrats publics et ses exclusions avant d'introduire du code ou de la persistance.
@@ -286,8 +319,8 @@ PGYS-046 ne decide pas :
 - le modele de persistance CRM ;
 - les endpoints ou DTO ;
 - le contenu d'une eventuelle extension ou d'un profil CRM futur ;
-- les opportunites, les entrees de pipeline et leurs transitions ;
-- les types et statuts d'activite ;
+- le changement de pipeline et la reouverture des opportunites ;
+- les automatisations, le scoring et les integrations externes des activites ;
 - les regles d'affectation aux membres d'un Workspace ;
 - les politiques de confidentialite ou de visibilite ;
 - le scoring commercial ;

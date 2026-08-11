@@ -7,5 +7,6 @@ import { CrmPipelinesService } from "./crm-pipelines.service";
 @Module({
   controllers: [CrmPipelinesController, CrmPipelineStagesController],
   providers: [CrmPipelinesRepository, CrmPipelinesService],
+  exports: [CrmPipelinesService],
 })
 export class CrmPipelinesModule {}

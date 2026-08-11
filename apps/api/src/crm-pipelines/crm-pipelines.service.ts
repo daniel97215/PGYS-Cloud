@@ -135,6 +135,16 @@ export class CrmPipelinesService {
       }
     }
 
+    if (
+      data.type !== undefined &&
+      data.type !== stage.type &&
+      (await this.repository.stageHasOpportunities(workspaceId, stage.id))
+    ) {
+      throw new BadRequestException(
+        "Pipeline stage type cannot change while opportunities reference it",
+      );
+    }
+
     return this.repository.updateStage(
       workspaceId,
       pipeline.id,
@@ -155,6 +165,40 @@ export class CrmPipelinesService {
       stageCode,
     );
     await this.repository.deactivateStage(workspaceId, pipeline.id, stage.id);
+  }
+
+  async getPipelineStageByIds(
+    workspaceId: string,
+    pipelineId: string,
+    stageId: string,
+  ): Promise<{
+    pipeline: CrmPipelineRecord;
+    stage: CrmPipelineStageRecord;
+  }> {
+    const pipeline = await this.repository.findPipelineById(
+      workspaceId,
+      pipelineId,
+    );
+
+    if (!pipeline) {
+      throw new NotFoundException(`Pipeline "${pipelineId}" not found`);
+    }
+
+    const stage = await this.repository.findStageById(
+      workspaceId,
+      pipelineId,
+      stageId,
+    );
+
+    if (!stage) {
+      throw new NotFoundException(`Pipeline stage "${stageId}" not found`);
+    }
+
+    if (!pipeline.isActive || !stage.isActive) {
+      throw new BadRequestException("Pipeline and stage must be active");
+    }
+
+    return { pipeline, stage };
   }
 
   private async requirePipeline(

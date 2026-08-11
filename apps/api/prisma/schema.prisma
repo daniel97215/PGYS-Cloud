@@ -175,6 +175,26 @@ enum CrmPipelineStageType {
   LOST
 }
 
+enum CrmOpportunityStatus {
+  OPEN
+  WON
+  LOST
+}
+
+enum CrmActivityType {
+  CALL
+  EMAIL
+  MEETING
+  TASK
+  NOTE
+}
+
+enum CrmActivityStatus {
+  PLANNED
+  COMPLETED
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -270,6 +290,8 @@ model Workspace {
   businessPartnerCategories BusinessPartnerCategory[]
   businessPartners     BusinessPartner[]
   crmPipelines         CrmPipeline[]
+  crmOpportunities     CrmOpportunity[]
+  crmActivities        CrmActivity[]
   invoices             Invoice[]
   tickets              Ticket[]
   activities           Activity[]
@@ -343,6 +365,8 @@ model Member {
   status      MemberStatus @default(INVITED)
   workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   user        User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  crmOpportunities CrmOpportunity[]
+  crmActivities    CrmActivity[]
   invitedAt   DateTime     @default(now())
   joinedAt    DateTime?
   revokedAt   DateTime?
@@ -955,6 +979,8 @@ model BusinessPartner {
   roleAssignments BusinessPartnerRoleAssignment[]
   tagAssignments  BusinessPartnerTagAssignment[]
   timelineEntries BusinessPartnerTimelineEntry[]
+  crmOpportunities CrmOpportunity[]
+  crmActivities    CrmActivity[]
   salesQuotes      SalesQuote[]
   salesOrders      SalesOrder[]
   salesInvoices    SalesInvoice[]
@@ -1519,6 +1545,8 @@ model BusinessPartnerContact {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   businessPartner BusinessPartner @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
+  crmOpportunities CrmOpportunity[]
+  crmActivities    CrmActivity[]
 
   @@index([workspaceId])
   @@index([businessPartnerId])
@@ -1682,6 +1710,7 @@ model CrmPipeline {
   updatedAt   DateTime           @updatedAt
   workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   stages      CrmPipelineStage[]
+  opportunities CrmOpportunity[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
@@ -1702,6 +1731,7 @@ model CrmPipelineStage {
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   pipeline    CrmPipeline          @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  opportunities CrmOpportunity[]
 
   @@unique([pipelineId, code])
   @@unique([pipelineId, position])
@@ -1709,6 +1739,72 @@ model CrmPipelineStage {
   @@index([pipelineId])
   @@index([type])
   @@index([isActive])
+}
+
+model CrmOpportunity {
+  id                  String                @id @default(uuid()) @db.Uuid
+  workspaceId         String                @db.Uuid
+  code                String
+  title               String
+  businessPartnerId   String                @db.Uuid
+  contactId           String?               @db.Uuid
+  pipelineId          String                @db.Uuid
+  stageId             String                @db.Uuid
+  amount              Decimal?              @db.Decimal(12, 2)
+  currency            String                @default("EUR") @db.VarChar(3)
+  dueAt               DateTime?
+  responsibleMemberId String?               @db.Uuid
+  status              CrmOpportunityStatus  @default(OPEN)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  workspace           Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  businessPartner     BusinessPartner       @relation(fields: [businessPartnerId], references: [id], onDelete: Restrict)
+  contact             BusinessPartnerContact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  pipeline            CrmPipeline           @relation(fields: [pipelineId], references: [id], onDelete: Restrict)
+  stage               CrmPipelineStage      @relation(fields: [stageId], references: [id], onDelete: Restrict)
+  responsibleMember   Member?               @relation(fields: [responsibleMemberId], references: [id], onDelete: SetNull)
+  activities          CrmActivity[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([contactId])
+  @@index([pipelineId])
+  @@index([stageId])
+  @@index([responsibleMemberId])
+  @@index([status])
+  @@index([dueAt])
+}
+
+model CrmActivity {
+  id                  String             @id @default(uuid()) @db.Uuid
+  workspaceId         String             @db.Uuid
+  businessPartnerId   String             @db.Uuid
+  opportunityId       String?            @db.Uuid
+  contactId           String?            @db.Uuid
+  responsibleMemberId String?            @db.Uuid
+  type                CrmActivityType
+  status              CrmActivityStatus  @default(PLANNED)
+  title               String
+  description         String?
+  scheduledAt         DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  workspace           Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  businessPartner     BusinessPartner    @relation(fields: [businessPartnerId], references: [id], onDelete: Restrict)
+  opportunity         CrmOpportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  contact             BusinessPartnerContact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  responsibleMember   Member?            @relation(fields: [responsibleMemberId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([opportunityId])
+  @@index([contactId])
+  @@index([responsibleMemberId])
+  @@index([type])
+  @@index([status])
+  @@index([scheduledAt])
 }
 
 model ProvisioningJob {

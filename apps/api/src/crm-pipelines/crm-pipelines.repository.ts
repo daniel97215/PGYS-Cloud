@@ -79,6 +79,15 @@ export class CrmPipelinesRepository {
     });
   }
 
+  findPipelineById(
+    workspaceId: string,
+    id: string,
+  ): Promise<CrmPipelineRecord | null> {
+    return this.prisma.crmPipeline.findFirst({
+      where: { id, workspaceId },
+    });
+  }
+
   createStage(data: CreateCrmPipelineStageData): Promise<CrmPipelineStageRecord> {
     return this.prisma.crmPipelineStage.create({ data });
   }
@@ -134,5 +143,25 @@ export class CrmPipelinesRepository {
     return this.prisma.crmPipelineStage.findFirst({
       where: { workspaceId, pipelineId, position },
     });
+  }
+
+  findStageById(
+    workspaceId: string,
+    pipelineId: string,
+    id: string,
+  ): Promise<CrmPipelineStageRecord | null> {
+    return this.prisma.crmPipelineStage.findFirst({
+      where: { id, workspaceId, pipelineId },
+    });
+  }
+
+  async stageHasOpportunities(
+    workspaceId: string,
+    stageId: string,
+  ): Promise<boolean> {
+    const count = await this.prisma.crmOpportunity.count({
+      where: { workspaceId, stageId },
+    });
+    return count > 0;
   }
 }

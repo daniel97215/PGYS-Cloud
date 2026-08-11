@@ -67,7 +67,20 @@ CRM reference cette identite et ne cree pas de copie CRM du tiers.
 
 Contact est une personne ou un point de contact rattache a un Business Partner.
 
-Business Partners reste proprietaire de l'identite et des coordonnees du Contact. Les besoins CRM propres aux contacts seront precises par PGYS-047 sans deplacer cette responsabilite.
+Business Partners reste proprietaire de l'identite et des coordonnees du Contact. CRM reutilise le module `BusinessPartnerContact` existant et ne cree aucun modele Contact concurrent.
+
+### Decision PGYS-047 - Contacts Foundation
+
+PGYS-047 est satisfait par la reutilisation de la fondation Contacts deja portee par Business Partners.
+
+Cette decision implique que :
+
+- `BusinessPartnerContact` reste l'unique modele de contact metier ;
+- chaque Contact reste rattache a un Business Partner et a son `workspaceId` ;
+- CRM consulte ou manipule les contacts au travers des contrats publics de Business Partners ;
+- CRM ne duplique ni l'identite, ni les coordonnees, ni le statut actif d'un Contact ;
+- toute future donnee exclusivement CRM doit etre rattachee au Contact par un concept CRM distinct et un ticket explicite ;
+- PGYS-047 n'introduit aucun modele Prisma, migration, endpoint ou module applicatif supplementaire.
 
 ### CRM Account
 
@@ -230,7 +243,7 @@ Les evenements Business Partner Created, Role Assigned, Contact Added et Contact
 
 La cartographie prepare les tickets suivants sans les implementer :
 
-1. PGYS-047 - Contacts Foundation ;
+1. PGYS-047 - Contacts Foundation - complete par reutilisation de `BusinessPartnerContact` ;
 2. PGYS-048 - Accounts Foundation ;
 3. PGYS-049 - Pipeline Foundation ;
 4. PGYS-050 - CRM Activities Foundation ;

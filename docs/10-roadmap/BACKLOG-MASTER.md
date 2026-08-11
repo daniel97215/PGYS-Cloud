@@ -103,7 +103,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | ID | Titre | Dependances | Priorite | Etat |
 | --- | --- | --- | --- | --- |
 | PGYS-046 | CRM Domain Map | PGYS-031 | P1 | Completed |
-| PGYS-047 | Contacts Foundation | PGYS-046 | P1 | Planned |
+| PGYS-047 | Contacts Foundation | PGYS-046 | P1 | Completed |
 | PGYS-048 | Accounts Foundation | PGYS-047 | P1 | Planned |
 | PGYS-049 | Pipeline Foundation | PGYS-047 | P1 | Planned |
 | PGYS-050 | CRM Activities Foundation | PGYS-047 | P2 | Planned |
@@ -243,11 +243,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 77 |
-| Tickets termines | 32 |
-| Tickets planifies | 45 |
+| Tickets termines | 33 |
+| Tickets planifies | 44 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 42% |
+| Progression globale | 43% |
 
 ### Progression par EPIC
 
@@ -256,7 +256,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-01 Core Platform | 20 | 17 | 3 | 85% |
 | EPIC-02 Commercial Core | 9 | 5 | 4 | 56% |
 | EPIC-03 ERP | 8 | 1 | 7 | 13% |
-| EPIC-04 CRM | 6 | 1 | 5 | 17% |
+| EPIC-04 CRM | 6 | 2 | 4 | 33% |
 | EPIC-05 Marketing | 8 | 4 | 4 | 50% |
 | EPIC-06 AI | 5 | 1 | 4 | 20% |
 | EPIC-07 Integrations | 6 | 1 | 5 | 17% |
@@ -271,7 +271,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.1 Core Platform | 20 | 17 | In Progress |
 | v0.2 Commercial Core | 9 | 5 | In Progress |
 | v0.3 ERP Foundation | 8 | 1 | Planned |
-| v0.4 CRM Foundation | 6 | 1 | In Progress |
+| v0.4 CRM Foundation | 6 | 2 | In Progress |
 | v0.5 Marketing Foundation | 8 | 4 | Planned |
 | v0.6 AI Platform | 5 | 1 | Planned |
 | v0.7 Marketplace & Integrations | 6 | 1 | Planned |

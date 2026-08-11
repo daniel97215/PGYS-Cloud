@@ -5,6 +5,17 @@ import { PrismaService } from "../prisma/prisma.service";
 export type BusinessPartnerCategoryRecord =
   Prisma.BusinessPartnerCategoryGetPayload<object>;
 
+const categoryAssignmentInclude = {
+  businessPartnerCategory: true,
+} satisfies Prisma.BusinessPartnerCategoryAssignmentInclude;
+
+export type BusinessPartnerCategoryAssignmentRecord =
+  Prisma.BusinessPartnerCategoryAssignmentGetPayload<{
+    include: typeof categoryAssignmentInclude;
+  }>;
+
+export type BusinessPartnerReference = Prisma.BusinessPartnerGetPayload<object>;
+
 export interface CreateBusinessPartnerCategoryData {
   workspaceId: string;
   code: string;
@@ -72,6 +83,71 @@ export class BusinessPartnerCategoriesRepository {
           code,
         },
       },
+    });
+  }
+
+  findBusinessPartnerByCode(
+    workspaceId: string,
+    code: string,
+  ): Promise<BusinessPartnerReference | null> {
+    return this.prisma.businessPartner.findUnique({
+      where: { workspaceId_code: { workspaceId, code } },
+    });
+  }
+
+  createAssignment(data: {
+    workspaceId: string;
+    businessPartnerId: string;
+    businessPartnerCategoryId: string;
+  }): Promise<BusinessPartnerCategoryAssignmentRecord> {
+    return this.prisma.businessPartnerCategoryAssignment.create({
+      data,
+      include: categoryAssignmentInclude,
+    });
+  }
+
+  findAssignment(
+    workspaceId: string,
+    businessPartnerId: string,
+    businessPartnerCategoryId: string,
+  ): Promise<BusinessPartnerCategoryAssignmentRecord | null> {
+    return this.prisma.businessPartnerCategoryAssignment.findFirst({
+      where: {
+        workspaceId,
+        businessPartnerId,
+        businessPartnerCategoryId,
+      },
+      include: categoryAssignmentInclude,
+    });
+  }
+
+  async removeAssignment(
+    workspaceId: string,
+    businessPartnerId: string,
+    businessPartnerCategoryId: string,
+  ): Promise<boolean> {
+    const result = await this.prisma.businessPartnerCategoryAssignment.deleteMany({
+      where: {
+        workspaceId,
+        businessPartnerId,
+        businessPartnerCategoryId,
+      },
+    });
+
+    return result.count > 0;
+  }
+
+  findAssignmentsByBusinessPartner(
+    workspaceId: string,
+    businessPartnerId: string,
+  ): Promise<BusinessPartnerCategoryAssignmentRecord[]> {
+    return this.prisma.businessPartnerCategoryAssignment.findMany({
+      where: { workspaceId, businessPartnerId },
+      include: categoryAssignmentInclude,
+      orderBy: [
+        { businessPartnerCategory: { name: "asc" } },
+        { businessPartnerCategory: { code: "asc" } },
+      ],
     });
   }
 }

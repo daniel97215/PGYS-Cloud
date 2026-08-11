@@ -978,6 +978,7 @@ model BusinessPartner {
   partnerNotes    BusinessPartnerNote[]
   roleAssignments BusinessPartnerRoleAssignment[]
   tagAssignments  BusinessPartnerTagAssignment[]
+  categoryAssignments BusinessPartnerCategoryAssignment[]
   timelineEntries BusinessPartnerTimelineEntry[]
   crmOpportunities CrmOpportunity[]
   crmActivities    CrmActivity[]
@@ -1657,11 +1658,27 @@ model BusinessPartnerCategory {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  assignments BusinessPartnerCategoryAssignment[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([name])
   @@index([isActive])
+}
+
+model BusinessPartnerCategoryAssignment {
+  id                        String                  @id @default(uuid()) @db.Uuid
+  workspaceId               String                  @db.Uuid
+  businessPartnerId         String                  @db.Uuid
+  businessPartnerCategoryId String                  @db.Uuid
+  assignedAt                DateTime                @default(now())
+  businessPartner           BusinessPartner         @relation(fields: [businessPartnerId], references: [id], onDelete: Cascade)
+  businessPartnerCategory   BusinessPartnerCategory @relation(fields: [businessPartnerCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([businessPartnerId, businessPartnerCategoryId])
+  @@index([workspaceId])
+  @@index([businessPartnerId])
+  @@index([businessPartnerCategoryId])
 }
 
 model BusinessPartnerRole {

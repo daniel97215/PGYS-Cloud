@@ -84,9 +84,22 @@ Cette decision implique que :
 
 ### CRM Account
 
-CRM Account est le nom de travail porte par PGYS-048 pour la vue CRM d'une relation avec un Business Partner.
+Business Partner est l'Account de reference partage pour CRM.
 
-Sa definition detaillee et son cycle de vie appartiennent a PGYS-048. Ce futur concept devra obligatoirement referencer un Business Partner et ne devra ni dupliquer son identite, ni introduire une seconde fiche de tiers.
+CRM reference le Business Partner par son identifiant et par les contrats publics exposes par Business Partners. Il ne cree ni modele `CrmAccount`, ni seconde fiche de tiers.
+
+### Decision PGYS-048 - Accounts Foundation
+
+PGYS-048 est satisfait par la reutilisation de `BusinessPartner` comme Account CRM.
+
+Cette decision implique que :
+
+- `BusinessPartner` reste l'unique identite de l'organisation ou de la personne suivie ;
+- le CRM ne copie ni son nom, ni ses coordonnees, ni ses roles, ni ses relations existantes ;
+- toute operation CRM recoit un `businessPartnerId` dans le contexte explicite d'un Workspace ;
+- CRM utilise uniquement les contrats publics de Business Partners pour consulter ou valider cette reference ;
+- aucun modele Prisma, migration, endpoint ou module `CrmAccount` n'est introduit par PGYS-048 ;
+- une eventuelle extension ou un profil propre au CRM necessitera un ticket futur fonde sur un besoin metier concret.
 
 ### Pipeline
 
@@ -114,7 +127,7 @@ Il s'appuie sur les donnees des modules qui en sont proprietaires. Il ne doit pa
 | Business Partner | Business Partners | Identite du tiers suivi |
 | Role | Business Partners | Qualification generique, notamment Prospect ou Customer |
 | Contact | Business Partners | Interlocuteur de la relation commerciale |
-| CRM Account | CRM | Vue CRM de la relation, a definir dans PGYS-048 |
+| CRM Account | Business Partners | Account CRM de reference porte par `BusinessPartner` |
 | Pipeline | CRM | Organisation du parcours commercial, a definir dans PGYS-049 |
 | CRM Activity | CRM | Suivi relationnel, a definir dans PGYS-050 |
 | Quote et Sales Order | Sales | Documents commerciaux references par contrat public si necessaire |
@@ -134,7 +147,7 @@ Workspace
    |      +-- Tags
    |
    +-- CRM
-          +-- CRM Account (PGYS-048)
+          +-- Business Partner reference (Account CRM, PGYS-048)
           +-- Pipeline (PGYS-049)
           +-- CRM Activities (PGYS-050)
           +-- Relationship History
@@ -228,8 +241,6 @@ Les parcours suivants bornent les futurs tickets sans en definir les details tec
 
 Les evenements suivants expriment des faits possibles du domaine. Leur contrat exact n'est pas defini par PGYS-046 :
 
-- CRM Account Created ;
-- CRM Account Updated ;
 - Pipeline Entry Created ;
 - Pipeline Stage Changed ;
 - CRM Activity Recorded ;
@@ -244,7 +255,7 @@ Les evenements Business Partner Created, Role Assigned, Contact Added et Contact
 La cartographie prepare les tickets suivants sans les implementer :
 
 1. PGYS-047 - Contacts Foundation - complete par reutilisation de `BusinessPartnerContact` ;
-2. PGYS-048 - Accounts Foundation ;
+2. PGYS-048 - Accounts Foundation - complete par reutilisation de `BusinessPartner` ;
 3. PGYS-049 - Pipeline Foundation ;
 4. PGYS-050 - CRM Activities Foundation ;
 5. PGYS-051 - CRM Reporting Foundation.
@@ -257,7 +268,7 @@ PGYS-046 ne decide pas :
 
 - le modele de persistance CRM ;
 - les endpoints ou DTO ;
-- le contenu exact d'un CRM Account ;
+- le contenu d'une eventuelle extension ou d'un profil CRM futur ;
 - les etapes et transitions d'un pipeline ;
 - les types et statuts d'activite ;
 - les regles d'affectation aux membres d'un Workspace ;

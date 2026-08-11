@@ -71,6 +71,8 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | PGYS-033 | Core Status Constants | PGYS-029 | P2 | Planned |
 | PGYS-034 | Core Integration Test Suite | PGYS-030 | P1 | Planned |
 
+Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique de son perimetre. Le plan de hardening existant est partiellement obsolete et doit etre audite puis redécoupe en increments atomiques avant demarrage. Le ticket reste `Planned` et ne bloque pas le lancement de l'EPIC Marketing.
+
 ### EPIC-02 Commercial Core
 
 | ID | Titre | Dependances | Priorite | Etat |

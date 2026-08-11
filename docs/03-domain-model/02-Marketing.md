@@ -76,6 +76,23 @@ Segment represente une definition reutilisable permettant de selectionner une po
 
 Un Segment appartient a un Workspace. Il s'appuie sur des donnees accessibles au travers de contrats publics, notamment les roles, categories et tags de Business Partners. PGYS-052 ne definit ni le langage de criteres, ni le mode de calcul, ni le caractere dynamique ou fige d'un Segment.
 
+### Decision PGYS-053 - Segments Foundation
+
+PGYS-053 introduit des Segments dynamiques constitues de regles enregistrees.
+
+Cette decision implique que :
+
+- un code de Segment est unique dans un Workspace ;
+- les seules familles de criteres V1 sont les roles, categories et tags de Business Partners, ainsi que le filtre `activeOnly` ;
+- plusieurs valeurs d'une meme famille sont combinees par `OR` ;
+- les familles renseignees sont combinees par `AND` ;
+- les codes de criteres doivent designer des referentiels actifs du meme Workspace ;
+- l'audience est evaluee a la demande et paginee par le contrat public de Business Partners ;
+- aucun membre d'audience ni resultat d'evaluation n'est persiste ;
+- un Segment peut etre active ou desactive sans suppression physique ;
+- seuls les Business Partners sont cibles par un Segment ;
+- la selection des Contacts destinataires appartient aux futures Campaigns.
+
 ### Campaign
 
 Campaign represente une action marketing planifiee et suivie dans un Workspace.
@@ -246,7 +263,7 @@ Les tickets proprietaires devront confirmer les noms, donnees, producteurs, cons
 
 La cartographie prepare les tickets suivants sans les implementer :
 
-1. PGYS-053 - Segments Foundation ;
+1. PGYS-053 - Segments Foundation - segments dynamiques evalues a la demande ;
 2. PGYS-054 - Campaigns Foundation ;
 3. PGYS-055 - Marketing Automation Foundation.
 
@@ -256,8 +273,6 @@ Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses co
 
 PGYS-052 ne decide pas :
 
-- le langage et les operateurs des criteres de Segment ;
-- le caractere dynamique, recalcule ou fige d'une audience ;
 - les volumes, limites et performances d'evaluation ;
 - le cycle de vie et les transitions d'une Campaign ;
 - les canaux disponibles dans la V1 ;

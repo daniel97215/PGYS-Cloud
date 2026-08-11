@@ -6,5 +6,6 @@ import { BusinessPartnerSearchService } from "./business-partner-search.service"
 @Module({
   controllers: [BusinessPartnerSearchController],
   providers: [BusinessPartnerSearchRepository, BusinessPartnerSearchService],
+  exports: [BusinessPartnerSearchService],
 })
 export class BusinessPartnerSearchModule {}

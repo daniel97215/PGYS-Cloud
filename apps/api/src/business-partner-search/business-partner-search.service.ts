@@ -2,6 +2,10 @@ import { Injectable } from "@nestjs/common";
 import {
   BusinessPartnerSearchRepository,
   BusinessPartnerSearchResult,
+  BusinessPartnerAudienceCriteria,
+  BusinessPartnerAudienceKnownCodes,
+  BusinessPartnerAudiencePagination,
+  BusinessPartnerAudienceResult,
 } from "./business-partner-search.repository";
 import { SearchBusinessPartnerDto } from "./dto/search-business-partner.dto";
 
@@ -16,5 +20,27 @@ export class BusinessPartnerSearchService {
     query: SearchBusinessPartnerDto,
   ): Promise<BusinessPartnerSearchResult> {
     return this.businessPartnerSearchRepository.search(workspaceId, query);
+  }
+
+  evaluateAudience(
+    workspaceId: string,
+    criteria: BusinessPartnerAudienceCriteria,
+    pagination: BusinessPartnerAudiencePagination,
+  ): Promise<BusinessPartnerAudienceResult> {
+    return this.businessPartnerSearchRepository.evaluateAudience(
+      workspaceId,
+      criteria,
+      pagination,
+    );
+  }
+
+  findKnownAudienceCodes(
+    workspaceId: string,
+    criteria: BusinessPartnerAudienceCriteria,
+  ): Promise<BusinessPartnerAudienceKnownCodes> {
+    return this.businessPartnerSearchRepository.findKnownAudienceCodes(
+      workspaceId,
+      criteria,
+    );
   }
 }

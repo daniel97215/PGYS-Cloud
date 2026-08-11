@@ -48,6 +48,32 @@ export interface BusinessPartnerSearchResult
   pageSize: number;
 }
 
+export interface BusinessPartnerAudienceCriteria {
+  roleCodes: string[];
+  categoryCodes: string[];
+  tagCodes: string[];
+  activeOnly: boolean;
+}
+
+export interface BusinessPartnerAudiencePagination {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface BusinessPartnerAudienceResult
+  extends PaginationResult<BusinessPartnerRecord> {
+  page: number;
+  pageSize: number;
+}
+
+export interface BusinessPartnerAudienceKnownCodes {
+  roleCodes: string[];
+  categoryCodes: string[];
+  tagCodes: string[];
+}
+
+export type BusinessPartnerRecord = Prisma.BusinessPartnerGetPayload<object>;
+
 @Injectable()
 export class BusinessPartnerSearchRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -77,6 +103,65 @@ export class BusinessPartnerSearchRepository {
       total,
       page,
       pageSize,
+    };
+  }
+
+  async evaluateAudience(
+    workspaceId: string,
+    criteria: BusinessPartnerAudienceCriteria,
+    pagination: BusinessPartnerAudiencePagination,
+  ): Promise<BusinessPartnerAudienceResult> {
+    const page = Math.max(pagination.page ?? 1, 1);
+    const pageSize = Math.min(Math.max(pagination.pageSize ?? 25, 1), 100);
+    const where = this.buildAudienceWhere(workspaceId, criteria);
+    const [items, total] = await Promise.all([
+      this.prisma.businessPartner.findMany({
+        where,
+        orderBy: [{ name: "asc" }, { code: "asc" }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.businessPartner.count({ where }),
+    ]);
+
+    return { items, total, page, pageSize };
+  }
+
+  async findKnownAudienceCodes(
+    workspaceId: string,
+    criteria: BusinessPartnerAudienceCriteria,
+  ): Promise<BusinessPartnerAudienceKnownCodes> {
+    const [roles, categories, tags] = await Promise.all([
+      this.prisma.businessPartnerRole.findMany({
+        where: {
+          workspaceId,
+          code: { in: criteria.roleCodes },
+          isActive: true,
+        },
+        select: { code: true },
+      }),
+      this.prisma.businessPartnerCategory.findMany({
+        where: {
+          workspaceId,
+          code: { in: criteria.categoryCodes },
+          isActive: true,
+        },
+        select: { code: true },
+      }),
+      this.prisma.businessPartnerTag.findMany({
+        where: {
+          workspaceId,
+          code: { in: criteria.tagCodes },
+          isActive: true,
+        },
+        select: { code: true },
+      }),
+    ]);
+
+    return {
+      roleCodes: roles.map(({ code }) => code),
+      categoryCodes: categories.map(({ code }) => code),
+      tagCodes: tags.map(({ code }) => code),
     };
   }
 
@@ -172,6 +257,64 @@ export class BusinessPartnerSearchRepository {
 
     if (criteria.status) {
       and.push({ status: criteria.status });
+    }
+
+    return { AND: and };
+  }
+
+  private buildAudienceWhere(
+    workspaceId: string,
+    criteria: BusinessPartnerAudienceCriteria,
+  ): Prisma.BusinessPartnerWhereInput {
+    const and: Prisma.BusinessPartnerWhereInput[] = [{ workspaceId }];
+
+    if (criteria.roleCodes.length > 0) {
+      and.push({
+        roleAssignments: {
+          some: {
+            workspaceId,
+            businessPartnerRole: {
+              workspaceId,
+              code: { in: criteria.roleCodes },
+              isActive: true,
+            },
+          },
+        },
+      });
+    }
+
+    if (criteria.categoryCodes.length > 0) {
+      and.push({
+        categoryAssignments: {
+          some: {
+            workspaceId,
+            businessPartnerCategory: {
+              workspaceId,
+              code: { in: criteria.categoryCodes },
+              isActive: true,
+            },
+          },
+        },
+      });
+    }
+
+    if (criteria.tagCodes.length > 0) {
+      and.push({
+        tagAssignments: {
+          some: {
+            workspaceId,
+            businessPartnerTag: {
+              workspaceId,
+              code: { in: criteria.tagCodes },
+              isActive: true,
+            },
+          },
+        },
+      });
+    }
+
+    if (criteria.activeOnly) {
+      and.push({ status: "active" });
     }
 
     return { AND: and };

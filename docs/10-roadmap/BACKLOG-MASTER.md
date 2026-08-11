@@ -121,7 +121,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-005 | Page applications metier | PGYS-003 | P2 | Completed |
 | PGYS-006 | Page hebergement | PGYS-003 | P2 | Completed |
 | PGYS-052 | Marketing Domain Map | PGYS-031 | P2 | Completed |
-| PGYS-053 | Segments Foundation | PGYS-047, PGYS-052, PGYS-078 | P2 | Planned |
+| PGYS-053 | Segments Foundation | PGYS-047, PGYS-052, PGYS-078 | P2 | Completed |
 | PGYS-054 | Campaigns Foundation | PGYS-053 | P2 | Planned |
 | PGYS-055 | Marketing Automation Foundation | PGYS-054 | P3 | Planned |
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 39 |
-| Tickets planifies | 39 |
+| Tickets termines | 40 |
+| Tickets planifies | 38 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 50% |
+| Progression globale | 51% |
 
 ### Progression par EPIC
 
@@ -260,7 +260,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-02 Commercial Core | 9 | 5 | 4 | 56% |
 | EPIC-03 ERP | 9 | 2 | 7 | 22% |
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
-| EPIC-05 Marketing | 8 | 5 | 3 | 63% |
+| EPIC-05 Marketing | 8 | 6 | 2 | 75% |
 | EPIC-06 AI | 5 | 1 | 4 | 20% |
 | EPIC-07 Integrations | 6 | 1 | 5 | 17% |
 | EPIC-08 Reporting | 5 | 0 | 5 | 0% |
@@ -275,7 +275,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.2 Commercial Core | 9 | 5 | In Progress |
 | v0.3 ERP Foundation | 9 | 2 | Planned |
 | v0.4 CRM Foundation | 6 | 6 | Completed |
-| v0.5 Marketing Foundation | 8 | 5 | In Progress |
+| v0.5 Marketing Foundation | 8 | 6 | In Progress |
 | v0.6 AI Platform | 5 | 1 | Planned |
 | v0.7 Marketplace & Integrations | 6 | 1 | Planned |
 | v1.0 First Commercial Release | 15 | 2 | Planned |

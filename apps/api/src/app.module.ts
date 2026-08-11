@@ -23,6 +23,7 @@ import { InventoryAdjustmentsModule } from "./inventory-adjustments/inventory-ad
 import { InventoryCountsModule } from "./inventory-counts/inventory-counts.module";
 import { InventoryItemsModule } from "./inventory-items/inventory-items.module";
 import { ManufacturersModule } from "./manufacturers/manufacturers.module";
+import { MarketingSegmentsModule } from "./marketing-segments/marketing-segments.module";
 import { OffersModule } from "./offers/offers.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PriceListsModule } from "./price-lists/price-lists.module";
@@ -80,6 +81,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     InventoryCountsModule,
     InventoryItemsModule,
     ManufacturersModule,
+    MarketingSegmentsModule,
     OffersModule,
     PricingModule,
     PriceListsModule,

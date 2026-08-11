@@ -292,6 +292,7 @@ model Workspace {
   crmPipelines         CrmPipeline[]
   crmOpportunities     CrmOpportunity[]
   crmActivities        CrmActivity[]
+  marketingSegments    MarketingSegment[]
   invoices             Invoice[]
   tickets              Ticket[]
   activities           Activity[]
@@ -1679,6 +1680,27 @@ model BusinessPartnerCategoryAssignment {
   @@index([workspaceId])
   @@index([businessPartnerId])
   @@index([businessPartnerCategoryId])
+}
+
+model MarketingSegment {
+  id            String    @id @default(uuid()) @db.Uuid
+  workspaceId   String    @db.Uuid
+  code          String
+  name          String
+  description   String?
+  roleCodes     String[]  @default([])
+  categoryCodes String[]  @default([])
+  tagCodes      String[]  @default([])
+  activeOnly    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([name])
+  @@index([isActive])
 }
 
 model BusinessPartnerRole {

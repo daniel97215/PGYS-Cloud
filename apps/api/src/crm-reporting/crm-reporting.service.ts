@@ -1,0 +1,89 @@
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { CrmActivityReportResponseDto } from "./dto/crm-activity-report-response.dto";
+import { CrmOpportunityReportResponseDto } from "./dto/crm-opportunity-report-response.dto";
+import { CrmReportFilterDto } from "./dto/crm-report-filter.dto";
+import {
+  CrmReportingRepository,
+  CrmReportQuery,
+} from "./crm-reporting.repository";
+
+@Injectable()
+export class CrmReportingService {
+  constructor(private readonly repository: CrmReportingRepository) {}
+
+  async opportunities(
+    workspaceId: string,
+    filter: CrmReportFilterDto,
+  ): Promise<CrmOpportunityReportResponseDto> {
+    const query = await this.toQuery(workspaceId, filter);
+    const [groups, amounts] = await Promise.all([
+      this.repository.opportunityCounts(workspaceId, query),
+      this.repository.opportunityAmounts(workspaceId, query),
+    ]);
+
+    return {
+      groups: groups.map((group) => ({
+        pipelineId: group.pipelineId,
+        stageId: group.stageId,
+        status: group.status,
+        count: group._count._all,
+      })),
+      amountsByCurrency: amounts.map((group) => ({
+        pipelineId: group.pipelineId,
+        stageId: group.stageId,
+        status: group.status,
+        currency: group.currency,
+        count: group._count._all,
+        amount: group._sum.amount?.toFixed(2) ?? "0.00",
+      })),
+    };
+  }
+
+  async activities(
+    workspaceId: string,
+    filter: CrmReportFilterDto,
+  ): Promise<CrmActivityReportResponseDto> {
+    const query = await this.toQuery(workspaceId, filter);
+    const now = new Date();
+    const [groups, overduePlanned] = await Promise.all([
+      this.repository.activityCounts(workspaceId, query),
+      this.repository.overduePlannedActivities(workspaceId, query, now),
+    ]);
+
+    return {
+      groups: groups.map((group) => ({
+        type: group.type,
+        status: group.status,
+        count: group._count._all,
+      })),
+      overduePlanned,
+    };
+  }
+
+  private async toQuery(
+    workspaceId: string,
+    filter: CrmReportFilterDto,
+  ): Promise<CrmReportQuery> {
+    const from = filter.from === undefined ? undefined : new Date(filter.from);
+    const to = filter.to === undefined ? undefined : new Date(filter.to);
+
+    if (from !== undefined && to !== undefined && from > to) {
+      throw new BadRequestException("Report start date cannot be after end date");
+    }
+
+    if (
+      filter.pipelineId !== undefined &&
+      !(await this.repository.pipelineExists(workspaceId, filter.pipelineId))
+    ) {
+      throw new NotFoundException(`CRM pipeline "${filter.pipelineId}" not found`);
+    }
+
+    return {
+      ...(filter.pipelineId === undefined
+        ? {}
+        : { pipelineId: filter.pipelineId }),
+      ...(from === undefined ? {} : { from }),
+      ...(to === undefined ? {} : { to }),
+    };
+  }
+}

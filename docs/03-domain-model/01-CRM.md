@@ -250,6 +250,27 @@ CRM expose les donnees et faits dont il est proprietaire. Reporting construit le
 
 Un rapport ne doit pas devenir la source de verite d'un pipeline, d'une activite ou d'une relation CRM.
 
+### Decision PGYS-051 - CRM Reporting Foundation
+
+PGYS-051 expose uniquement des instantanes en lecture seule :
+
+- nombre d'opportunites par pipeline, etape et statut ;
+- montants d'opportunites regroupes par devise, sans addition inter-devise ;
+- nombre d'activites par type et statut ;
+- nombre d'activites `PLANNED` dont la date planifiee est depassee ;
+- filtres optionnels par pipeline et par periode de creation.
+
+La fondation Reporting CRM :
+
+- filtre systematiquement par `workspaceId` ;
+- centralise toutes les lectures Prisma dans son repository ;
+- ne persiste aucun resultat ;
+- ne calcule aucun taux de conversion historique ;
+- n'ajoute aucun historique de transition ;
+- ne fournit ni cache, ni export, ni graphique, ni dashboard frontend.
+
+La consolidation avec les autres domaines reste reservee a PGYS-069.
+
 ## Invariants structurants
 
 - toute donnee CRM propre a un client appartient a un Workspace explicite ;
@@ -308,7 +329,7 @@ La cartographie prepare les tickets suivants sans les implementer :
 2. PGYS-048 - Accounts Foundation - complete par reutilisation de `BusinessPartner` ;
 3. PGYS-049 - Pipeline Foundation - referentiels Pipeline et PipelineStage ;
 4. PGYS-050 - CRM Opportunities & Activities Foundation ;
-5. PGYS-051 - CRM Reporting Foundation.
+5. PGYS-051 - CRM Reporting Foundation - instantanes en lecture seule.
 
 Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses contrats publics et ses exclusions avant d'introduire du code ou de la persistance.
 
@@ -325,7 +346,8 @@ PGYS-046 ne decide pas :
 - les politiques de confidentialite ou de visibilite ;
 - le scoring commercial ;
 - les consentements et preferences de communication ;
-- les indicateurs et tableaux de bord ;
+- les tableaux de bord consolides, graphiques et exports ;
+- les taux de conversion et analyses historiques ;
 - les integrations email, SMS, agenda ou telephonie ;
 - l'interface d'une application CRM.
 

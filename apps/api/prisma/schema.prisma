@@ -169,6 +169,12 @@ enum PurchasePaymentMethod {
   OTHER
 }
 
+enum CrmPipelineStageType {
+  OPEN
+  WON
+  LOST
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -263,6 +269,7 @@ model Workspace {
   businessPartnerTags  BusinessPartnerTag[]
   businessPartnerCategories BusinessPartnerCategory[]
   businessPartners     BusinessPartner[]
+  crmPipelines         CrmPipeline[]
   invoices             Invoice[]
   tickets              Ticket[]
   activities           Activity[]
@@ -1662,6 +1669,46 @@ model BusinessPartnerRoleAssignment {
   @@index([workspaceId])
   @@index([businessPartnerId])
   @@index([businessPartnerRoleId])
+}
+
+model CrmPipeline {
+  id          String             @id @default(uuid()) @db.Uuid
+  workspaceId String             @db.Uuid
+  code        String
+  name        String
+  description String?
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  stages      CrmPipelineStage[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([name])
+  @@index([isActive])
+}
+
+model CrmPipelineStage {
+  id          String               @id @default(uuid()) @db.Uuid
+  workspaceId String               @db.Uuid
+  pipelineId  String               @db.Uuid
+  code        String
+  name        String
+  description String?
+  position    Int
+  type        CrmPipelineStageType  @default(OPEN)
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  pipeline    CrmPipeline          @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+
+  @@unique([pipelineId, code])
+  @@unique([pipelineId, position])
+  @@index([workspaceId])
+  @@index([pipelineId])
+  @@index([type])
+  @@index([isActive])
 }
 
 model ProvisioningJob {

@@ -103,9 +103,24 @@ Cette decision implique que :
 
 ### Pipeline
 
-Pipeline represente l'organisation d'un parcours commercial en etapes ordonnees.
+Pipeline represente un parcours commercial configurable appartenant a un Workspace.
 
-La structure exacte des etapes, les transitions et les objets suivis dans le pipeline seront definis par PGYS-049.
+Un Workspace peut posseder plusieurs pipelines. Chaque pipeline possede des etapes ordonnees et configurables dont le type est `OPEN`, `WON` ou `LOST`.
+
+### Decision PGYS-049 - Pipeline Foundation
+
+PGYS-049 introduit uniquement les referentiels `CrmPipeline` et `CrmPipelineStage`.
+
+Cette decision implique que :
+
+- un code de pipeline est unique dans un Workspace ;
+- un code et une position d'etape sont uniques dans un pipeline ;
+- les positions commencent a 1 et determinent l'ordre de restitution ;
+- les pipelines et leurs etapes peuvent etre desactives sans suppression physique ;
+- chaque etape est qualifiee par un type `OPEN`, `WON` ou `LOST` ;
+- un pipeline suivra des opportunites, jamais directement un Business Partner ;
+- aucune opportunite ni entree de pipeline n'est creee par PGYS-049 ;
+- les futures opportunites appartiennent a PGYS-050.
 
 ### CRM Activity
 
@@ -128,7 +143,8 @@ Il s'appuie sur les donnees des modules qui en sont proprietaires. Il ne doit pa
 | Role | Business Partners | Qualification generique, notamment Prospect ou Customer |
 | Contact | Business Partners | Interlocuteur de la relation commerciale |
 | CRM Account | Business Partners | Account CRM de reference porte par `BusinessPartner` |
-| Pipeline | CRM | Organisation du parcours commercial, a definir dans PGYS-049 |
+| Pipeline | CRM | Referentiel workspace-scoped des parcours commerciaux |
+| Pipeline Stage | CRM | Etape ordonnee et configurable de type `OPEN`, `WON` ou `LOST` |
 | CRM Activity | CRM | Suivi relationnel, a definir dans PGYS-050 |
 | Quote et Sales Order | Sales | Documents commerciaux references par contrat public si necessaire |
 | Campaign | Marketing | Action marketing consommant des contrats CRM explicites |
@@ -148,7 +164,8 @@ Workspace
    |
    +-- CRM
           +-- Business Partner reference (Account CRM, PGYS-048)
-          +-- Pipeline (PGYS-049)
+          +-- Pipelines (PGYS-049)
+          |      +-- Pipeline Stages
           +-- CRM Activities (PGYS-050)
           +-- Relationship History
 ```
@@ -256,7 +273,7 @@ La cartographie prepare les tickets suivants sans les implementer :
 
 1. PGYS-047 - Contacts Foundation - complete par reutilisation de `BusinessPartnerContact` ;
 2. PGYS-048 - Accounts Foundation - complete par reutilisation de `BusinessPartner` ;
-3. PGYS-049 - Pipeline Foundation ;
+3. PGYS-049 - Pipeline Foundation - referentiels Pipeline et PipelineStage ;
 4. PGYS-050 - CRM Activities Foundation ;
 5. PGYS-051 - CRM Reporting Foundation.
 
@@ -269,7 +286,7 @@ PGYS-046 ne decide pas :
 - le modele de persistance CRM ;
 - les endpoints ou DTO ;
 - le contenu d'une eventuelle extension ou d'un profil CRM futur ;
-- les etapes et transitions d'un pipeline ;
+- les opportunites, les entrees de pipeline et leurs transitions ;
 - les types et statuts d'activite ;
 - les regles d'affectation aux membres d'un Workspace ;
 - les politiques de confidentialite ou de visibilite ;

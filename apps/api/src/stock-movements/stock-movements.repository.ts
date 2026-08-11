@@ -35,6 +35,16 @@ export interface CreateInboundStockMovementData {
   reason?: string;
 }
 
+export interface CreateOutboundStockMovementData {
+  workspaceId: string;
+  inventoryItemId: string;
+  quantity: Prisma.Decimal;
+  referenceType: string;
+  referenceId: string;
+  occurredAt: Date;
+  reason?: string;
+}
+
 export interface StockTransferMovements {
   outMovement: StockMovementRecord;
   inMovement: StockMovementRecord;
@@ -227,6 +237,45 @@ export class StockMovementsRepository {
         direction: StockMovementDirection.IN,
         quantity: data.quantity,
         quantityBefore: updatedItem.quantityOnHand.minus(data.quantity),
+        quantityAfter: updatedItem.quantityOnHand,
+        referenceType: data.referenceType,
+        referenceId: data.referenceId,
+        occurredAt: data.occurredAt,
+        ...(data.reason === undefined ? {} : { reason: data.reason }),
+      },
+    });
+  }
+
+  async createOutboundMovementInTransaction(
+    transaction: Prisma.TransactionClient,
+    data: CreateOutboundStockMovementData,
+  ): Promise<StockMovementRecord> {
+    const updatedItems = await transaction.inventoryItem.updateManyAndReturn({
+      where: {
+        id: data.inventoryItemId,
+        workspaceId: data.workspaceId,
+        isActive: true,
+        quantityOnHand: { gte: data.quantity },
+      },
+      data: { quantityOnHand: { decrement: data.quantity } },
+      select: { quantityOnHand: true, quantityReserved: true },
+    });
+    const updatedItem = updatedItems[0];
+
+    if (
+      !updatedItem ||
+      updatedItem.quantityOnHand.lessThan(updatedItem.quantityReserved)
+    ) {
+      throw new StockUpdateRejectedError();
+    }
+
+    return transaction.stockMovement.create({
+      data: {
+        workspaceId: data.workspaceId,
+        inventoryItemId: data.inventoryItemId,
+        direction: StockMovementDirection.OUT,
+        quantity: data.quantity,
+        quantityBefore: updatedItem.quantityOnHand.plus(data.quantity),
         quantityAfter: updatedItem.quantityOnHand,
         referenceType: data.referenceType,
         referenceId: data.referenceId,

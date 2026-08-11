@@ -9,5 +9,6 @@ import { PurchaseReceiptsService } from "./purchase-receipts.service";
   imports: [PurchaseOrdersModule, StockMovementsModule],
   controllers: [PurchaseReceiptsController],
   providers: [PurchaseReceiptsRepository, PurchaseReceiptsService],
+  exports: [PurchaseReceiptsRepository],
 })
 export class PurchaseReceiptsModule {}

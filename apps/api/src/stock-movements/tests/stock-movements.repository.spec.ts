@@ -305,6 +305,81 @@ describe("StockMovementsRepository", () => {
     expect(data.occurredAt).toBe(occurredAt);
   });
 
+  it("creates an outbound purchase return movement inside an existing transaction", async () => {
+    const updateManyAndReturn = jest.fn().mockResolvedValue([{
+      quantityOnHand: new Prisma.Decimal(7),
+      quantityReserved: new Prisma.Decimal(2),
+    }]);
+    const movement = createMovement({
+      direction: StockMovementDirection.OUT,
+      quantity: 3,
+      quantityBefore: 10,
+      quantityAfter: 7,
+    });
+    const create = jest.fn().mockResolvedValue(movement);
+    const repository = new StockMovementsRepository(createPrismaMock({}));
+    const occurredAt = new Date("2026-08-10T00:00:00.000Z");
+
+    await repository.createOutboundMovementInTransaction(
+      {
+        inventoryItem: { updateManyAndReturn },
+        stockMovement: { create },
+      } as unknown as Prisma.TransactionClient,
+      {
+        workspaceId,
+        inventoryItemId,
+        quantity: new Prisma.Decimal(3),
+        referenceType: "PURCHASE_RETURN",
+        referenceId: "40000000-0000-4000-8000-000000000001",
+        occurredAt,
+      },
+    );
+
+    expect(updateManyAndReturn).toHaveBeenCalledWith({
+      where: {
+        id: inventoryItemId,
+        workspaceId,
+        isActive: true,
+        quantityOnHand: { gte: new Prisma.Decimal(3) },
+      },
+      data: { quantityOnHand: { decrement: new Prisma.Decimal(3) } },
+      select: { quantityOnHand: true, quantityReserved: true },
+    });
+    const data = create.mock.calls[0][0].data;
+    expect(data.direction).toBe(StockMovementDirection.OUT);
+    expect(data.quantityBefore.toString()).toBe("10");
+    expect(data.quantityAfter.toString()).toBe("7");
+    expect(data.referenceType).toBe("PURCHASE_RETURN");
+    expect(data.occurredAt).toBe(occurredAt);
+  });
+
+  it("rejects an outbound transaction that would consume reserved stock", async () => {
+    const updateManyAndReturn = jest.fn().mockResolvedValue([{
+      quantityOnHand: new Prisma.Decimal(4),
+      quantityReserved: new Prisma.Decimal(5),
+    }]);
+    const create = jest.fn();
+    const repository = new StockMovementsRepository(createPrismaMock({}));
+
+    await expect(
+      repository.createOutboundMovementInTransaction(
+        {
+          inventoryItem: { updateManyAndReturn },
+          stockMovement: { create },
+        } as unknown as Prisma.TransactionClient,
+        {
+          workspaceId,
+          inventoryItemId,
+          quantity: new Prisma.Decimal(6),
+          referenceType: "PURCHASE_RETURN",
+          referenceId: "40000000-0000-4000-8000-000000000001",
+          occurredAt: new Date("2026-08-10T00:00:00.000Z"),
+        },
+      ),
+    ).rejects.toBeInstanceOf(StockUpdateRejectedError);
+    expect(create).not.toHaveBeenCalled();
+  });
+
   it("finds a movement by id and workspace", async () => {
     const movement = createMovement({});
     const findFirst = jest.fn().mockResolvedValue(movement);

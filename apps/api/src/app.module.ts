@@ -27,6 +27,7 @@ import { PurchaseInvoicesModule } from "./purchase-invoices/purchase-invoices.mo
 import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
 import { PurchasePaymentsModule } from "./purchase-payments/purchase-payments.module";
 import { PurchaseReceiptsModule } from "./purchase-receipts/purchase-receipts.module";
+import { PurchaseReturnsModule } from "./purchase-returns/purchase-returns.module";
 import { ProductCategoriesModule } from "./product-categories/product-categories.module";
 import { ProductAttributesModule } from "./product-attributes/product-attributes.module";
 import { ProductBarcodesModule } from "./product-barcodes/product-barcodes.module";
@@ -78,6 +79,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     PurchaseOrdersModule,
     PurchasePaymentsModule,
     PurchaseReceiptsModule,
+    PurchaseReturnsModule,
     ProductCategoriesModule,
     ProductAttributesModule,
     ProductBarcodesModule,

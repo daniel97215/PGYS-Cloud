@@ -15,6 +15,8 @@ export type PurchaseReceiptRecord = Prisma.PurchaseReceiptGetPayload<object>;
 export type PurchaseReceiptWithLines = Prisma.PurchaseReceiptGetPayload<{
   include: { lines: true };
 }>;
+export type PurchaseReceiptLineRecord =
+  Prisma.PurchaseReceiptLineGetPayload<object>;
 
 export interface CreatePurchaseReceiptData {
   workspaceId: string;
@@ -170,6 +172,34 @@ export class PurchaseReceiptsRepository {
     return this.prisma.purchaseReceipt.findMany({
       where: { workspaceId },
       orderBy: [{ createdAt: "desc" }, { number: "asc" }],
+    });
+  }
+
+  findReceivedInTransaction(
+    transaction: Prisma.TransactionClient,
+    workspaceId: string,
+    id: string,
+  ): Promise<PurchaseReceiptRecord | null> {
+    return transaction.purchaseReceipt.findFirst({
+      where: { id, workspaceId, status: PurchaseReceiptStatus.RECEIVED },
+    });
+  }
+
+  findReceivedLineInTransaction(
+    transaction: Prisma.TransactionClient,
+    workspaceId: string,
+    purchaseReceiptId: string,
+    lineId: string,
+    inventoryItemId: string,
+  ): Promise<PurchaseReceiptLineRecord | null> {
+    return transaction.purchaseReceiptLine.findFirst({
+      where: {
+        id: lineId,
+        workspaceId,
+        purchaseReceiptId,
+        inventoryItemId,
+        purchaseReceipt: { status: PurchaseReceiptStatus.RECEIVED },
+      },
     });
   }
 

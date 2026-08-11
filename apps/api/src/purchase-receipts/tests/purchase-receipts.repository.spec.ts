@@ -141,6 +141,57 @@ describe("PurchaseReceiptsRepository", () => {
     ).not.toHaveBeenCalled();
   });
 
+  it("exposes only received receipts to transactional consumers", async () => {
+    const findFirst = jest
+      .fn()
+      .mockResolvedValue(receipt(PurchaseReceiptStatus.RECEIVED));
+    const repository = createRepository(transactionMock({}));
+    const transaction = {
+      purchaseReceipt: { findFirst },
+    } as unknown as Prisma.TransactionClient;
+
+    await repository.findReceivedInTransaction(
+      transaction,
+      workspaceId,
+      receiptId,
+    );
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        id: receiptId,
+        workspaceId,
+        status: PurchaseReceiptStatus.RECEIVED,
+      },
+    });
+  });
+
+  it("scopes received lines to receipt, inventory item and workspace", async () => {
+    const findFirst = jest.fn().mockResolvedValue(receiptLine(4));
+    const receiptLineId = receiptLine(4).id;
+    const repository = createRepository(transactionMock({}));
+    const transaction = {
+      purchaseReceiptLine: { findFirst },
+    } as unknown as Prisma.TransactionClient;
+
+    await repository.findReceivedLineInTransaction(
+      transaction,
+      workspaceId,
+      receiptId,
+      receiptLineId,
+      inventoryItemId,
+    );
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        id: receiptLineId,
+        workspaceId,
+        purchaseReceiptId: receiptId,
+        inventoryItemId,
+        purchaseReceipt: { status: PurchaseReceiptStatus.RECEIVED },
+      },
+    });
+  });
+
   it("rejects a second confirmation before any stock mutation", async () => {
     const transaction = transactionMock({
       purchaseReceipt: { updateManyAndReturn: jest.fn().mockResolvedValue([]) },

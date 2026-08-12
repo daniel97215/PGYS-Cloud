@@ -432,6 +432,18 @@ Payload minimal attendu :
 
 ## Tests d'integration necessaires
 
+PGYS-034 fournit une suite d'integration applicative reproductible, sans base
+externe, qui relie les services publics du Core autour d'un etat partage en
+memoire. Elle couvre le parcours nominal, le rejeu idempotent du provisioning,
+le changement d'offre avec reprovisioning, la resiliation avec deprovisioning,
+les conflits de souscription et l'isolation entre Workspaces. Les erreurs de
+reference Workspace, Offer et Price ainsi que la validation de configuration
+des Workspace Services y sont egalement exercees.
+
+Les evenements listes dans ce document restent des contrats cibles. Leur test
+d'integration depend de l'infrastructure Event Bus explicitement differee et
+n'est pas simule par PGYS-034.
+
 ### Parcours nominal
 
 - Creer un Workspace.

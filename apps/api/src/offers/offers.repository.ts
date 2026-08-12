@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const OFFER_STATUS_ARCHIVED = "archived";
+import { OFFER_STATUSES, OfferStatus } from "./offers.constants";
 
 export type OfferRecord = Prisma.OfferGetPayload<object>;
 
@@ -10,7 +9,7 @@ export interface CreateOfferData {
   key: string;
   name: string;
   description?: string;
-  status?: string;
+  status?: OfferStatus;
   visibility?: string;
 }
 
@@ -46,7 +45,7 @@ export class OffersRepository {
   archive(key: string): Promise<OfferRecord> {
     return this.prisma.offer.update({
       where: { key },
-      data: { status: OFFER_STATUS_ARCHIVED },
+      data: { status: OFFER_STATUSES.ARCHIVED },
     });
   }
 }

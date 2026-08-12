@@ -1,5 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
-import { OFFER_STATUS_ARCHIVED, OffersRepository } from "../offers.repository";
+import { OFFER_STATUS_ARCHIVED } from "../offers.constants";
+import { OffersRepository } from "../offers.repository";
 
 describe("OffersRepository", () => {
   const offer = {

@@ -1,8 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
-import {
-  SUBSCRIPTION_STATUSES,
-  SubscriptionsRepository,
-} from "../subscriptions.repository";
+import { SUBSCRIPTION_STATUSES } from "../subscriptions.constants";
+import { SubscriptionsRepository } from "../subscriptions.repository";
 
 describe("SubscriptionsRepository", () => {
   const workspace = {

@@ -273,6 +273,25 @@ Ces actions sont proposees pour des tickets futurs. Elles ne doivent pas etre im
 - Ajouter des tests de non-regression sur les transitions.
 - Decider quand utiliser enum Prisma, constantes TypeScript ou table de reference.
 
+PGYS-033 centralise les vocabulaires stables dans un fichier de constantes
+propre a chaque module. Les valeurs persistantes et leur casse restent
+inchangees afin de ne pas imposer de migration de donnees :
+
+| Module | Etats autorises |
+| --- | --- |
+| Workspace Services | `ACTIVE`, `INACTIVE` |
+| Features | `active`, `archived` |
+| Offers | `draft`, `active`, `archived` |
+| Pricing | `active`, `archived` |
+| Subscriptions | `pending`, `active`, `suspended`, `cancelled`, `expired` |
+| Provisioning | `pending`, `running`, `completed`, `failed` |
+
+Les DTO qui acceptent directement un statut reutilisent ces constantes pour
+fermer leur vocabulaire. Les operations stables du provisioning (`provision`,
+`reprovision`, `deprovision`) suivent la meme regle. Les constantes restent
+locales a leur module ; aucun enum Prisma ni Shared Kernel global n'est requis
+pour ce perimetre.
+
 ### Harmoniser les DTO
 
 - Aligner les conventions de validation UUID, key, currency, dates et JSON.

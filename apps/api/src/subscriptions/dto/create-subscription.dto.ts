@@ -1,7 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import { IsDate, IsIn, IsOptional, IsString, IsUUID } from "class-validator";
-import { SUBSCRIPTION_STATUSES } from "../subscriptions.repository";
+import {
+  SUBSCRIPTION_STATUSES,
+  SubscriptionStatus,
+} from "../subscriptions.constants";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
@@ -48,5 +51,5 @@ export class CreateSubscriptionDto {
   @IsOptional()
   @IsString()
   @IsIn(Object.values(SUBSCRIPTION_STATUSES))
-  status?: string;
+  status?: SubscriptionStatus;
 }

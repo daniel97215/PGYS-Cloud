@@ -2,8 +2,8 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   WORKSPACE_SERVICE_STATUS_ACTIVE,
   WORKSPACE_SERVICE_STATUS_INACTIVE,
-  WorkspaceServicesRepository,
-} from "../workspace-services.repository";
+} from "../workspace-services.constants";
+import { WorkspaceServicesRepository } from "../workspace-services.repository";
 
 describe("WorkspaceServicesRepository", () => {
   const workspaceId = "10000000-0000-4000-8000-000000000001";
@@ -162,4 +162,3 @@ function createPrismaMock(methods: {
 
   return prisma as unknown as PrismaService;
 }
-

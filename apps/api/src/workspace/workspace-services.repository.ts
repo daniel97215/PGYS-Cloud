@@ -1,9 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const WORKSPACE_SERVICE_STATUS_ACTIVE = "ACTIVE";
-export const WORKSPACE_SERVICE_STATUS_INACTIVE = "INACTIVE";
+import { WORKSPACE_SERVICE_STATUSES } from "./workspace-services.constants";
 
 export type WorkspaceServiceRecord =
   Prisma.WorkspaceServiceGetPayload<object>;
@@ -53,13 +51,13 @@ export class WorkspaceServicesRepository {
       create: {
         workspaceId,
         serviceKey,
-        status: WORKSPACE_SERVICE_STATUS_ACTIVE,
+        status: WORKSPACE_SERVICE_STATUSES.ACTIVE,
         activatedAt,
         deactivatedAt: null,
         ...configurationData,
       },
       update: {
-        status: WORKSPACE_SERVICE_STATUS_ACTIVE,
+        status: WORKSPACE_SERVICE_STATUSES.ACTIVE,
         activatedAt,
         deactivatedAt: null,
         ...configurationData,
@@ -79,7 +77,7 @@ export class WorkspaceServicesRepository {
         },
       },
       data: {
-        status: WORKSPACE_SERVICE_STATUS_INACTIVE,
+        status: WORKSPACE_SERVICE_STATUSES.INACTIVE,
         deactivatedAt: new Date(),
       },
     });
@@ -103,4 +101,3 @@ export class WorkspaceServicesRepository {
     });
   }
 }
-

@@ -2,8 +2,8 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   PRICE_STATUS_ACTIVE,
   PRICE_STATUS_ARCHIVED,
-  PricingRepository,
-} from "../pricing.repository";
+} from "../pricing.constants";
+import { PricingRepository } from "../pricing.repository";
 
 describe("PricingRepository", () => {
   const offer = {

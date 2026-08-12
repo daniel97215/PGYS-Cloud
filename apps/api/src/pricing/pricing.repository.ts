@@ -1,9 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const PRICE_STATUS_ACTIVE = "active";
-export const PRICE_STATUS_ARCHIVED = "archived";
+import { PRICE_STATUSES, PriceStatus } from "./pricing.constants";
 
 export type PriceRecord = Prisma.PriceGetPayload<object>;
 export type PriceOfferRecord = Prisma.OfferGetPayload<object>;
@@ -15,7 +13,7 @@ export interface CreatePriceData {
   billingPeriod: string;
   validFrom: Date;
   validTo?: Date;
-  status?: string;
+  status?: PriceStatus;
 }
 
 export type UpdatePriceData = Partial<Omit<CreatePriceData, "offerId">>;
@@ -61,7 +59,7 @@ export class PricingRepository {
     return this.prisma.price.findFirst({
       where: {
         offerId,
-        status: PRICE_STATUS_ACTIVE,
+        status: PRICE_STATUSES.ACTIVE,
         validFrom: { lte: at },
         OR: [{ validTo: null }, { validTo: { gte: at } }],
       },
@@ -72,7 +70,7 @@ export class PricingRepository {
   archive(id: string): Promise<PriceRecord> {
     return this.prisma.price.update({
       where: { id },
-      data: { status: PRICE_STATUS_ARCHIVED },
+      data: { status: PRICE_STATUSES.ARCHIVED },
     });
   }
 }

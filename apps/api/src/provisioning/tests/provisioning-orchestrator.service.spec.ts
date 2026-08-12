@@ -3,8 +3,8 @@ import { ProvisioningOrchestratorService } from "../provisioning-orchestrator.se
 import {
   PROVISIONING_JOB_STATUS,
   PROVISIONING_OPERATION,
-  ProvisioningRepository,
-} from "../provisioning.repository";
+} from "../provisioning.constants";
+import { ProvisioningRepository } from "../provisioning.repository";
 
 describe("ProvisioningOrchestratorService", () => {
   let repository: jest.Mocked<ProvisioningRepository>;

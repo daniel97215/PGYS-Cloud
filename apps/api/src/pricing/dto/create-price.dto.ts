@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import {
   IsDate,
+  IsIn,
   IsNumber,
   IsOptional,
   IsString,
@@ -9,6 +10,7 @@ import {
   MaxLength,
   Min,
 } from "class-validator";
+import { PRICE_STATUSES, PriceStatus } from "../pricing.constants";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
@@ -46,10 +48,14 @@ export class CreatePriceDto {
   @IsDate()
   validTo?: Date;
 
-  @ApiPropertyOptional({ example: "active", default: "active", maxLength: 40 })
+  @ApiPropertyOptional({
+    example: PRICE_STATUSES.ACTIVE,
+    default: PRICE_STATUSES.ACTIVE,
+    enum: Object.values(PRICE_STATUSES),
+  })
   @Transform(normalizeText)
   @IsOptional()
   @IsString()
-  @MaxLength(40)
-  status?: string;
+  @IsIn(Object.values(PRICE_STATUSES))
+  status?: PriceStatus;
 }

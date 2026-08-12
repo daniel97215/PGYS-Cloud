@@ -1,17 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const SUBSCRIPTION_STATUSES = {
-  PENDING: "pending",
-  ACTIVE: "active",
-  SUSPENDED: "suspended",
-  CANCELLED: "cancelled",
-  EXPIRED: "expired",
-} as const;
-
-export type SubscriptionStatus =
-  (typeof SUBSCRIPTION_STATUSES)[keyof typeof SUBSCRIPTION_STATUSES];
+import { SUBSCRIPTION_STATUSES } from "./subscriptions.constants";
 
 export type SubscriptionRecord = Prisma.SubscriptionGetPayload<object>;
 export type SubscriptionWorkspaceRecord = Prisma.WorkspaceGetPayload<object>;

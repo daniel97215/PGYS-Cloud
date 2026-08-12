@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import {
   PROVISIONING_JOB_STATUS,
+  ProvisioningOperation,
+} from "./provisioning.constants";
+import {
   ProvisioningJobRecord,
   ProvisioningOfferFeatureRecord,
   ProvisioningOfferRecord,
-  ProvisioningOperation,
   ProvisioningRepository,
   ProvisioningSubscriptionRecord,
   ProvisioningWorkspaceServiceRecord,

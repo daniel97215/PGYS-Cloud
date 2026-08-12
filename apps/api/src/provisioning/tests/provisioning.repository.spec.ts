@@ -2,8 +2,8 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   PROVISIONING_JOB_STATUS,
   PROVISIONING_OPERATION,
-  ProvisioningRepository,
-} from "../provisioning.repository";
+} from "../provisioning.constants";
+import { ProvisioningRepository } from "../provisioning.repository";
 
 describe("ProvisioningRepository", () => {
   const job = {

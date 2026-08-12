@@ -1,8 +1,6 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import {
-  OFFER_STATUS_ARCHIVED,
-  OffersRepository,
-} from "../offers.repository";
+import { OFFER_STATUS_ARCHIVED } from "../offers.constants";
+import { OffersRepository } from "../offers.repository";
 import { OffersService } from "../offers.service";
 
 describe("OffersService", () => {

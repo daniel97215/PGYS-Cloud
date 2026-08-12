@@ -10,10 +10,12 @@ import { CreateSubscriptionDto } from "./dto/create-subscription.dto";
 import { ReactivateSubscriptionDto } from "./dto/reactivate-subscription.dto";
 import {
   SUBSCRIPTION_STATUSES,
+  SubscriptionStatus,
+} from "./subscriptions.constants";
+import {
   SubscriptionOfferRecord,
   SubscriptionPriceRecord,
   SubscriptionRecord,
-  SubscriptionStatus,
   SubscriptionsRepository,
   SubscriptionWorkspaceRecord,
 } from "./subscriptions.repository";

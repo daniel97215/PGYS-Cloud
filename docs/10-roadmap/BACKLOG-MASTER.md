@@ -68,7 +68,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | PGYS-030 | Vertical Slice Workspace Onboarding | PGYS-021, PGYS-022, PGYS-023, PGYS-025, PGYS-026, PGYS-027, PGYS-028 | P1 | Completed |
 | PGYS-031 | Backlog Master Foundation | PGYS-029, PGYS-030 | P1 | Completed |
 | PGYS-032 | Core Platform Hardening | PGYS-029, PGYS-030, PGYS-031 | P1 | Planned |
-| PGYS-033 | Core Status Constants | PGYS-029 | P2 | Planned |
+| PGYS-033 | Core Status Constants | PGYS-029 | P2 | Completed |
 | PGYS-034 | Core Integration Test Suite | PGYS-030 | P1 | Planned |
 
 Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique de son perimetre. Le plan de hardening existant est partiellement obsolete et doit etre audite puis redécoupe en increments atomiques avant demarrage. Le ticket reste `Planned` et ne bloque pas le lancement de l'EPIC Marketing.
@@ -246,17 +246,17 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 42 |
-| Tickets planifies | 36 |
+| Tickets termines | 43 |
+| Tickets planifies | 35 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 54% |
+| Progression globale | 55% |
 
 ### Progression par EPIC
 
 | EPIC | Total | Completed | Planned | Progression |
 | --- | ---: | ---: | ---: | ---: |
-| EPIC-01 Core Platform | 20 | 17 | 3 | 85% |
+| EPIC-01 Core Platform | 20 | 18 | 2 | 90% |
 | EPIC-02 Commercial Core | 9 | 5 | 4 | 56% |
 | EPIC-03 ERP | 9 | 2 | 7 | 22% |
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
@@ -271,7 +271,7 @@ Ces indicateurs sont mis a jour manuellement.
 
 | Version | Tickets principaux suivis | Completed | Etat |
 | --- | ---: | ---: | --- |
-| v0.1 Core Platform | 20 | 17 | In Progress |
+| v0.1 Core Platform | 20 | 18 | In Progress |
 | v0.2 Commercial Core | 9 | 5 | In Progress |
 | v0.3 ERP Foundation | 9 | 2 | Planned |
 | v0.4 CRM Foundation | 6 | 6 | Completed |

@@ -3,10 +3,8 @@ import {
   ConflictException,
   NotFoundException,
 } from "@nestjs/common";
-import {
-  SUBSCRIPTION_STATUSES,
-  SubscriptionsRepository,
-} from "../subscriptions.repository";
+import { SUBSCRIPTION_STATUSES } from "../subscriptions.constants";
+import { SubscriptionsRepository } from "../subscriptions.repository";
 import { SubscriptionsService } from "../subscriptions.service";
 
 describe("SubscriptionsService", () => {
@@ -201,7 +199,7 @@ describe("SubscriptionsService", () => {
       service.createSubscription({
         workspaceId: workspace.id,
         offerKey: offer.key,
-        status: "trial",
+        status: "trial" as never,
         startedAt: subscription.startedAt,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);

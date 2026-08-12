@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const FEATURE_STATUS_ARCHIVED = "archived";
+import { FEATURE_STATUSES, FeatureStatus } from "./features.constants";
 
 export type FeatureRecord = Prisma.FeatureGetPayload<object>;
 
@@ -11,7 +10,7 @@ export interface CreateFeatureData {
   name: string;
   description?: string;
   category?: string;
-  status?: string;
+  status?: FeatureStatus;
 }
 
 export type UpdateFeatureData = Omit<Partial<CreateFeatureData>, "key">;
@@ -46,7 +45,7 @@ export class FeaturesRepository {
   archive(key: string): Promise<FeatureRecord> {
     return this.prisma.feature.update({
       where: { key },
-      data: { status: FEATURE_STATUS_ARCHIVED },
+      data: { status: FEATURE_STATUSES.ARCHIVED },
     });
   }
 }

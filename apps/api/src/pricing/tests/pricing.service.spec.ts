@@ -1,8 +1,6 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import {
-  PRICE_STATUS_ARCHIVED,
-  PricingRepository,
-} from "../pricing.repository";
+import { PRICE_STATUS_ARCHIVED } from "../pricing.constants";
+import { PricingRepository } from "../pricing.repository";
 import { PricingService } from "../pricing.service";
 
 describe("PricingService", () => {

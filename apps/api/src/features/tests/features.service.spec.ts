@@ -1,8 +1,6 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import {
-  FEATURE_STATUS_ARCHIVED,
-  FeaturesRepository,
-} from "../features.repository";
+import { FEATURE_STATUS_ARCHIVED } from "../features.constants";
+import { FeaturesRepository } from "../features.repository";
 import { FeaturesService } from "../features.service";
 
 describe("FeaturesService", () => {

@@ -1,25 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-
-export const PROVISIONING_JOB_STATUS = {
-  PENDING: "pending",
-  RUNNING: "running",
-  COMPLETED: "completed",
-  FAILED: "failed",
-} as const;
-
-export const PROVISIONING_OPERATION = {
-  PROVISION: "provision",
-  REPROVISION: "reprovision",
-  DEPROVISION: "deprovision",
-} as const;
-
-export type ProvisioningOperation =
-  (typeof PROVISIONING_OPERATION)[keyof typeof PROVISIONING_OPERATION];
-
-export type ProvisioningJobStatus =
-  (typeof PROVISIONING_JOB_STATUS)[keyof typeof PROVISIONING_JOB_STATUS];
+import {
+  PROVISIONING_JOB_STATUSES,
+  ProvisioningJobStatus,
+  ProvisioningOperation,
+} from "./provisioning.constants";
 
 export type ProvisioningJobRecord =
   Prisma.ProvisioningJobGetPayload<object>;
@@ -62,9 +48,9 @@ export class ProvisioningRepository {
         operation,
         status: {
           in: [
-            PROVISIONING_JOB_STATUS.PENDING,
-            PROVISIONING_JOB_STATUS.RUNNING,
-            PROVISIONING_JOB_STATUS.COMPLETED,
+            PROVISIONING_JOB_STATUSES.PENDING,
+            PROVISIONING_JOB_STATUSES.RUNNING,
+            PROVISIONING_JOB_STATUSES.COMPLETED,
           ],
         },
       },
@@ -78,7 +64,7 @@ export class ProvisioningRepository {
         workspaceId: data.workspaceId,
         subscriptionId: data.subscriptionId,
         operation: data.operation,
-        status: data.status ?? PROVISIONING_JOB_STATUS.PENDING,
+        status: data.status ?? PROVISIONING_JOB_STATUSES.PENDING,
       },
     });
   }
@@ -87,7 +73,7 @@ export class ProvisioningRepository {
     return this.prisma.provisioningJob.update({
       where: { id: jobId },
       data: {
-        status: PROVISIONING_JOB_STATUS.RUNNING,
+        status: PROVISIONING_JOB_STATUSES.RUNNING,
         error: null,
       },
     });
@@ -97,7 +83,7 @@ export class ProvisioningRepository {
     return this.prisma.provisioningJob.update({
       where: { id: jobId },
       data: {
-        status: PROVISIONING_JOB_STATUS.COMPLETED,
+        status: PROVISIONING_JOB_STATUSES.COMPLETED,
         completedAt: new Date(),
         error: null,
       },
@@ -108,7 +94,7 @@ export class ProvisioningRepository {
     return this.prisma.provisioningJob.update({
       where: { id: jobId },
       data: {
-        status: PROVISIONING_JOB_STATUS.FAILED,
+        status: PROVISIONING_JOB_STATUSES.FAILED,
         completedAt: new Date(),
         error,
       },

@@ -2,8 +2,8 @@ import { BadRequestException, NotFoundException } from "@nestjs/common";
 import {
   WORKSPACE_SERVICE_STATUS_ACTIVE,
   WORKSPACE_SERVICE_STATUS_INACTIVE,
-  WorkspaceServicesRepository,
-} from "../workspace-services.repository";
+} from "../workspace-services.constants";
+import { WorkspaceServicesRepository } from "../workspace-services.repository";
 import { WorkspaceServicesService } from "../workspace-services.service";
 
 describe("WorkspaceServicesService", () => {
@@ -112,4 +112,3 @@ describe("WorkspaceServicesService", () => {
     },
   );
 });
-

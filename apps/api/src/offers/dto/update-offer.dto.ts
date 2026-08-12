@@ -1,6 +1,13 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import {
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
+import { OFFER_STATUSES, OfferStatus } from "../offers.constants";
 
 const normalizeText = ({ value }: { value: unknown }) =>
   typeof value === "string" ? value.trim() : value;
@@ -21,12 +28,15 @@ export class UpdateOfferDto {
   @MaxLength(500)
   description?: string;
 
-  @ApiPropertyOptional({ example: "active", maxLength: 40 })
+  @ApiPropertyOptional({
+    example: OFFER_STATUSES.ACTIVE,
+    enum: Object.values(OFFER_STATUSES),
+  })
   @Transform(normalizeText)
   @IsOptional()
   @IsString()
-  @MaxLength(40)
-  status?: string;
+  @IsIn(Object.values(OFFER_STATUSES))
+  status?: OfferStatus;
 
   @ApiPropertyOptional({ example: "public", maxLength: 40 })
   @Transform(normalizeText)

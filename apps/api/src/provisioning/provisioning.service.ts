@@ -5,10 +5,10 @@ import {
 } from "@nestjs/common";
 import { DeprovisionWorkspaceDto } from "./dto/deprovision-workspace.dto";
 import { ProvisionWorkspaceDto } from "./dto/provision-workspace.dto";
+import { PROVISIONING_OPERATION } from "./provisioning.constants";
 import { ReprovisionWorkspaceDto } from "./dto/reprovision-workspace.dto";
 import { ProvisioningOrchestratorService } from "./provisioning-orchestrator.service";
 import {
-  PROVISIONING_OPERATION,
   ProvisioningJobRecord,
   ProvisioningRepository,
 } from "./provisioning.repository";

@@ -86,6 +86,13 @@ describe("MarketingSegmentsRepository", () => {
       where: { workspaceId_code: { workspaceId, code: segment.code } },
     });
   });
+
+  it("finds a segment by workspace and id for public contracts", async () => {
+    const findFirst = jest.fn().mockResolvedValue(segment);
+    const repository = new MarketingSegmentsRepository(createPrismaMock({ findFirst }));
+    await expect(repository.findById(workspaceId, segment.id)).resolves.toEqual(segment);
+    expect(findFirst).toHaveBeenCalledWith({ where: { id: segment.id, workspaceId } });
+  });
 });
 
 function createPrismaMock(methods: {
@@ -93,6 +100,7 @@ function createPrismaMock(methods: {
   update?: jest.Mock;
   findMany?: jest.Mock;
   findUnique?: jest.Mock;
+  findFirst?: jest.Mock;
 }): PrismaService {
   return {
     marketingSegment: {
@@ -100,6 +108,7 @@ function createPrismaMock(methods: {
       update: methods.update ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),
       findUnique: methods.findUnique ?? jest.fn(),
+      findFirst: methods.findFirst ?? jest.fn(),
     },
   } as unknown as PrismaService;
 }

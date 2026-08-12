@@ -51,6 +51,7 @@ describe("MarketingSegmentsService", () => {
       deactivate: jest.fn().mockResolvedValue({ ...segment, isActive: false }),
       findByWorkspace: jest.fn().mockResolvedValue([segment]),
       findByCode: jest.fn().mockResolvedValue(segment),
+      findById: jest.fn().mockResolvedValue(segment),
     } as unknown as jest.Mocked<MarketingSegmentsRepository>;
     businessPartnerSearchService = {
       findKnownAudienceCodes: jest.fn().mockResolvedValue({
@@ -198,5 +199,11 @@ describe("MarketingSegmentsService", () => {
     await expect(
       service.getSegment(workspaceId, segment.code),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it("exposes only active workspace segments by id", async () => {
+    await expect(service.getActiveSegmentById(workspaceId, segment.id)).resolves.toEqual(view);
+    repository.findById.mockResolvedValueOnce({ ...segment, isActive: false });
+    await expect(service.getActiveSegmentById(workspaceId, segment.id)).rejects.toBeInstanceOf(BadRequestException);
   });
 });

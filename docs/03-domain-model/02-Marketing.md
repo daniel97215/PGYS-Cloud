@@ -99,6 +99,29 @@ Campaign represente une action marketing planifiee et suivie dans un Workspace.
 
 Elle associe une intention, une audience, un contenu et, lorsque le futur ticket le definit, un ou plusieurs canaux. Son cycle de vie, ses transitions et les conditions de lancement appartiennent a PGYS-054.
 
+### Decision PGYS-054 - Campaigns & Templates Foundation
+
+PGYS-054 introduit les referentiels `MarketingCampaign` et `MarketingTemplate` sans diffusion executable.
+
+Une Campaign :
+
+- appartient a un Workspace et possede un code unique dans ce Workspace ;
+- cible obligatoirement un Segment actif du meme Workspace ;
+- utilise un canal `EMAIL` ou `SMS` ;
+- peut rester sans Template tant qu'elle est `DRAFT` ;
+- exige un Template actif et de meme canal pour passer a `READY` ;
+- suit uniquement les transitions `DRAFT -> READY`, `DRAFT -> CANCELLED` et `READY -> CANCELLED` ;
+- reste modifiable uniquement en `DRAFT` ;
+- devient immutable en `READY`, hors annulation explicite, et terminale en `CANCELLED`.
+
+Un Marketing Template :
+
+- appartient a un Workspace et possede un code unique dans ce Workspace ;
+- utilise le canal `EMAIL` ou `SMS` ;
+- porte un sujet optionnel et un contenu obligatoire ;
+- peut etre active ou desactive sans suppression physique ;
+- ne porte aucun secret, identifiant fournisseur ou regle de diffusion.
+
 ### Marketing Template
 
 Marketing Template represente un contenu reutilisable destine a une action marketing.
@@ -264,7 +287,7 @@ Les tickets proprietaires devront confirmer les noms, donnees, producteurs, cons
 La cartographie prepare les tickets suivants sans les implementer :
 
 1. PGYS-053 - Segments Foundation - segments dynamiques evalues a la demande ;
-2. PGYS-054 - Campaigns Foundation ;
+2. PGYS-054 - Campaigns & Templates Foundation - preparation sans diffusion ;
 3. PGYS-055 - Marketing Automation Foundation.
 
 Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses contrats publics et ses exclusions avant d'introduire du code ou de la persistance.
@@ -274,9 +297,7 @@ Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses co
 PGYS-052 ne decide pas :
 
 - les volumes, limites et performances d'evaluation ;
-- le cycle de vie et les transitions d'une Campaign ;
-- les canaux disponibles dans la V1 ;
-- la structure, les variables et le versionnement des Marketing Templates ;
+- les variables et le versionnement des Marketing Templates ;
 - le module proprietaire et les regles des consentements et preferences de communication ;
 - la selection d'un Contact ou d'une coordonnee pour une diffusion ;
 - la strategie de desinscription et de suppression ;

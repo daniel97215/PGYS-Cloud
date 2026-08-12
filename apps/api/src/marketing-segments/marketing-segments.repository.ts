@@ -65,4 +65,11 @@ export class MarketingSegmentsRepository {
       where: { workspaceId_code: { workspaceId, code } },
     });
   }
+
+  findById(
+    workspaceId: string,
+    id: string,
+  ): Promise<MarketingSegmentRecord | null> {
+    return this.prisma.marketingSegment.findFirst({ where: { id, workspaceId } });
+  }
 }

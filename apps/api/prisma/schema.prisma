@@ -195,6 +195,17 @@ enum CrmActivityStatus {
   CANCELLED
 }
 
+enum MarketingChannel {
+  EMAIL
+  SMS
+}
+
+enum MarketingCampaignStatus {
+  DRAFT
+  READY
+  CANCELLED
+}
+
 enum ProductAttributeValueType {
   TEXT
   NUMBER
@@ -293,6 +304,8 @@ model Workspace {
   crmOpportunities     CrmOpportunity[]
   crmActivities        CrmActivity[]
   marketingSegments    MarketingSegment[]
+  marketingTemplates   MarketingTemplate[]
+  marketingCampaigns   MarketingCampaign[]
   invoices             Invoice[]
   tickets              Ticket[]
   activities           Activity[]
@@ -1696,11 +1709,56 @@ model MarketingSegment {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaigns     MarketingCampaign[]
 
   @@unique([workspaceId, code])
   @@index([workspaceId])
   @@index([name])
   @@index([isActive])
+}
+
+model MarketingTemplate {
+  id          String           @id @default(uuid()) @db.Uuid
+  workspaceId String           @db.Uuid
+  code        String
+  name        String
+  channel     MarketingChannel
+  subject     String?
+  content     String
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaigns   MarketingCampaign[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([channel])
+  @@index([isActive])
+}
+
+model MarketingCampaign {
+  id          String                  @id @default(uuid()) @db.Uuid
+  workspaceId String                  @db.Uuid
+  code        String
+  name        String
+  description String?
+  channel     MarketingChannel
+  status      MarketingCampaignStatus @default(DRAFT)
+  segmentId   String                  @db.Uuid
+  templateId  String?                 @db.Uuid
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  workspace   Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  segment     MarketingSegment        @relation(fields: [segmentId], references: [id])
+  template    MarketingTemplate?      @relation(fields: [templateId], references: [id])
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId])
+  @@index([segmentId])
+  @@index([templateId])
+  @@index([channel])
+  @@index([status])
 }
 
 model BusinessPartnerRole {

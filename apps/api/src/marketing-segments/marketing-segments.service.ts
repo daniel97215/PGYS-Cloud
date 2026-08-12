@@ -80,6 +80,23 @@ export class MarketingSegmentsService {
     return this.toView(await this.requireSegment(workspaceId, code));
   }
 
+  async getActiveSegmentById(
+    workspaceId: string,
+    id: string,
+  ): Promise<MarketingSegmentView> {
+    const segment = await this.repository.findById(workspaceId, id);
+
+    if (!segment) {
+      throw new NotFoundException(`Marketing segment "${id}" not found`);
+    }
+
+    if (!segment.isActive) {
+      throw new BadRequestException("Marketing segment must be active");
+    }
+
+    return this.toView(segment);
+  }
+
   async updateSegment(
     workspaceId: string,
     code: string,

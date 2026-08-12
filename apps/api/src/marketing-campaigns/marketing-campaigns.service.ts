@@ -52,6 +52,37 @@ export class MarketingCampaignsService {
   listCampaigns(workspaceId: string) { return this.repository.findCampaigns(workspaceId); }
   getCampaign(workspaceId: string, code: string) { return this.requireCampaign(workspaceId, code); }
 
+  async getCampaignById(
+    workspaceId: string,
+    campaignId: string,
+  ): Promise<MarketingCampaignRecord> {
+    const campaign = await this.repository.findCampaignById(workspaceId, campaignId);
+    if (!campaign) {
+      throw new NotFoundException(`Marketing campaign "${campaignId}" not found`);
+    }
+    return campaign;
+  }
+
+  async getAutomationActivationContext(
+    workspaceId: string,
+    campaignId: string,
+  ): Promise<MarketingCampaignRecord> {
+    const campaign = await this.getCampaignById(workspaceId, campaignId);
+
+    if (campaign.status !== READY) {
+      throw new BadRequestException("Marketing campaign must be ready");
+    }
+
+    await this.segmentsService.getActiveSegmentById(workspaceId, campaign.segmentId);
+
+    if (!campaign.templateId) {
+      throw new BadRequestException("Ready marketing campaign requires a template");
+    }
+
+    await this.validateTemplate(workspaceId, campaign.templateId, campaign.channel);
+    return campaign;
+  }
+
   async updateCampaign(workspaceId: string, code: string, data: UpdateMarketingCampaignDto): Promise<MarketingCampaignRecord> {
     const campaign = await this.requireDraftCampaign(workspaceId, code);
     const segmentId = data.segmentId ?? campaign.segmentId;

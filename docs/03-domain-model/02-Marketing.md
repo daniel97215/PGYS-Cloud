@@ -134,6 +134,27 @@ Marketing Automation represente une regle qui reagit a un declencheur explicite 
 
 Une automatisation n'est jamais deduite d'un comportement implicite d'un autre module. Son declencheur, ses conditions, ses actions, son idempotence et ses garde-fous devront etre definis par PGYS-055.
 
+### Decision PGYS-055 - Marketing Automation Foundation
+
+PGYS-055 introduit uniquement un referentiel d'automatisations configurables. Aucune automatisation n'est executee dans ce ticket.
+
+Une Marketing Automation :
+
+- appartient a un Workspace et possede un code unique dans ce Workspace ;
+- suit le cycle `DRAFT`, `ACTIVE`, `INACTIVE` ;
+- reste modifiable uniquement en `DRAFT` ;
+- peut etre activee depuis `DRAFT` ou reactivee depuis `INACTIVE` ;
+- peut etre desactivee depuis `DRAFT` ou `ACTIVE` ;
+- utilise uniquement les declencheurs declaratifs `BUSINESS_PARTNER_CREATED`, `TAG_ASSIGNED`, `CATEGORY_ASSIGNED` ou `ROLE_ASSIGNED` ;
+- utilise uniquement l'action declarative `ENROLL_IN_CAMPAIGN` ;
+- reference une Campaign du meme Workspace ;
+- exige lors de chaque activation une Campaign `READY`, son Segment actif et son Template actif et coherent ;
+- n'est pas desactivee automatiquement si une dependance devient ensuite inactive.
+
+Une future execution devra revalider toutes les dependances et echouer proprement si l'une d'elles n'est plus exploitable. Sa cle d'idempotence cible sera la combinaison `automationId + eventId + businessPartnerId`.
+
+La consommation du bus d'evenements, les producteurs, handlers, workers, files d'attente, reprises et inscriptions reelles sont differes.
+
 ### Delivery
 
 Delivery represente la tentative de diffusion d'un message par un canal et un fournisseur determines.
@@ -288,7 +309,7 @@ La cartographie prepare les tickets suivants sans les implementer :
 
 1. PGYS-053 - Segments Foundation - segments dynamiques evalues a la demande ;
 2. PGYS-054 - Campaigns & Templates Foundation - preparation sans diffusion ;
-3. PGYS-055 - Marketing Automation Foundation.
+3. PGYS-055 - Marketing Automation Foundation - referentiel declaratif sans execution.
 
 Chaque ticket doit definir son agregat, ses invariants, son cycle de vie, ses contrats publics et ses exclusions avant d'introduire du code ou de la persistance.
 
@@ -302,8 +323,8 @@ PGYS-052 ne decide pas :
 - la selection d'un Contact ou d'une coordonnee pour une diffusion ;
 - la strategie de desinscription et de suppression ;
 - les fournisseurs email, SMS ou autres ;
-- les regles d'idempotence, de reprise et de limitation des diffusions ;
-- les declencheurs, conditions et actions des Marketing Automations ;
+- la mise en oeuvre de l'idempotence, de la reprise et de la limitation des diffusions ;
+- l'execution des declencheurs et actions des Marketing Automations ;
 - les indicateurs, tableaux de bord, exports ou analyses consolidees ;
 - l'interface d'une application Marketing.
 

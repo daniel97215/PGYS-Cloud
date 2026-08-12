@@ -28,6 +28,7 @@ export class MarketingCampaignsRepository {
   createCampaign(data: CreateCampaignData) { return this.prisma.marketingCampaign.create({ data: { ...data, channel: data.channel as PrismaMarketingChannel } }); }
   findCampaigns(workspaceId: string) { return this.prisma.marketingCampaign.findMany({ where: { workspaceId }, orderBy: [{ createdAt: "desc" }, { code: "asc" }] }); }
   findCampaignByCode(workspaceId: string, code: string) { return this.prisma.marketingCampaign.findUnique({ where: { workspaceId_code: { workspaceId, code } } }); }
+  findCampaignById(workspaceId: string, id: string) { return this.prisma.marketingCampaign.findFirst({ where: { id, workspaceId } }); }
   async updateDraft(workspaceId: string, id: string, data: UpdateCampaignData): Promise<MarketingCampaignRecord | null> {
     const rows = await this.prisma.marketingCampaign.updateManyAndReturn({ where: { id, workspaceId, status: PrismaMarketingCampaignStatus.DRAFT }, data });
     return rows[0] ?? null;

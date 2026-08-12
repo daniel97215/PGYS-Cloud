@@ -13,7 +13,7 @@ describe("MarketingCampaignsService", () => {
   let service: MarketingCampaignsService;
 
   beforeEach(() => {
-    repository = { createTemplate: jest.fn().mockResolvedValue(template), updateTemplate: jest.fn().mockResolvedValue(template), findTemplates: jest.fn().mockResolvedValue([template]), findTemplateByCode: jest.fn().mockResolvedValue(template), findTemplateById: jest.fn().mockResolvedValue(template), createCampaign: jest.fn().mockResolvedValue(campaign), findCampaigns: jest.fn().mockResolvedValue([campaign]), findCampaignByCode: jest.fn().mockResolvedValue(campaign), updateDraft: jest.fn().mockResolvedValue(campaign), transition: jest.fn().mockResolvedValue(campaign) } as unknown as jest.Mocked<MarketingCampaignsRepository>;
+    repository = { createTemplate: jest.fn().mockResolvedValue(template), updateTemplate: jest.fn().mockResolvedValue(template), findTemplates: jest.fn().mockResolvedValue([template]), findTemplateByCode: jest.fn().mockResolvedValue(template), findTemplateById: jest.fn().mockResolvedValue(template), createCampaign: jest.fn().mockResolvedValue(campaign), findCampaigns: jest.fn().mockResolvedValue([campaign]), findCampaignByCode: jest.fn().mockResolvedValue(campaign), findCampaignById: jest.fn().mockResolvedValue(campaign), updateDraft: jest.fn().mockResolvedValue(campaign), transition: jest.fn().mockResolvedValue(campaign) } as unknown as jest.Mocked<MarketingCampaignsRepository>;
     segments = { getActiveSegmentById: jest.fn().mockResolvedValue({ id: campaign.segmentId, isActive: true }) } as unknown as jest.Mocked<MarketingSegmentsService>;
     service = new MarketingCampaignsService(repository, segments);
   });
@@ -68,5 +68,31 @@ describe("MarketingCampaignsService", () => {
     expect(repository.transition).toHaveBeenCalledWith(workspaceId, campaign.id, [MarketingCampaignStatus.DRAFT, MarketingCampaignStatus.READY], MarketingCampaignStatus.CANCELLED);
     repository.findCampaignByCode.mockResolvedValueOnce({ ...campaign, status: MarketingCampaignStatus.CANCELLED });
     await expect(service.cancel(workspaceId, campaign.code)).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it("validates the complete context used to activate an automation", async () => {
+    repository.findCampaignById.mockResolvedValueOnce({
+      ...campaign,
+      status: MarketingCampaignStatus.READY,
+    });
+
+    await expect(
+      service.getAutomationActivationContext(workspaceId, campaign.id),
+    ).resolves.toEqual({ ...campaign, status: MarketingCampaignStatus.READY });
+    expect(segments.getActiveSegmentById).toHaveBeenCalledWith(
+      workspaceId,
+      campaign.segmentId,
+    );
+    expect(repository.findTemplateById).toHaveBeenCalledWith(
+      workspaceId,
+      template.id,
+    );
+  });
+
+  it("rejects non-ready campaign activation contexts", async () => {
+    await expect(
+      service.getAutomationActivationContext(workspaceId, campaign.id),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(segments.getActiveSegmentById).not.toHaveBeenCalled();
   });
 });

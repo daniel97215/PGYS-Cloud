@@ -39,8 +39,22 @@ describe("MarketingCampaignsRepository", () => {
     expect(updateManyAndReturn).toHaveBeenNthCalledWith(1, { where: { id: campaign.id, workspaceId, status: MarketingCampaignStatus.DRAFT }, data: { name: "Updated" } });
     expect(updateManyAndReturn).toHaveBeenNthCalledWith(2, { where: { id: campaign.id, workspaceId, status: { in: [MarketingCampaignStatus.DRAFT] } }, data: { status: MarketingCampaignStatus.READY } });
   });
+
+  it("finds a campaign by id within the workspace", async () => {
+    const campaignFindFirst = jest.fn().mockResolvedValue(campaign);
+    const repository = new MarketingCampaignsRepository(
+      mockPrisma({ campaignFindFirst }),
+    );
+
+    await expect(
+      repository.findCampaignById(workspaceId, campaign.id),
+    ).resolves.toEqual(campaign);
+    expect(campaignFindFirst).toHaveBeenCalledWith({
+      where: { id: campaign.id, workspaceId },
+    });
+  });
 });
 
 function mockPrisma(m: Record<string, jest.Mock>): PrismaService {
-  return { marketingTemplate: { create: m.templateCreate ?? jest.fn(), update: m.templateUpdate ?? jest.fn(), findMany: m.templateFindMany ?? jest.fn(), findUnique: m.templateFindUnique ?? jest.fn(), findFirst: m.templateFindFirst ?? jest.fn() }, marketingCampaign: { create: m.campaignCreate ?? jest.fn(), findMany: m.campaignFindMany ?? jest.fn(), findUnique: m.campaignFindUnique ?? jest.fn(), updateManyAndReturn: m.campaignUpdateManyAndReturn ?? jest.fn() } } as unknown as PrismaService;
+  return { marketingTemplate: { create: m.templateCreate ?? jest.fn(), update: m.templateUpdate ?? jest.fn(), findMany: m.templateFindMany ?? jest.fn(), findUnique: m.templateFindUnique ?? jest.fn(), findFirst: m.templateFindFirst ?? jest.fn() }, marketingCampaign: { create: m.campaignCreate ?? jest.fn(), findMany: m.campaignFindMany ?? jest.fn(), findUnique: m.campaignFindUnique ?? jest.fn(), findFirst: m.campaignFindFirst ?? jest.fn(), updateManyAndReturn: m.campaignUpdateManyAndReturn ?? jest.fn() } } as unknown as PrismaService;
 }

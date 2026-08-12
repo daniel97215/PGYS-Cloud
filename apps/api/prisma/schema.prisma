@@ -313,6 +313,8 @@ model Workspace {
   priceLists           PriceList[]
   warehouses           Warehouse[]
   taxes                Tax[]
+  billingInvoiceLines  InvoiceLine[]
+  invoiceNumberSequence InvoiceNumberSequence?
   businessPartnerRoles BusinessPartnerRole[]
   businessPartnerTags  BusinessPartnerTag[]
   businessPartnerCategories BusinessPartnerCategory[]
@@ -836,6 +838,7 @@ model Tax {
   isDefault   Boolean   @default(false)
   isActive    Boolean   @default(true)
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invoiceLines InvoiceLine[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -1999,24 +2002,70 @@ model ServiceAccount {
 }
 
 model Invoice {
-  id             String        @id @default(uuid()) @db.Uuid
-  workspaceId    String        @db.Uuid
-  subscriptionId String?       @db.Uuid
-  number         String        @unique
-  status         InvoiceStatus @default(DRAFT)
-  totalAmount    Decimal       @db.Decimal(12, 2)
-  currency       String        @default("EUR") @db.VarChar(3)
-  billingDetails Json
-  issuedAt       DateTime      @default(now())
-  dueAt          DateTime
-  paidAt         DateTime?
-  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id              String        @id @default(uuid()) @db.Uuid
+  workspaceId     String        @db.Uuid
+  subscriptionId  String?       @db.Uuid
+  number          String
+  status          InvoiceStatus @default(DRAFT)
+  billingPeriod   String        @db.VarChar(16)
+  periodStart     DateTime
+  periodEnd       DateTime
+  subtotalAmount  Decimal       @default(0) @db.Decimal(12, 2)
+  discountAmount  Decimal       @default(0) @db.Decimal(12, 2)
+  taxAmount       Decimal       @default(0) @db.Decimal(12, 2)
+  totalAmount     Decimal       @db.Decimal(12, 2)
+  currency        String        @default("EUR") @db.VarChar(3)
+  billingDetails  Json
+  issuedAt        DateTime      @default(now())
+  dueAt           DateTime
+  paidAt          DateTime?
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  lines           InvoiceLine[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
+  @@unique([workspaceId, number])
+  @@unique([workspaceId, subscriptionId, periodStart, periodEnd])
   @@index([workspaceId, status])
   @@index([subscriptionId])
   @@index([status, dueAt])
+}
+
+model InvoiceLine {
+  id              String    @id @default(uuid()) @db.Uuid
+  workspaceId     String    @db.Uuid
+  invoiceId       String    @db.Uuid
+  taxId           String?   @db.Uuid
+  position        Int
+  description     String    @db.VarChar(500)
+  quantity        Decimal   @db.Decimal(12, 4)
+  unitPrice       Decimal   @db.Decimal(12, 2)
+  discountRate    Decimal   @default(0) @db.Decimal(7, 4)
+  taxCode         String?   @db.VarChar(80)
+  taxName         String?   @db.VarChar(120)
+  taxRate         Decimal   @default(0) @db.Decimal(7, 4)
+  subtotalAmount  Decimal   @db.Decimal(12, 2)
+  discountAmount  Decimal   @db.Decimal(12, 2)
+  taxAmount       Decimal   @db.Decimal(12, 2)
+  totalAmount     Decimal   @db.Decimal(12, 2)
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  tax             Tax?      @relation(fields: [taxId], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([invoiceId, position])
+  @@index([workspaceId])
+  @@index([invoiceId])
+  @@index([taxId])
+}
+
+model InvoiceNumberSequence {
+  workspaceId String    @id @db.Uuid
+  nextValue   Int       @default(1)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Ticket {

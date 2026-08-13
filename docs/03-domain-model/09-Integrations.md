@@ -417,6 +417,44 @@ Les paiements hors session, renouvellements Stripe, remboursements, litiges,
 Payment Element, moyens de paiement sauvegardes, Customer Portal, Connect,
 frontend, webhooks HTTP et reconciliation restent hors du perimetre.
 
+## Decision PGYS-064 - OVH Integration Preparation
+
+PGYS-064 prepare le contrat technique de gestion d'un hebergement OVH, sans
+SDK, appel reseau, endpoint public ni execution destructive.
+
+Le perimetre V1 couvre :
+
+- la creation et la consultation d'une instance d'hebergement ;
+- sa suspension et sa reactivation ;
+- la preparation explicite d'une resiliation, sans commande de resiliation ;
+- une configuration globale non secrete composee d'un endpoint HTTPS et d'un
+  profil d'hebergement interne ;
+- un registre d'adaptateurs qui echoue proprement tant qu'aucun adaptateur OVH
+  executable n'est installe ;
+- des tests fondes uniquement sur un adaptateur factice.
+
+Le schema historique distingue `WorkspaceService`, qui porte une cle de
+service sans type, et `Service`, qui est l'instance workspace-scoped portant le
+type `HOSTING`. Le contrat OVH utilise donc l'identifiant de ce dernier comme
+`workspaceServiceId` et le repository verifie ensemble l'identifiant, le
+`workspaceId` et le type `HOSTING`. Aucune nouvelle source de verite ni
+migration n'est introduite.
+
+Chaque creation, suspension ou reactivation porte une cle d'idempotence. Les
+reponses exposent une External Reference OVH normalisee. Une persistance future
+devra rendre unique l'association entre cette reference externe et le service
+PGYS, et conserver les cles d'idempotence avant tout adaptateur reel.
+
+La Subscription et le Service PGYS restent sources de verite de leur cycle de
+vie. L'adaptateur ne modifie aucun repository commercial et ne decide aucune
+transition PGYS. La preparation de resiliation renvoie uniquement l'etat
+`PREPARED` avec `destructiveExecutionAllowed: false` ; le contrat ne contient
+volontairement aucune methode de resiliation.
+
+Les domaines, DNS, emails, VPS bruts, facturation OVH, secrets, credentials,
+workers, reprises, reconciliation et commandes OVH reelles restent hors du
+perimetre.
+
 ## Decisions differees
 
 PGYS-060 ne decide pas :
@@ -428,7 +466,6 @@ PGYS-060 ne decide pas :
 - les templates techniques ou variables de messages ;
 - les consentements et preferences de communication ;
 - le produit Stripe et le parcours de paiement ;
-- les services OVH et commandes de provisioning V1 ;
 - le contrat executable Nextcloud ;
 - la file, les workers, les reprises et la reconciliation ;
 - la retention des tentatives et payloads entrants ;

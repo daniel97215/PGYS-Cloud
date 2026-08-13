@@ -26,7 +26,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | v0.4 CRM Foundation | Construire les fondations CRM reutilisables. | Contacts, pipeline, activites, historique client et premiers workflows CRM disponibles. | Completed |
 | v0.5 Marketing Foundation | Ajouter les capacites marketing de base. | Segments, campagnes, templates et suivi minimal des actions marketing disponibles. | Completed |
 | v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | Completed |
-| v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | In Progress |
+| v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | Completed |
 | v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | Planned |
 
 ## 3. EPIC
@@ -39,7 +39,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-04 | CRM | Fondations CRM SaaS. | v0.4 CRM Foundation | Completed |
 | EPIC-05 | Marketing | Acquisition, campagnes et marketing automation. | v0.5 Marketing Foundation | Completed |
 | EPIC-06 | AI | Capacites IA transverses et gouvernees. | v0.6 AI Platform | Completed |
-| EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | In Progress |
+| EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Completed |
 | EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | Planned |
 | EPIC-09 | Administration | Back-office, gouvernance operationnelle et outils internes. | v1.0 First Commercial Release | Planned |
 | EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | Planned |
@@ -144,7 +144,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-061 | Email Provider Contract | PGYS-060 | P2 | Completed |
 | PGYS-062 | SMS Provider Contract | PGYS-060 | P3 | Completed |
 | PGYS-063 | Stripe Integration Preparation | PGYS-035, PGYS-060 | P2 | Completed |
-| PGYS-064 | OVH Integration Preparation | PGYS-060 | P3 | Planned |
+| PGYS-064 | OVH Integration Preparation | PGYS-060 | P3 | Completed |
 
 ### EPIC-08 Reporting
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 63 |
-| Tickets planifies | 15 |
+| Tickets termines | 64 |
+| Tickets planifies | 14 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 81% |
+| Progression globale | 82% |
 
 ### Progression par EPIC
 
@@ -262,7 +262,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
 | EPIC-06 AI | 5 | 5 | 0 | 100% |
-| EPIC-07 Integrations | 6 | 5 | 1 | 83% |
+| EPIC-07 Integrations | 6 | 6 | 0 | 100% |
 | EPIC-08 Reporting | 5 | 0 | 5 | 0% |
 | EPIC-09 Administration | 6 | 2 | 4 | 33% |
 | EPIC-10 Mobile | 4 | 0 | 4 | 0% |
@@ -277,7 +277,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.4 CRM Foundation | 6 | 6 | Completed |
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
-| v0.7 Marketplace & Integrations | 6 | 5 | In Progress |
+| v0.7 Marketplace & Integrations | 6 | 6 | Completed |
 | v1.0 First Commercial Release | 15 | 2 | Planned |
 
 ## 8. Maintenance du Backlog Master

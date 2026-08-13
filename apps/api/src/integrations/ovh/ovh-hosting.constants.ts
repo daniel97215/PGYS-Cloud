@@ -1,0 +1,17 @@
+export const OVH_HOSTING_PROVIDER_ADAPTERS = Symbol(
+  "OVH_HOSTING_PROVIDER_ADAPTERS",
+);
+
+export const OVH_HOSTING_INSTANCE_STATUS = {
+  PENDING: "PENDING",
+  ACTIVE: "ACTIVE",
+  SUSPENDED: "SUSPENDED",
+  FAILED: "FAILED",
+} as const;
+
+export type OvhHostingInstanceStatus =
+  (typeof OVH_HOSTING_INSTANCE_STATUS)[keyof typeof OVH_HOSTING_INSTANCE_STATUS];
+
+export const OVH_HOSTING_TERMINATION_STATUS = {
+  PREPARED: "PREPARED",
+} as const;

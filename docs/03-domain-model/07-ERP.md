@@ -378,6 +378,36 @@ L'audit PGYS-044 a execute 10 suites Sales, soit 82 tests reussis. `SalesInvoice
 reste distinct de l'`Invoice` SaaS de Billing ; aucune conversion, emission PDF,
 integration de paiement ou ecriture comptable n'est ajoutee par ce ticket.
 
+## Decision PGYS-045 - Purchases Foundation
+
+PGYS-045 est satisfait par la chaine Purchasing deja implementee et auditee.
+Elle reutilise Business Partners pour l'identite fournisseur, Catalog pour les
+articles et Inventory pour les effets physiques.
+
+Le perimetre confirme :
+
+- `PurchaseOrder` et ses lignes, rattaches a un fournisseur et a un entrepot
+  du meme Workspace ;
+- `PurchaseReceipt` et ses lignes, bornees par les quantites commandees et
+  associees aux articles de stock cibles ;
+- l'entree de stock transactionnelle lors de la reception et sa trace par
+  `StockMovement` ;
+- `PurchaseReturn` et ses lignes, bornees par les quantites receptionnees et
+  deja retournees ;
+- la sortie de stock transactionnelle lors du retour fournisseur ;
+- `PurchaseInvoice` et ses lignes, avec numero interne unique et reference de
+  facture fournisseur unique pour le fournisseur dans le Workspace ;
+- `PurchasePayment`, rattache a une facture du meme Workspace et de la meme
+  devise, avec mise a jour coherente des montants payes ;
+- les snapshots de descriptions, quantites, couts, taxes et totaux ;
+- les transitions fermees, l'immutabilite des documents finalises et un acces
+  Prisma limite aux repositories ;
+- des migrations additives et des tests repository/service.
+
+L'audit PGYS-045 a execute 10 suites Purchasing, soit 94 tests reussis. Il
+n'ajoute ni avoir fournisseur, ni rapprochement bancaire, ni ecriture
+comptable, ni integration de paiement externe.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

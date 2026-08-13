@@ -98,7 +98,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-042 | Products Foundation | PGYS-040 | P1 | Completed |
 | PGYS-043 | Inventory Foundation | PGYS-042 | P1 | Completed |
 | PGYS-044 | Sales Foundation | PGYS-041, PGYS-042 | P1 | Completed |
-| PGYS-045 | Purchases Foundation | PGYS-042, PGYS-043 | P2 | Planned |
+| PGYS-045 | Purchases Foundation | PGYS-042, PGYS-043 | P2 | Completed |
 | PGYS-078 | Business Partner Category Assignments | PGYS-011 | P1 | Completed |
 
 ### EPIC-04 CRM
@@ -246,19 +246,19 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 45 |
-| Tickets planifies | 33 |
+| Tickets termines | 55 |
+| Tickets planifies | 23 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 58% |
+| Progression globale | 71% |
 
 ### Progression par EPIC
 
 | EPIC | Total | Completed | Planned | Progression |
 | --- | ---: | ---: | ---: | ---: |
 | EPIC-01 Core Platform | 20 | 19 | 1 | 95% |
-| EPIC-02 Commercial Core | 9 | 6 | 3 | 67% |
-| EPIC-03 ERP | 9 | 2 | 7 | 22% |
+| EPIC-02 Commercial Core | 9 | 9 | 0 | 100% |
+| EPIC-03 ERP | 9 | 9 | 0 | 100% |
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
 | EPIC-06 AI | 5 | 1 | 4 | 20% |
@@ -272,8 +272,8 @@ Ces indicateurs sont mis a jour manuellement.
 | Version | Tickets principaux suivis | Completed | Etat |
 | --- | ---: | ---: | --- |
 | v0.1 Core Platform | 20 | 19 | In Progress |
-| v0.2 Commercial Core | 9 | 6 | In Progress |
-| v0.3 ERP Foundation | 9 | 2 | Planned |
+| v0.2 Commercial Core | 9 | 9 | Completed |
+| v0.3 ERP Foundation | 9 | 9 | Completed |
 | v0.4 CRM Foundation | 6 | 6 | Completed |
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 1 | Planned |

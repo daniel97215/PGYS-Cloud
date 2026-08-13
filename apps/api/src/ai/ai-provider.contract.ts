@@ -11,6 +11,9 @@ export interface AiMessage {
 
 export interface GenerateAiTextRequest {
   workspaceId: string;
+  actorId?: string;
+  sourceModule: string;
+  useCase: string;
   messages: AiMessage[];
 }
 

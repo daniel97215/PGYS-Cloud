@@ -282,6 +282,11 @@ enum AuditAction {
   SERVICE_CONFIG_CHANGED
 }
 
+enum AiUsageStatus {
+  SUCCESS
+  FAILED
+}
+
 model Workspace {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String
@@ -338,6 +343,7 @@ model Workspace {
   tickets              Ticket[]
   activities           Activity[]
   auditLogs            AuditLog[]
+  aiUsageAudits        AiUsageAudit[]
   settings             WorkspaceSettings?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
@@ -375,6 +381,7 @@ model User {
   tickets      Ticket[]
   activities   Activity[]
   auditLogs    AuditLog[]
+  aiUsageAudits AiUsageAudit[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -2170,4 +2177,30 @@ model AuditLog {
   @@index([actorId])
   @@index([targetType, targetId])
   @@index([action, createdAt])
+}
+
+model AiUsageAudit {
+  id           String        @id @default(uuid()) @db.Uuid
+  workspaceId  String        @db.Uuid
+  actorId      String?       @db.Uuid
+  sourceModule String        @db.VarChar(80)
+  useCase      String        @db.VarChar(120)
+  provider     String        @db.VarChar(40)
+  model        String        @db.VarChar(120)
+  status       AiUsageStatus
+  durationMs   Int
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int?
+  errorCode    String?       @db.VarChar(80)
+  errorMessage String?       @db.VarChar(160)
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  actor        User?         @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt    DateTime      @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, provider, createdAt])
+  @@index([workspaceId, useCase, createdAt])
+  @@index([actorId])
 }

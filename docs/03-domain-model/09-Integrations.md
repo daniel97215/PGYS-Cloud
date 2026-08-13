@@ -366,6 +366,57 @@ webhooks, reprises, audit, estimation du nombre de segments et calcul du cout
 restent hors du perimetre. Aucun secret ni configuration fournisseur n'est
 ajoute au depot.
 
+## Decision PGYS-063 - Stripe Integration Preparation
+
+PGYS-063 prepare les contrats d'un encaissement ponctuel d'une facture Billing
+par Stripe Checkout, sans SDK, appel reseau, endpoint ou mutation metier.
+
+Le choix d'integration est une Checkout Session hebergee en mode `payment`, avec
+la version d'API `2026-02-25.clover`. Les anciennes Charges, Sources, Tokens et
+Card Element ne font pas partie de la fondation.
+
+Les responsabilites restent les suivantes :
+
+- PGYS reste source de verite de la Subscription et de l'Invoice ;
+- seule une Invoice Billing `OPEN` est candidate a l'encaissement ;
+- Billing fournit le montant total et la devise snapshots de l'Invoice ;
+- le montant transmis au contrat Stripe est un entier positif en unite
+  monetaire mineure, calcule selon la devise par le module proprietaire ;
+- Stripe ne cree aucun Product, Price ou Subscription concurrent ;
+- les URLs de succes et d'annulation sont configurees globalement cote serveur
+  et doivent utiliser HTTPS ;
+- la demande porte une cle d'idempotence et les metadonnees minimales
+  `workspaceId`, `invoiceId` et `invoiceNumber` ;
+- la reponse normalisee porte l'identifiant de session, l'URL hebergee, son
+  statut et son expiration.
+
+Le contrat de webhook accepte uniquement un payload brut et sa signature. Un
+adaptateur futur devra verifier la signature avant de traduire les faits V1 :
+
+- `CHECKOUT_SESSION_COMPLETED` ;
+- `CHECKOUT_SESSION_EXPIRED` ;
+- `PAYMENT_FAILED`.
+
+Un fait verifie porte au minimum l'identifiant d'evenement, sa date,
+l'identifiant de session, le Workspace et l'Invoice correles. Le payload brut
+n'est jamais considere comme un evenement metier PGYS.
+
+Avant toute activation, deux garanties durables restent obligatoires :
+
+- un store doit garantir atomiquement une seule session active par Invoice et
+  reutiliser la session existante lors d'un replay compatible ;
+- un deduplicateur doit revendiquer chaque identifiant d'evenement avant tout
+  effet et accepter les livraisons repetees.
+
+Une Invoice ne pourra etre marquee `PAID` qu'apres verification, deduplication,
+correlation au meme Workspace et application de la transition par le service
+public Billing. PGYS-063 n'implemente pas cette transition et ne pretend pas
+fournir ces garanties sans persistance.
+
+Les paiements hors session, renouvellements Stripe, remboursements, litiges,
+Payment Element, moyens de paiement sauvegardes, Customer Portal, Connect,
+frontend, webhooks HTTP et reconciliation restent hors du perimetre.
+
 ## Decisions differees
 
 PGYS-060 ne decide pas :

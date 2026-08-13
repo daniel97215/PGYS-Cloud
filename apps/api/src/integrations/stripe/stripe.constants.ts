@@ -1,0 +1,26 @@
+export const STRIPE_API_VERSION = "2026-02-25.clover" as const;
+
+export const STRIPE_CHECKOUT_MODE = {
+  PAYMENT: "payment",
+} as const;
+
+export const STRIPE_CHECKOUT_STATUS = {
+  OPEN: "OPEN",
+  COMPLETED: "COMPLETED",
+  EXPIRED: "EXPIRED",
+  FAILED: "FAILED",
+} as const;
+
+export type StripeCheckoutStatus =
+  (typeof STRIPE_CHECKOUT_STATUS)[keyof typeof STRIPE_CHECKOUT_STATUS];
+
+export const STRIPE_WEBHOOK_EVENT = {
+  CHECKOUT_SESSION_COMPLETED: "CHECKOUT_SESSION_COMPLETED",
+  CHECKOUT_SESSION_EXPIRED: "CHECKOUT_SESSION_EXPIRED",
+  PAYMENT_FAILED: "PAYMENT_FAILED",
+} as const;
+
+export type StripeWebhookEventType =
+  (typeof STRIPE_WEBHOOK_EVENT)[keyof typeof STRIPE_WEBHOOK_EVENT];
+
+export const STRIPE_PROVIDER_ADAPTERS = Symbol("STRIPE_PROVIDER_ADAPTERS");

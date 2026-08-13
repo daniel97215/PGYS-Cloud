@@ -294,6 +294,33 @@ Cette decision implique que :
 L'audit PGYS-041 a execute les 20 suites Business Partners, soit 117 tests
 reussis. Il n'introduit aucune migration, aucun modele et aucun endpoint.
 
+## Decision PGYS-042 - Products Foundation
+
+PGYS-042 est satisfait par l'agregat Product deja implemente et audite. Le
+ticket reutilise les referentiels Catalog de PGYS-040 et ne cree aucun modele
+concurrent.
+
+Le perimetre confirme :
+
+- `Product` comme racine workspace-scoped, avec code unique, nom, description,
+  type produit/service et cycle actif/inactif ;
+- `ProductVariant` pour les declinaisons, avec code unique dans le Workspace,
+  SKU optionnel, variante par defaut et cycle actif/inactif ;
+- `ProductBarcode` rattache exactement a un Product ou une Variant et unique
+  dans le Workspace ;
+- `ProductMedia` rattache exactement a un Product ou une Variant, avec ordre et
+  media principal ;
+- `ProductAttribute` et `ProductAttributeValue` pour des valeurs typees et les
+  axes de variantes ;
+- la verification du Workspace commun pour toutes les references ;
+- des DTO fermes, des operations publiques et un acces Prisma limite aux
+  repositories ;
+- des migrations additives distinctes et des tests repository/service.
+
+L'audit PGYS-042 a execute 10 suites ciblees, soit 62 tests reussis. Les
+categories, marques, fabricants, unites, taxes et listes de prix restent des
+referentiels de PGYS-040 ; aucune association non requise n'est inventee ici.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

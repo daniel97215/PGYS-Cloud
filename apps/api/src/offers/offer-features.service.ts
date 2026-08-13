@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { OFFER_STATUSES } from "./offers.constants";
 import {
   OfferFeatureFeatureRecord,
   OfferFeatureOfferRecord,
@@ -21,6 +23,7 @@ export class OfferFeaturesService {
     featureKey: string,
   ): Promise<OfferFeatureRecord> {
     const offer = await this.requireOffer(offerKey);
+    await this.ensureOfferMutable(offer);
     const feature = await this.requireFeature(featureKey);
 
     return this.offerFeaturesRepository.addFeatureToOffer(
@@ -34,6 +37,7 @@ export class OfferFeaturesService {
     featureKey: string,
   ): Promise<OfferFeatureRecord> {
     const offer = await this.requireOffer(offerKey);
+    await this.ensureOfferMutable(offer);
     const feature = await this.requireFeature(featureKey);
     const offerFeature =
       await this.offerFeaturesRepository.findByOfferAndFeature(
@@ -93,6 +97,19 @@ export class OfferFeaturesService {
     }
 
     return feature;
+  }
+
+  private async ensureOfferMutable(
+    offer: OfferFeatureOfferRecord,
+  ): Promise<void> {
+    if (offer.status === OFFER_STATUSES.ARCHIVED) {
+      throw new ConflictException("Archived offers are immutable");
+    }
+    if (await this.offerFeaturesRepository.hasOfferUsage(offer.id)) {
+      throw new ConflictException(
+        "Used offers are immutable and must be replaced by a new offer",
+      );
+    }
   }
 
   private normalizeKey(key: string, label: string): string {

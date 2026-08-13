@@ -1,5 +1,5 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { OFFER_STATUS_ARCHIVED } from "../offers.constants";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
+import { OFFER_STATUSES, OFFER_STATUS_ARCHIVED } from "../offers.constants";
 import { OffersRepository } from "../offers.repository";
 import { OffersService } from "../offers.service";
 
@@ -24,6 +24,12 @@ describe("OffersService", () => {
       update: jest.fn().mockResolvedValue(offer),
       findAll: jest.fn().mockResolvedValue([offer]),
       findByKey: jest.fn().mockResolvedValue(offer),
+      hasUsage: jest.fn().mockResolvedValue(false),
+      hasActivePrice: jest.fn().mockResolvedValue(true),
+      transition: jest.fn().mockImplementation(async (_id, _current, status) => ({
+        ...offer,
+        status,
+      })),
       archive: jest.fn().mockResolvedValue({
         ...offer,
         status: OFFER_STATUS_ARCHIVED,
@@ -46,6 +52,17 @@ describe("OffersService", () => {
       name: offer.name,
       description: offer.description,
     });
+  });
+
+  it("creates offers only as draft", async () => {
+    await expect(
+      service.createOffer({
+        key: "crm-active",
+        name: "CRM Active",
+        status: OFFER_STATUSES.ACTIVE,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(repository.create).not.toHaveBeenCalled();
   });
 
   it("updates an offer", async () => {
@@ -75,10 +92,58 @@ describe("OffersService", () => {
   });
 
   it("archives an offer", async () => {
+    repository.findByKey.mockResolvedValue({
+      ...offer,
+      status: OFFER_STATUSES.ACTIVE,
+    });
     const result = await service.archiveOffer(offer.key);
 
     expect(result.status).toBe(OFFER_STATUS_ARCHIVED);
-    expect(repository.archive).toHaveBeenCalledWith(offer.key);
+    expect(repository.transition).toHaveBeenCalledWith(
+      offer.id,
+      OFFER_STATUSES.ACTIVE,
+      OFFER_STATUSES.ARCHIVED,
+    );
+  });
+
+  it("activates only a draft offer with an active price", async () => {
+    await service.activateOffer(offer.key);
+    expect(repository.hasActivePrice).toHaveBeenCalledWith(offer.id, expect.any(Date));
+    expect(repository.transition).toHaveBeenCalledWith(
+      offer.id,
+      OFFER_STATUSES.DRAFT,
+      OFFER_STATUSES.ACTIVE,
+    );
+
+    repository.hasActivePrice.mockResolvedValue(false);
+    await expect(service.activateOffer(offer.key)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+  });
+
+  it("keeps a used offer immutable while allowing its archival", async () => {
+    repository.hasUsage.mockResolvedValue(true);
+    await expect(
+      service.updateOffer(offer.key, { name: "Changed" }),
+    ).rejects.toBeInstanceOf(ConflictException);
+
+    repository.findByKey.mockResolvedValue({
+      ...offer,
+      status: OFFER_STATUSES.ACTIVE,
+    });
+    await expect(service.archiveOffer(offer.key)).resolves.toEqual(
+      expect.objectContaining({ status: OFFER_STATUSES.ARCHIVED }),
+    );
+  });
+
+  it("does not reactivate an archived offer", async () => {
+    repository.findByKey.mockResolvedValue({
+      ...offer,
+      status: OFFER_STATUSES.ARCHIVED,
+    });
+    await expect(service.activateOffer(offer.key)).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it("throws NotFoundException when an offer is unknown", async () => {

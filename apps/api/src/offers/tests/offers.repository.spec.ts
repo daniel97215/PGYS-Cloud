@@ -88,6 +88,34 @@ describe("OffersRepository", () => {
       data: { status: OFFER_STATUS_ARCHIVED },
     });
   });
+
+  it("detects usage from subscriptions or checkouts", async () => {
+    const subscriptionCount = jest.fn().mockResolvedValue(0);
+    const checkoutCount = jest.fn().mockResolvedValue(1);
+    const repository = new OffersRepository(
+      createPrismaMock({ subscriptionCount, checkoutCount }),
+    );
+
+    await expect(repository.hasUsage(offer.id)).resolves.toBe(true);
+    expect(subscriptionCount).toHaveBeenCalledWith({ where: { offerId: offer.id } });
+    expect(checkoutCount).toHaveBeenCalledWith({ where: { offerId: offer.id } });
+  });
+
+  it("applies lifecycle transitions with the current status guard", async () => {
+    const updateMany = jest.fn().mockResolvedValue({ count: 1 });
+    const findUnique = jest.fn().mockResolvedValue({ ...offer, status: "active" });
+    const repository = new OffersRepository(
+      createPrismaMock({ updateMany, findUnique }),
+    );
+
+    await expect(repository.transition(offer.id, "draft", "active")).resolves.toEqual(
+      expect.objectContaining({ status: "active" }),
+    );
+    expect(updateMany).toHaveBeenCalledWith({
+      where: { id: offer.id, status: "draft" },
+      data: { status: "active" },
+    });
+  });
 });
 
 function createPrismaMock(methods: {
@@ -95,6 +123,9 @@ function createPrismaMock(methods: {
   update?: jest.Mock;
   findMany?: jest.Mock;
   findUnique?: jest.Mock;
+  updateMany?: jest.Mock;
+  subscriptionCount?: jest.Mock;
+  checkoutCount?: jest.Mock;
 }): PrismaService {
   const prisma = {
     offer: {
@@ -102,8 +133,16 @@ function createPrismaMock(methods: {
       update: methods.update ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),
       findUnique: methods.findUnique ?? jest.fn(),
+      updateMany: methods.updateMany ?? jest.fn(),
     },
+    subscription: { count: methods.subscriptionCount ?? jest.fn() },
+    checkoutSession: { count: methods.checkoutCount ?? jest.fn() },
   };
+  Object.assign(prisma, {
+    $transaction: jest.fn(async (input: unknown) =>
+      Array.isArray(input) ? Promise.all(input) : (input as (tx: typeof prisma) => unknown)(prisma),
+    ),
+  });
 
   return prisma as unknown as PrismaService;
 }

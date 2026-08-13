@@ -8,6 +8,8 @@ import { CancelSubscriptionDto } from "./dto/cancel-subscription.dto";
 import { ChangeOfferDto } from "./dto/change-offer.dto";
 import { CreateSubscriptionDto } from "./dto/create-subscription.dto";
 import { ReactivateSubscriptionDto } from "./dto/reactivate-subscription.dto";
+import { OFFER_STATUSES } from "../offers/offers.constants";
+import { PRICE_STATUSES } from "../pricing/pricing.constants";
 import {
   SUBSCRIPTION_STATUSES,
   SubscriptionStatus,
@@ -30,9 +32,10 @@ export class SubscriptionsService {
     data: CreateSubscriptionDto,
   ): Promise<SubscriptionRecord> {
     const workspace = await this.requireWorkspace(data.workspaceId);
-    const offer = await this.requireOffer(data.offerKey);
-    await this.requirePriceIfProvided(data.priceId);
     const status = this.normalizeStatus(data.status);
+    const offer = await this.requireOffer(data.offerKey);
+    this.requireOfferAvailable(offer);
+    await this.requirePriceIfProvided(data.priceId, offer.id);
     await this.ensureNoActiveDuplicate(workspace.id, offer.id, status);
 
     return this.subscriptionsRepository.create({
@@ -76,7 +79,8 @@ export class SubscriptionsService {
   ): Promise<SubscriptionRecord> {
     const subscription = await this.requireSubscription(subscriptionId);
     const offer = await this.requireOffer(data.offerKey);
-    await this.requirePriceIfProvided(data.priceId);
+    this.requireOfferAvailable(offer);
+    await this.requirePriceIfProvided(data.priceId, offer.id);
     await this.ensureNoActiveDuplicate(
       subscription.workspaceId,
       offer.id,
@@ -167,6 +171,7 @@ export class SubscriptionsService {
 
   private async requirePriceIfProvided(
     priceId?: string,
+    offerId?: string,
   ): Promise<SubscriptionPriceRecord | null> {
     if (!priceId) {
       return null;
@@ -180,8 +185,23 @@ export class SubscriptionsService {
     if (!price) {
       throw new NotFoundException(`Price "${priceId}" not found`);
     }
+    const now = new Date();
+    if (
+      (offerId && price.offerId !== offerId) ||
+      price.status !== PRICE_STATUSES.ACTIVE ||
+      price.validFrom > now ||
+      (price.validTo !== null && price.validTo <= now)
+    ) {
+      throw new ConflictException("Price is not available for this offer");
+    }
 
     return price;
+  }
+
+  private requireOfferAvailable(offer: SubscriptionOfferRecord): void {
+    if (offer.status !== OFFER_STATUSES.ACTIVE) {
+      throw new ConflictException("Only an active offer can be subscribed");
+    }
   }
 
   private async requireSubscription(

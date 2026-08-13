@@ -28,6 +28,18 @@ export class PricingRepository {
     });
   }
 
+  findOfferById(id: string): Promise<PriceOfferRecord | null> {
+    return this.prisma.offer.findUnique({ where: { id } });
+  }
+
+  async hasOfferUsage(offerId: string): Promise<boolean> {
+    const [subscriptions, checkouts] = await this.prisma.$transaction([
+      this.prisma.subscription.count({ where: { offerId } }),
+      this.prisma.checkoutSession.count({ where: { offerId } }),
+    ]);
+    return subscriptions > 0 || checkouts > 0;
+  }
+
   create(data: CreatePriceData): Promise<PriceRecord> {
     return this.prisma.price.create({ data });
   }

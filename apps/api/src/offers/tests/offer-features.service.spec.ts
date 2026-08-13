@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { OfferFeaturesRepository } from "../offer-features.repository";
 import { OfferFeaturesService } from "../offer-features.service";
 
@@ -42,6 +42,7 @@ describe("OfferFeaturesService", () => {
     repository = {
       findOfferByKey: jest.fn().mockResolvedValue(offer),
       findFeatureByKey: jest.fn().mockResolvedValue(feature),
+      hasOfferUsage: jest.fn().mockResolvedValue(false),
       findByOfferAndFeature: jest.fn().mockResolvedValue(offerFeature),
       addFeatureToOffer: jest.fn().mockResolvedValue(offerFeature),
       removeFeatureFromOffer: jest.fn().mockResolvedValue({
@@ -138,5 +139,13 @@ describe("OfferFeaturesService", () => {
     await expect(
       service.listOffersForFeature(" "),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it("rejects feature changes once the offer is used", async () => {
+    repository.hasOfferUsage.mockResolvedValue(true);
+    await expect(
+      service.addFeatureToOffer(offer.key, feature.key),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.addFeatureToOffer).not.toHaveBeenCalled();
   });
 });

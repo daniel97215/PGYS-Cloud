@@ -62,6 +62,12 @@ export class OffersController {
     return this.offersService.updateOffer(key, data);
   }
 
+  @ApiOperation({ summary: "Activate a draft offer" })
+  @Post(":key/activate")
+  activate(@Param("key") key: string) {
+    return this.offersService.activateOffer(key);
+  }
+
   @ApiOperation({ summary: "Archive an offer" })
   @ApiParam({ name: "key" })
   @ApiNoContentResponse({ description: "Offer archived" })

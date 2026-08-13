@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { OFFER_STATUSES } from "../offers/offers.constants";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
 import {
@@ -20,6 +22,7 @@ export class PricingService {
     data: CreatePriceDto,
   ): Promise<PriceRecord> {
     const offer = await this.requireOffer(offerKey);
+    await this.ensureOfferMutable(offer);
 
     return this.pricingRepository.create({
       ...data,
@@ -32,7 +35,8 @@ export class PricingService {
     data: UpdatePriceDto,
   ): Promise<PriceRecord> {
     const normalizedId = this.normalizeId(priceId, "Price id");
-    await this.requirePrice(normalizedId);
+    const price = await this.requirePrice(normalizedId);
+    await this.ensurePriceOfferMutable(price.offerId);
 
     return this.pricingRepository.update(normalizedId, data);
   }
@@ -58,7 +62,8 @@ export class PricingService {
 
   async archivePrice(priceId: string): Promise<PriceRecord> {
     const normalizedId = this.normalizeId(priceId, "Price id");
-    await this.requirePrice(normalizedId);
+    const price = await this.requirePrice(normalizedId);
+    await this.ensurePriceOfferMutable(price.offerId);
 
     return this.pricingRepository.archive(normalizedId);
   }
@@ -82,6 +87,23 @@ export class PricingService {
     }
 
     return price;
+  }
+
+  private async ensurePriceOfferMutable(offerId: string): Promise<void> {
+    const offer = await this.pricingRepository.findOfferById(offerId);
+    if (!offer) throw new NotFoundException("Offer not found");
+    return this.ensureOfferMutable(offer);
+  }
+
+  private async ensureOfferMutable(offer: PriceOfferRecord): Promise<void> {
+    if (offer.status === OFFER_STATUSES.ARCHIVED) {
+      throw new ConflictException("Archived offers are immutable");
+    }
+    if (await this.pricingRepository.hasOfferUsage(offer.id)) {
+      throw new ConflictException(
+        "Used offers are immutable and must be replaced by a new offer",
+      );
+    }
   }
 
   private normalizeKey(key: string, label: string): string {

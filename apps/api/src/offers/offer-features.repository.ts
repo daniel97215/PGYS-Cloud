@@ -30,6 +30,14 @@ export class OfferFeaturesRepository {
     });
   }
 
+  async hasOfferUsage(offerId: string): Promise<boolean> {
+    const [subscriptions, checkouts] = await this.prisma.$transaction([
+      this.prisma.subscription.count({ where: { offerId } }),
+      this.prisma.checkoutSession.count({ where: { offerId } }),
+    ]);
+    return subscriptions > 0 || checkouts > 0;
+  }
+
   findByOfferAndFeature(
     offerId: string,
     featureId: string,

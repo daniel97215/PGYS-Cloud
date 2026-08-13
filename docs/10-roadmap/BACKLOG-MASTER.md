@@ -84,7 +84,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-027 | Subscription Foundation | PGYS-017, PGYS-023, PGYS-026 | P1 | Completed |
 | PGYS-035 | Billing Foundation | PGYS-026, PGYS-027, PGYS-030 | P1 | Completed |
 | PGYS-036 | Checkout Foundation | PGYS-026, PGYS-027, PGYS-035 | P2 | Completed |
-| PGYS-037 | Commercial Offer Lifecycle | PGYS-023, PGYS-025, PGYS-026 | P2 | Planned |
+| PGYS-037 | Commercial Offer Lifecycle | PGYS-023, PGYS-025, PGYS-026 | P2 | Completed |
 | PGYS-038 | Subscription Lifecycle Tests | PGYS-027, PGYS-035 | P1 | Planned |
 
 ### EPIC-03 ERP

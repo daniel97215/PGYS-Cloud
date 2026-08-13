@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { SUBSCRIPTION_STATUSES } from "../subscriptions.constants";
 import { SubscriptionsRepository } from "../subscriptions.repository";
 import { SubscriptionsService } from "../subscriptions.service";
@@ -21,7 +22,7 @@ describe("SubscriptionsService", () => {
     key: "crm-starter",
     name: "CRM Starter",
     description: "Entry CRM offer",
-    status: "draft",
+    status: "active",
     visibility: "public",
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
@@ -38,6 +39,13 @@ describe("SubscriptionsService", () => {
     id: "10000000-0000-4000-8000-000000000003",
     offerId: offer.id,
     currency: "EUR",
+    amount: new Prisma.Decimal(29.99),
+    billingPeriod: "monthly",
+    validFrom: new Date("2025-01-01T00:00:00.000Z"),
+    validTo: null,
+    status: "active",
+    createdAt: new Date("2025-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2025-01-01T00:00:00.000Z"),
   };
 
   const subscription = {
@@ -115,6 +123,10 @@ describe("SubscriptionsService", () => {
 
   it("changes the offer", async () => {
     repository.findOfferByKey.mockResolvedValueOnce(nextOffer);
+    repository.findPriceById.mockResolvedValueOnce({
+      ...price,
+      offerId: nextOffer.id,
+    });
 
     const result = await service.changeOffer(subscription.id, {
       offerKey: nextOffer.key,
@@ -209,5 +221,21 @@ describe("SubscriptionsService", () => {
     await expect(service.getActiveSubscription(" ")).rejects.toBeInstanceOf(
       BadRequestException,
     );
+  });
+
+  it("rejects new subscriptions to an archived offer", async () => {
+    repository.findOfferByKey.mockResolvedValue({
+      ...offer,
+      status: "archived",
+    });
+    await expect(
+      service.createSubscription({
+        workspaceId: workspace.id,
+        offerKey: offer.key,
+        priceId: price.id,
+        startedAt: subscription.startedAt,
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.create).not.toHaveBeenCalled();
   });
 });

@@ -42,6 +42,41 @@ export class OffersRepository {
     });
   }
 
+  async hasUsage(offerId: string): Promise<boolean> {
+    const [subscriptions, checkouts] = await this.prisma.$transaction([
+      this.prisma.subscription.count({ where: { offerId } }),
+      this.prisma.checkoutSession.count({ where: { offerId } }),
+    ]);
+    return subscriptions > 0 || checkouts > 0;
+  }
+
+  async hasActivePrice(offerId: string, at: Date): Promise<boolean> {
+    const count = await this.prisma.price.count({
+      where: {
+        offerId,
+        status: "active",
+        validFrom: { lte: at },
+        OR: [{ validTo: null }, { validTo: { gt: at } }],
+      },
+    });
+    return count > 0;
+  }
+
+  transition(
+    offerId: string,
+    currentStatus: OfferStatus,
+    status: OfferStatus,
+  ): Promise<OfferRecord | null> {
+    return this.prisma.$transaction(async (transaction) => {
+      const result = await transaction.offer.updateMany({
+        where: { id: offerId, status: currentStatus },
+        data: { status },
+      });
+      if (result.count === 0) return null;
+      return transaction.offer.findUnique({ where: { id: offerId } });
+    });
+  }
+
   archive(key: string): Promise<OfferRecord> {
     return this.prisma.offer.update({
       where: { key },

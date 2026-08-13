@@ -164,13 +164,40 @@ describe("Core Workspace Onboarding integration", () => {
     } as unknown as WorkspaceRepository;
 
     const offersRepository = {
-      create: jest.fn(async (data: Omit<OfferState, keyof CoreRecord>) => {
-        const offer = { id: nextId(), createdAt: now, updatedAt: now, ...data };
+      create: jest.fn(async (data: Omit<OfferState, keyof CoreRecord | "status" | "visibility"> & Partial<Pick<OfferState, "status" | "visibility">>) => {
+        const offer = {
+          id: nextId(),
+          createdAt: now,
+          updatedAt: now,
+          status: OFFER_STATUSES.DRAFT,
+          visibility: "public",
+          ...data,
+        };
         offers.push(offer);
         return offer;
       }),
       findByKey: jest.fn(async (key: string) =>
         offers.find((offer) => offer.key === key) ?? null,
+      ),
+      hasUsage: jest.fn(async (offerId: string) =>
+        subscriptions.some((item) => item.offerId === offerId),
+      ),
+      hasActivePrice: jest.fn(async (offerId: string) =>
+        prices.some(
+          (price) =>
+            price.offerId === offerId && price.status === PRICE_STATUSES.ACTIVE,
+        ),
+      ),
+      transition: jest.fn(
+        async (offerId: string, currentStatus: string, status: string) => {
+          const offer = offers.find(
+            (item) => item.id === offerId && item.status === currentStatus,
+          );
+          if (!offer) return null;
+          offer.status = status;
+          offer.updatedAt = now;
+          return offer;
+        },
       ),
     } as unknown as OffersRepository;
 
@@ -196,6 +223,9 @@ describe("Core Workspace Onboarding integration", () => {
       ),
       findFeatureByKey: jest.fn(async (key: string) =>
         features.find((feature) => feature.key === key) ?? null,
+      ),
+      hasOfferUsage: jest.fn(async (offerId: string) =>
+        subscriptions.some((item) => item.offerId === offerId),
       ),
       addFeatureToOffer: jest.fn(
         async (offerId: string, featureId: string) => {
@@ -229,6 +259,12 @@ describe("Core Workspace Onboarding integration", () => {
     const pricingRepository = {
       findOfferByKey: jest.fn(async (key: string) =>
         offers.find((offer) => offer.key === key) ?? null,
+      ),
+      findOfferById: jest.fn(async (id: string) =>
+        offers.find((offer) => offer.id === id) ?? null,
+      ),
+      hasOfferUsage: jest.fn(async (offerId: string) =>
+        subscriptions.some((item) => item.offerId === offerId),
       ),
       create: jest.fn(
         async (data: Omit<PriceState, keyof CoreRecord | "status">) => {
@@ -451,7 +487,6 @@ describe("Core Workspace Onboarding integration", () => {
     const offer = await offersService.createOffer({
       key: "crm-starter",
       name: "CRM Starter",
-      status: OFFER_STATUSES.ACTIVE,
       visibility: "public",
     });
     const feature = await featuresService.createFeature({
@@ -467,6 +502,7 @@ describe("Core Workspace Onboarding integration", () => {
       validFrom: now,
       status: PRICE_STATUSES.ACTIVE,
     });
+    await offersService.activateOffer(offer.key);
     const subscription = await subscriptionsService.createSubscription({
       workspaceId: workspace.id,
       offerKey: offer.key,
@@ -514,9 +550,16 @@ describe("Core Workspace Onboarding integration", () => {
     const nextOffer = await offersService.createOffer({
       key: "crm-pro",
       name: "CRM Pro",
-      status: OFFER_STATUSES.ACTIVE,
       visibility: "public",
     });
+    await pricingService.createPrice(nextOffer.key, {
+      currency: "EUR",
+      amount: 49,
+      billingPeriod: "monthly",
+      validFrom: now,
+      status: PRICE_STATUSES.ACTIVE,
+    });
+    await offersService.activateOffer(nextOffer.key);
 
     const changed = await subscriptionsService.changeOffer(subscription.id, {
       offerKey: nextOffer.key,
@@ -582,9 +625,16 @@ describe("Core Workspace Onboarding integration", () => {
     const offer = await offersService.createOffer({
       key: "crm-starter",
       name: "CRM Starter",
-      status: OFFER_STATUSES.ACTIVE,
       visibility: "public",
     });
+    await pricingService.createPrice(offer.key, {
+      currency: "EUR",
+      amount: 29,
+      billingPeriod: "monthly",
+      validFrom: now,
+      status: PRICE_STATUSES.ACTIVE,
+    });
+    await offersService.activateOffer(offer.key);
 
     await expect(
       subscriptionsService.createSubscription({

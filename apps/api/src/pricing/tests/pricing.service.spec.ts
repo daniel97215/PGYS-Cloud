@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { PRICE_STATUS_ARCHIVED } from "../pricing.constants";
 import { PricingRepository } from "../pricing.repository";
 import { PricingService } from "../pricing.service";
@@ -34,6 +34,8 @@ describe("PricingService", () => {
   beforeEach(() => {
     repository = {
       findOfferByKey: jest.fn().mockResolvedValue(offer),
+      findOfferById: jest.fn().mockResolvedValue(offer),
+      hasOfferUsage: jest.fn().mockResolvedValue(false),
       create: jest.fn().mockResolvedValue(price),
       update: jest.fn().mockResolvedValue(price),
       findById: jest.fn().mockResolvedValue(price),
@@ -137,5 +139,13 @@ describe("PricingService", () => {
     await expect(service.archivePrice(" ")).rejects.toBeInstanceOf(
       BadRequestException,
     );
+  });
+
+  it("rejects price changes once the offer is used", async () => {
+    repository.hasOfferUsage.mockResolvedValue(true);
+    await expect(
+      service.updatePrice(price.id, { amount: 39.99 }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.update).not.toHaveBeenCalled();
   });
 });

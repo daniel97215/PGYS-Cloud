@@ -91,7 +91,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 
 | ID | Titre | Dependances | Priorite | Etat |
 | --- | --- | --- | --- | --- |
-| PGYS-039 | ERP Domain Map | PGYS-031 | P1 | Planned |
+| PGYS-039 | ERP Domain Map | PGYS-031 | P1 | Completed |
 | PGYS-011 | Modele Customer | PGYS-010 | P2 | Completed |
 | PGYS-040 | Catalog Foundation | PGYS-039 | P1 | Planned |
 | PGYS-041 | Customers Foundation | PGYS-039 | P1 | Planned |

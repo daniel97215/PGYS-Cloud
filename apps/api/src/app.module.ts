@@ -25,6 +25,7 @@ import { HealthModule } from "./health/health.module";
 import { InventoryAdjustmentsModule } from "./inventory-adjustments/inventory-adjustments.module";
 import { InventoryCountsModule } from "./inventory-counts/inventory-counts.module";
 import { InventoryItemsModule } from "./inventory-items/inventory-items.module";
+import { IntegrationsModule } from "./integrations/integrations.module";
 import { ManufacturersModule } from "./manufacturers/manufacturers.module";
 import { MarketingSegmentsModule } from "./marketing-segments/marketing-segments.module";
 import { MarketingCampaignsModule } from "./marketing-campaigns/marketing-campaigns.module";
@@ -88,6 +89,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     InventoryAdjustmentsModule,
     InventoryCountsModule,
     InventoryItemsModule,
+    IntegrationsModule,
     ManufacturersModule,
     MarketingSegmentsModule,
     MarketingCampaignsModule,

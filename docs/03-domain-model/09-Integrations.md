@@ -307,6 +307,37 @@ Chaque ticket doit confirmer sa capacite V1, le proprietaire du contrat, sa
 portee de configuration, ses donnees, son idempotence, ses erreurs, ses traces
 et ses exclusions avant d'introduire du code ou une persistance.
 
+## Decision PGYS-061 - Email Provider Contract
+
+PGYS-061 introduit un contrat interne d'envoi d'email transactionnel, sans
+fournisseur executable ni endpoint public.
+
+Le perimetre V1 est le suivant :
+
+- une demande appartient a un `workspaceId` et porte une cle d'idempotence
+  obligatoire dans ce Workspace ;
+- elle cible un destinataire unique et contient un sujet et un contenu texte
+  obligatoires, avec un contenu HTML optionnel ;
+- l'expediteur est configure globalement cote serveur par
+  `EMAIL_FROM_ADDRESS` et `EMAIL_FROM_NAME` ;
+- `EMAIL_PROVIDER` selectionne un adaptateur enregistre sans imposer de nom de
+  fournisseur dans le contrat public ;
+- le registre d'adaptateurs reste insensible a la casse et echoue proprement si
+  le fournisseur configure n'est pas installe ;
+- la reponse normalisee porte le statut `ACCEPTED`, `REJECTED` ou `FAILED`, le
+  fournisseur et une External Reference optionnelle ;
+- les entrees sont normalisees et bornees avant tout appel a l'adaptateur ;
+- une erreur technique d'adaptateur est propagee sans reprise implicite ;
+- les tests utilisent uniquement un adaptateur factice en memoire.
+
+La cle d'idempotence est transmise a l'adaptateur afin d'utiliser la garantie du
+fournisseur lorsqu'elle existe. PGYS-061 ne persiste aucune tentative et ne
+pretend donc pas fournir encore une deduplication interne durable.
+
+Les envois groupes, pieces jointes, templates executables, campagnes, suivi
+d'ouverture, clics, webhooks, reprises, audit et delivery persiste restent hors
+du perimetre. Aucun secret ni configuration fournisseur n'est ajoute au depot.
+
 ## Decisions differees
 
 PGYS-060 ne decide pas :

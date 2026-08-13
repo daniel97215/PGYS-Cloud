@@ -141,7 +141,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | --- | --- | --- | --- | --- |
 | PGYS-013 | Integration Nextcloud | PGYS-001 | P2 | Completed |
 | PGYS-060 | Integrations Map | PGYS-031 | P2 | Completed |
-| PGYS-061 | Email Provider Contract | PGYS-060 | P2 | Planned |
+| PGYS-061 | Email Provider Contract | PGYS-060 | P2 | Completed |
 | PGYS-062 | SMS Provider Contract | PGYS-060 | P3 | Planned |
 | PGYS-063 | Stripe Integration Preparation | PGYS-035, PGYS-060 | P2 | Planned |
 | PGYS-064 | OVH Integration Preparation | PGYS-060 | P3 | Planned |
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 60 |
-| Tickets planifies | 18 |
+| Tickets termines | 61 |
+| Tickets planifies | 17 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 77% |
+| Progression globale | 78% |
 
 ### Progression par EPIC
 
@@ -262,7 +262,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
 | EPIC-06 AI | 5 | 5 | 0 | 100% |
-| EPIC-07 Integrations | 6 | 2 | 4 | 33% |
+| EPIC-07 Integrations | 6 | 3 | 3 | 50% |
 | EPIC-08 Reporting | 5 | 0 | 5 | 0% |
 | EPIC-09 Administration | 6 | 2 | 4 | 33% |
 | EPIC-10 Mobile | 4 | 0 | 4 | 0% |
@@ -277,7 +277,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.4 CRM Foundation | 6 | 6 | Completed |
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
-| v0.7 Marketplace & Integrations | 6 | 2 | In Progress |
+| v0.7 Marketplace & Integrations | 6 | 3 | In Progress |
 | v1.0 First Commercial Release | 15 | 2 | Planned |
 
 ## 8. Maintenance du Backlog Master

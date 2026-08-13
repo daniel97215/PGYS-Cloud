@@ -268,6 +268,32 @@ ne cree pas d'association implicite entre Product et tous les referentiels :
 toute relation supplementaire devra repondre a un besoin metier explicite et
 faire l'objet d'un ticket dedie.
 
+## Decision PGYS-041 - Customers Foundation
+
+PGYS-041 est satisfait par la reutilisation de `BusinessPartner` comme identite
+client de reference. Le domaine ERP ne cree ni modele `Customer`, ni copie de
+l'identite ou des coordonnees d'un tiers.
+
+Cette decision implique que :
+
+- un client est un Business Partner qualifie par le role `CUSTOMER` ;
+- le meme Business Partner peut aussi etre prospect, fournisseur, partenaire
+  ou exercer tout autre role du referentiel ;
+- son code reste unique dans le Workspace et son identite ne change pas lors
+  de l'ajout ou du retrait d'un role ;
+- ses adresses, contacts, categories, tags, notes et documents restent portes
+  par Business Partners ;
+- Sales reference le `businessPartnerId` sans recopier la fiche client ;
+- toutes les operations publiques existantes restent filtrees par
+  `workspaceId` et les acces Prisma restent dans les repositories ;
+- les routes historiques nommees `customers` sont un contrat d'API existant et
+  ne justifient pas une seconde racine de domaine ;
+- toute donnee exclusivement propre au contexte Sales devra etre ajoutee par
+  un concept et un ticket explicites, pas sur une copie de Customer.
+
+L'audit PGYS-041 a execute les 20 suites Business Partners, soit 117 tests
+reussis. Il n'introduit aucune migration, aucun modele et aucun endpoint.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

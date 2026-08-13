@@ -94,7 +94,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-039 | ERP Domain Map | PGYS-031 | P1 | Completed |
 | PGYS-011 | Modele Customer | PGYS-010 | P2 | Completed |
 | PGYS-040 | Catalog Foundation | PGYS-039 | P1 | Completed |
-| PGYS-041 | Customers Foundation | PGYS-039 | P1 | Planned |
+| PGYS-041 | Customers Foundation | PGYS-039 | P1 | Completed |
 | PGYS-042 | Products Foundation | PGYS-040 | P1 | Planned |
 | PGYS-043 | Inventory Foundation | PGYS-042 | P1 | Planned |
 | PGYS-044 | Sales Foundation | PGYS-041, PGYS-042 | P1 | Planned |

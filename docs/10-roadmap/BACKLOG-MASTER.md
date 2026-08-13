@@ -131,7 +131,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | --- | --- | --- | --- | --- |
 | PGYS-002 | Structure AI | PGYS-001 | P2 | Completed |
 | PGYS-056 | AI Platform Map | PGYS-031 | P2 | Completed |
-| PGYS-057 | AI Provider Contracts | PGYS-056 | P2 | Planned |
+| PGYS-057 | AI Provider Contracts | PGYS-056 | P2 | Completed |
 | PGYS-058 | AI Usage Audit | PGYS-056 | P2 | Planned |
 | PGYS-059 | AI Assistant Foundation | PGYS-057, PGYS-058 | P3 | Planned |
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 56 |
-| Tickets planifies | 22 |
+| Tickets termines | 57 |
+| Tickets planifies | 21 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 72% |
+| Progression globale | 73% |
 
 ### Progression par EPIC
 
@@ -261,7 +261,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-03 ERP | 9 | 9 | 0 | 100% |
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
-| EPIC-06 AI | 5 | 2 | 3 | 40% |
+| EPIC-06 AI | 5 | 3 | 2 | 60% |
 | EPIC-07 Integrations | 6 | 1 | 5 | 17% |
 | EPIC-08 Reporting | 5 | 0 | 5 | 0% |
 | EPIC-09 Administration | 6 | 2 | 4 | 33% |
@@ -276,7 +276,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.3 ERP Foundation | 9 | 9 | Completed |
 | v0.4 CRM Foundation | 6 | 6 | Completed |
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
-| v0.6 AI Platform | 5 | 2 | In Progress |
+| v0.6 AI Platform | 5 | 3 | In Progress |
 | v0.7 Marketplace & Integrations | 6 | 1 | Planned |
 | v1.0 First Commercial Release | 15 | 2 | Planned |
 

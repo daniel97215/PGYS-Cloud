@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { AiModule } from "./ai/ai.module";
 import { CrmPipelinesModule } from "./crm-pipelines/crm-pipelines.module";
 import { CrmActivitiesModule } from "./crm-activities/crm-activities.module";
 import { CrmOpportunitiesModule } from "./crm-opportunities/crm-opportunities.module";
@@ -63,6 +64,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
+    AiModule,
     PrismaModule,
     BillingModule,
     CheckoutModule,

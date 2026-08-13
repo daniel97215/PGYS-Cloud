@@ -6,6 +6,7 @@ import { CrmOpportunitiesModule } from "./crm-opportunities/crm-opportunities.mo
 import { CrmReportingModule } from "./crm-reporting/crm-reporting.module";
 import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
+import { CheckoutModule } from "./checkout/checkout.module";
 import { BrandsModule } from "./brands/brands.module";
 import { BusinessPartnerAddressesModule } from "./business-partner-addresses/business-partner-addresses.module";
 import { BusinessPartnerContactsModule } from "./business-partner-contacts/business-partner-contacts.module";
@@ -64,6 +65,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
     PrismaModule,
     BillingModule,
+    CheckoutModule,
     CrmActivitiesModule,
     CrmOpportunitiesModule,
     CrmPipelinesModule,

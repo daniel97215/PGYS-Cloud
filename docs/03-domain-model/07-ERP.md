@@ -349,6 +349,35 @@ L'audit PGYS-043 a execute 14 suites Inventory, soit 118 tests reussis. Il
 n'ajoute ni valorisation de stock, ni lot, ni numero de serie, ni planification
 MRP, qui restent hors du perimetre confirme.
 
+## Decision PGYS-044 - Sales Foundation
+
+PGYS-044 est satisfait par la chaine Sales deja implementee et auditee. Elle
+reference Business Partners et Catalog sans dupliquer leurs sources de verite,
+et delegue a Inventory les effets physiques des livraisons.
+
+Le perimetre confirme :
+
+- `SalesQuote` et ses lignes, avec cycle de proposition et transformation
+  unique en commande ;
+- `SalesOrder` et ses lignes, avec confirmation, traitement et achevement ;
+- `SalesDelivery` et ses lignes, rattachees a une commande et a des articles de
+  stock du meme Workspace ;
+- la sortie de stock transactionnelle lors de l'expedition et la tracabilite
+  par `StockMovement` ;
+- `SalesInvoice` et ses lignes comme facture commerciale ERP, eventuellement
+  creee depuis une commande ;
+- `SalesPayment` et `SalesPaymentAllocation` pour affecter un reglement aux
+  factures du meme client, Workspace et devise ;
+- le calcul et le snapshot des descriptions, quantites, prix, taxes et totaux
+  dans les lignes de chaque document ;
+- les numeros uniques par Workspace, les transitions fermees et
+  l'immutabilite des documents finalises ;
+- un acces Prisma limite aux repositories et des tests repository/service.
+
+L'audit PGYS-044 a execute 10 suites Sales, soit 82 tests reussis. `SalesInvoice`
+reste distinct de l'`Invoice` SaaS de Billing ; aucune conversion, emission PDF,
+integration de paiement ou ecriture comptable n'est ajoutee par ce ticket.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

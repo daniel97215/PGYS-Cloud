@@ -25,3 +25,12 @@ export type AiFinishReason =
   (typeof AI_FINISH_REASON)[keyof typeof AI_FINISH_REASON];
 
 export const AI_PROVIDER_ADAPTERS = Symbol("AI_PROVIDER_ADAPTERS");
+
+export const AI_ASSISTANT_STATUS = {
+  DRAFT: "DRAFT",
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+} as const;
+
+export type AiAssistantStatus =
+  (typeof AI_ASSISTANT_STATUS)[keyof typeof AI_ASSISTANT_STATUS];

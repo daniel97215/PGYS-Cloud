@@ -25,7 +25,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | v0.3 ERP Foundation | Demarrer les premiers modules ERP generiques. | Catalog, customers, products, inventory, sales et purchases definis avec un premier parcours exploitable. | Planned |
 | v0.4 CRM Foundation | Construire les fondations CRM reutilisables. | Contacts, pipeline, activites, historique client et premiers workflows CRM disponibles. | Completed |
 | v0.5 Marketing Foundation | Ajouter les capacites marketing de base. | Segments, campagnes, templates et suivi minimal des actions marketing disponibles. | Completed |
-| v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | In Progress |
+| v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | Completed |
 | v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | Planned |
 | v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | Planned |
 
@@ -38,7 +38,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-03 | ERP | Fondations ERP generiques. | v0.3 ERP Foundation | Planned |
 | EPIC-04 | CRM | Fondations CRM SaaS. | v0.4 CRM Foundation | Completed |
 | EPIC-05 | Marketing | Acquisition, campagnes et marketing automation. | v0.5 Marketing Foundation | Completed |
-| EPIC-06 | AI | Capacites IA transverses et gouvernees. | v0.6 AI Platform | In Progress |
+| EPIC-06 | AI | Capacites IA transverses et gouvernees. | v0.6 AI Platform | Completed |
 | EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Planned |
 | EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | Planned |
 | EPIC-09 | Administration | Back-office, gouvernance operationnelle et outils internes. | v1.0 First Commercial Release | Planned |
@@ -133,7 +133,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-056 | AI Platform Map | PGYS-031 | P2 | Completed |
 | PGYS-057 | AI Provider Contracts | PGYS-056 | P2 | Completed |
 | PGYS-058 | AI Usage Audit | PGYS-056 | P2 | Completed |
-| PGYS-059 | AI Assistant Foundation | PGYS-057, PGYS-058 | P3 | Planned |
+| PGYS-059 | AI Assistant Foundation | PGYS-057, PGYS-058 | P3 | Completed |
 
 ### EPIC-07 Integrations
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 58 |
-| Tickets planifies | 20 |
+| Tickets termines | 59 |
+| Tickets planifies | 19 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 74% |
+| Progression globale | 76% |
 
 ### Progression par EPIC
 
@@ -261,7 +261,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-03 ERP | 9 | 9 | 0 | 100% |
 | EPIC-04 CRM | 6 | 6 | 0 | 100% |
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
-| EPIC-06 AI | 5 | 4 | 1 | 80% |
+| EPIC-06 AI | 5 | 5 | 0 | 100% |
 | EPIC-07 Integrations | 6 | 1 | 5 | 17% |
 | EPIC-08 Reporting | 5 | 0 | 5 | 0% |
 | EPIC-09 Administration | 6 | 2 | 4 | 33% |
@@ -276,7 +276,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.3 ERP Foundation | 9 | 9 | Completed |
 | v0.4 CRM Foundation | 6 | 6 | Completed |
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
-| v0.6 AI Platform | 5 | 4 | In Progress |
+| v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 1 | Planned |
 | v1.0 First Commercial Release | 15 | 2 | Planned |
 

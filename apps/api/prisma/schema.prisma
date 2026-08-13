@@ -287,6 +287,12 @@ enum AiUsageStatus {
   FAILED
 }
 
+enum AiAssistantStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
 model Workspace {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String
@@ -344,6 +350,7 @@ model Workspace {
   activities           Activity[]
   auditLogs            AuditLog[]
   aiUsageAudits        AiUsageAudit[]
+  aiAssistants         AiAssistant[]
   settings             WorkspaceSettings?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
@@ -2203,4 +2210,20 @@ model AiUsageAudit {
   @@index([workspaceId, provider, createdAt])
   @@index([workspaceId, useCase, createdAt])
   @@index([actorId])
+}
+
+model AiAssistant {
+  id           String            @id @default(uuid()) @db.Uuid
+  workspaceId  String            @db.Uuid
+  code         String            @db.VarChar(40)
+  name         String            @db.VarChar(120)
+  description  String?           @db.VarChar(500)
+  instructions String            @db.Text
+  status       AiAssistantStatus @default(DRAFT)
+  workspace    Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId, status])
 }

@@ -338,6 +338,34 @@ Les envois groupes, pieces jointes, templates executables, campagnes, suivi
 d'ouverture, clics, webhooks, reprises, audit et delivery persiste restent hors
 du perimetre. Aucun secret ni configuration fournisseur n'est ajoute au depot.
 
+## Decision PGYS-062 - SMS Provider Contract
+
+PGYS-062 introduit un contrat interne d'envoi de SMS transactionnel, sans
+fournisseur executable ni endpoint public.
+
+Le perimetre V1 est le suivant :
+
+- une demande appartient a un `workspaceId` et porte une cle d'idempotence
+  obligatoire dans ce Workspace ;
+- elle cible un destinataire unique au format international E.164 ;
+- elle contient un texte obligatoire limite a 1 600 caracteres ;
+- `SMS_PROVIDER` selectionne globalement un adaptateur enregistre ;
+- `SMS_FROM` permet de definir un expediteur global optionnel cote serveur ;
+- le registre d'adaptateurs reste insensible a la casse et echoue proprement si
+  le fournisseur configure n'est pas installe ;
+- la reponse normalisee porte le statut `ACCEPTED`, `REJECTED` ou `FAILED`, le
+  fournisseur et une External Reference optionnelle ;
+- une erreur technique d'adaptateur est propagee sans reprise implicite ;
+- les tests utilisent uniquement un adaptateur factice en memoire.
+
+Comme pour Email, la cle d'idempotence est transmise a l'adaptateur, mais aucune
+deduplication interne durable n'est revendiquee sans persistance de delivery.
+
+Les envois groupes, MMS, liens courts, campagnes, accuses de livraison,
+webhooks, reprises, audit, estimation du nombre de segments et calcul du cout
+restent hors du perimetre. Aucun secret ni configuration fournisseur n'est
+ajoute au depot.
+
 ## Decisions differees
 
 PGYS-060 ne decide pas :

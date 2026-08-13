@@ -321,6 +321,34 @@ L'audit PGYS-042 a execute 10 suites ciblees, soit 62 tests reussis. Les
 categories, marques, fabricants, unites, taxes et listes de prix restent des
 referentiels de PGYS-040 ; aucune association non requise n'est inventee ici.
 
+## Decision PGYS-043 - Inventory Foundation
+
+PGYS-043 est satisfait par les modules Inventory deja implementes et audites.
+Le stock physique reste une responsabilite unique, sans total concurrent dans
+Sales ou Purchasing.
+
+Le perimetre confirme :
+
+- `Warehouse` et `StorageLocation` comme referentiels workspace-scoped ;
+- `InventoryItem` unique pour une combinaison emplacement, Product et Variant,
+  avec quantites en stock et reservees ;
+- `StockMovement` comme journal des entrees et sorties avec quantites avant et
+  apres mouvement ;
+- les ajustements comme corrections tracees du stock ;
+- les transferts atomiques entre deux articles de stock coherents ;
+- `InventoryCount` et ses lignes pour le comptage, l'ecart et la finalisation ;
+- `StockReservation` et les transitions de reservation, liberation,
+  consommation et annulation ;
+- la validation du Workspace commun, des quantites positives et de la
+  disponibilite avant toute sortie ou reservation ;
+- un acces Prisma limite aux repositories, y compris pour les transactions et
+  les verrous necessaires aux mutations de quantite ;
+- des migrations additives et une couverture des repositories et services.
+
+L'audit PGYS-043 a execute 14 suites Inventory, soit 118 tests reussis. Il
+n'ajoute ni valorisation de stock, ni lot, ni numero de serie, ni planification
+MRP, qui restent hors du perimetre confirme.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

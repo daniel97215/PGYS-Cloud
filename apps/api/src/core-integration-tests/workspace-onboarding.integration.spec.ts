@@ -341,6 +341,21 @@ describe("Core Workspace Onboarding integration", () => {
         Object.assign(subscription, data, { updatedAt: now });
         return subscription;
       }),
+      transition: jest.fn(
+        async (
+          id: string,
+          currentStatus: string,
+          status: string,
+          data: Partial<SubscriptionState>,
+        ) => {
+          const subscription = subscriptions.find(
+            (item) => item.id === id && item.status === currentStatus,
+          );
+          if (!subscription) return null;
+          Object.assign(subscription, data, { status, updatedAt: now });
+          return subscription;
+        },
+      ),
     } as unknown as SubscriptionsRepository;
 
     const workspaceServicesRepository = {

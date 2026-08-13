@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { SUBSCRIPTION_STATUSES } from "./subscriptions.constants";
+import {
+  SUBSCRIPTION_STATUSES,
+  SubscriptionStatus,
+} from "./subscriptions.constants";
 
 export type SubscriptionRecord = Prisma.SubscriptionGetPayload<object>;
 export type SubscriptionWorkspaceRecord = Prisma.WorkspaceGetPayload<object>;
@@ -105,6 +108,24 @@ export class SubscriptionsRepository {
     return this.prisma.subscription.update({
       where: { id: subscriptionId },
       data,
+    });
+  }
+
+  transition(
+    subscriptionId: string,
+    currentStatus: SubscriptionStatus,
+    status: SubscriptionStatus,
+    data: UpdateSubscriptionData = {},
+  ): Promise<SubscriptionRecord | null> {
+    return this.prisma.$transaction(async (transaction) => {
+      const result = await transaction.subscription.updateMany({
+        where: { id: subscriptionId, status: currentStatus },
+        data: { ...data, status },
+      });
+      if (result.count === 0) return null;
+      return transaction.subscription.findUnique({
+        where: { id: subscriptionId },
+      });
     });
   }
 }

@@ -33,6 +33,14 @@ export class SubscriptionsService {
   ): Promise<SubscriptionRecord> {
     const workspace = await this.requireWorkspace(data.workspaceId);
     const status = this.normalizeStatus(data.status);
+    if (
+      status !== SUBSCRIPTION_STATUSES.PENDING &&
+      status !== SUBSCRIPTION_STATUSES.ACTIVE
+    ) {
+      throw new ConflictException(
+        "Subscriptions can only be created as pending or active",
+      );
+    }
     const offer = await this.requireOffer(data.offerKey);
     this.requireOfferAvailable(offer);
     await this.requirePriceIfProvided(data.priceId, offer.id);
@@ -78,6 +86,7 @@ export class SubscriptionsService {
     data: ChangeOfferDto,
   ): Promise<SubscriptionRecord> {
     const subscription = await this.requireSubscription(subscriptionId);
+    this.requireOfferChangeAllowed(subscription);
     const offer = await this.requireOffer(data.offerKey);
     this.requireOfferAvailable(offer);
     await this.requirePriceIfProvided(data.priceId, offer.id);
@@ -99,10 +108,16 @@ export class SubscriptionsService {
     subscriptionId: string,
   ): Promise<SubscriptionRecord> {
     const subscription = await this.requireSubscription(subscriptionId);
-
-    return this.subscriptionsRepository.update(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.SUSPENDED,
-    });
+    if (subscription.status === SUBSCRIPTION_STATUSES.SUSPENDED) {
+      return subscription;
+    }
+    if (subscription.status !== SUBSCRIPTION_STATUSES.ACTIVE) {
+      throw this.invalidTransition(subscription.status, SUBSCRIPTION_STATUSES.SUSPENDED);
+    }
+    return this.applyTransition(
+      subscription,
+      SUBSCRIPTION_STATUSES.SUSPENDED,
+    );
   }
 
   async reactivateSubscription(
@@ -110,6 +125,15 @@ export class SubscriptionsService {
     data: ReactivateSubscriptionDto,
   ): Promise<SubscriptionRecord> {
     const subscription = await this.requireSubscription(subscriptionId);
+    if (subscription.status === SUBSCRIPTION_STATUSES.ACTIVE) {
+      return subscription;
+    }
+    if (
+      subscription.status !== SUBSCRIPTION_STATUSES.PENDING &&
+      subscription.status !== SUBSCRIPTION_STATUSES.SUSPENDED
+    ) {
+      throw this.invalidTransition(subscription.status, SUBSCRIPTION_STATUSES.ACTIVE);
+    }
     await this.ensureNoActiveDuplicate(
       subscription.workspaceId,
       subscription.offerId,
@@ -117,8 +141,7 @@ export class SubscriptionsService {
       subscription.id,
     );
 
-    return this.subscriptionsRepository.update(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.ACTIVE,
+    return this.applyTransition(subscription, SUBSCRIPTION_STATUSES.ACTIVE, {
       startedAt: data.startedAt ?? subscription.startedAt,
       endsAt: data.endsAt,
       cancelledAt: null,
@@ -131,13 +154,80 @@ export class SubscriptionsService {
     data: CancelSubscriptionDto,
   ): Promise<SubscriptionRecord> {
     const subscription = await this.requireSubscription(subscriptionId);
+    if (subscription.status === SUBSCRIPTION_STATUSES.CANCELLED) {
+      return subscription;
+    }
+    if (
+      subscription.status !== SUBSCRIPTION_STATUSES.PENDING &&
+      subscription.status !== SUBSCRIPTION_STATUSES.ACTIVE &&
+      subscription.status !== SUBSCRIPTION_STATUSES.SUSPENDED
+    ) {
+      throw this.invalidTransition(
+        subscription.status,
+        SUBSCRIPTION_STATUSES.CANCELLED,
+      );
+    }
     const cancelledAt = data.cancelledAt ?? new Date();
 
-    return this.subscriptionsRepository.update(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.CANCELLED,
+    return this.applyTransition(subscription, SUBSCRIPTION_STATUSES.CANCELLED, {
       cancelledAt,
       endsAt: data.endsAt ?? cancelledAt,
     });
+  }
+
+  async expireSubscription(subscriptionId: string): Promise<SubscriptionRecord> {
+    const subscription = await this.requireSubscription(subscriptionId);
+    if (subscription.status === SUBSCRIPTION_STATUSES.EXPIRED) {
+      return subscription;
+    }
+    if (
+      subscription.status !== SUBSCRIPTION_STATUSES.PENDING &&
+      subscription.status !== SUBSCRIPTION_STATUSES.ACTIVE &&
+      subscription.status !== SUBSCRIPTION_STATUSES.SUSPENDED
+    ) {
+      throw this.invalidTransition(
+        subscription.status,
+        SUBSCRIPTION_STATUSES.EXPIRED,
+      );
+    }
+    return this.applyTransition(subscription, SUBSCRIPTION_STATUSES.EXPIRED, {
+      endsAt: new Date(),
+    });
+  }
+
+  private requireOfferChangeAllowed(subscription: SubscriptionRecord): void {
+    if (
+      subscription.status !== SUBSCRIPTION_STATUSES.PENDING &&
+      subscription.status !== SUBSCRIPTION_STATUSES.ACTIVE &&
+      subscription.status !== SUBSCRIPTION_STATUSES.SUSPENDED
+    ) {
+      throw new ConflictException(
+        `Offer cannot be changed on a ${subscription.status} subscription`,
+      );
+    }
+  }
+
+  private async applyTransition(
+    subscription: SubscriptionRecord,
+    target: SubscriptionStatus,
+    data: Parameters<SubscriptionsRepository["transition"]>[3] = {},
+  ): Promise<SubscriptionRecord> {
+    const updated = await this.subscriptionsRepository.transition(
+      subscription.id,
+      subscription.status as SubscriptionStatus,
+      target,
+      data,
+    );
+    if (!updated) {
+      throw new ConflictException("Subscription status changed concurrently");
+    }
+    return updated;
+  }
+
+  private invalidTransition(current: string, target: SubscriptionStatus) {
+    return new ConflictException(
+      `Subscription cannot transition from ${current} to ${target}`,
+    );
   }
 
   private async requireWorkspace(

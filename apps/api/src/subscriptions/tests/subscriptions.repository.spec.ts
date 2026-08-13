@@ -192,6 +192,51 @@ describe("SubscriptionsRepository", () => {
       data: { status: SUBSCRIPTION_STATUSES.SUSPENDED },
     });
   });
+
+  it("guards a status transition with the current persisted status", async () => {
+    const updateMany = jest.fn().mockResolvedValue({ count: 1 });
+    const subscriptionFindUnique = jest.fn().mockResolvedValue({
+      ...subscription,
+      status: SUBSCRIPTION_STATUSES.SUSPENDED,
+    });
+    const repository = new SubscriptionsRepository(
+      createPrismaMock({ updateMany, subscriptionFindUnique }),
+    );
+
+    await expect(
+      repository.transition(
+        subscription.id,
+        SUBSCRIPTION_STATUSES.ACTIVE,
+        SUBSCRIPTION_STATUSES.SUSPENDED,
+      ),
+    ).resolves.toEqual(
+      expect.objectContaining({ status: SUBSCRIPTION_STATUSES.SUSPENDED }),
+    );
+    expect(updateMany).toHaveBeenCalledWith({
+      where: {
+        id: subscription.id,
+        status: SUBSCRIPTION_STATUSES.ACTIVE,
+      },
+      data: { status: SUBSCRIPTION_STATUSES.SUSPENDED },
+    });
+  });
+
+  it("returns null when a concurrent transition changed the status", async () => {
+    const updateMany = jest.fn().mockResolvedValue({ count: 0 });
+    const subscriptionFindUnique = jest.fn();
+    const repository = new SubscriptionsRepository(
+      createPrismaMock({ updateMany, subscriptionFindUnique }),
+    );
+
+    await expect(
+      repository.transition(
+        subscription.id,
+        SUBSCRIPTION_STATUSES.ACTIVE,
+        SUBSCRIPTION_STATUSES.CANCELLED,
+      ),
+    ).resolves.toBeNull();
+    expect(subscriptionFindUnique).not.toHaveBeenCalled();
+  });
 });
 
 function createPrismaMock(methods: {
@@ -203,6 +248,7 @@ function createPrismaMock(methods: {
   findMany?: jest.Mock;
   create?: jest.Mock;
   update?: jest.Mock;
+  updateMany?: jest.Mock;
 }): PrismaService {
   const prisma = {
     workspace: {
@@ -220,8 +266,14 @@ function createPrismaMock(methods: {
       findMany: methods.findMany ?? jest.fn(),
       create: methods.create ?? jest.fn(),
       update: methods.update ?? jest.fn(),
+      updateMany: methods.updateMany ?? jest.fn(),
     },
   };
+  Object.assign(prisma, {
+    $transaction: jest.fn(async (callback: (tx: typeof prisma) => unknown) =>
+      callback(prisma),
+    ),
+  });
 
   return prisma as unknown as PrismaService;
 }

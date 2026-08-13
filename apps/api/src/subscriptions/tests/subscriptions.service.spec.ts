@@ -73,10 +73,19 @@ describe("SubscriptionsService", () => {
       listByWorkspace: jest.fn().mockResolvedValue([subscription]),
       create: jest.fn().mockResolvedValue(subscription),
       update: jest.fn().mockResolvedValue(subscription),
+      transition: jest.fn().mockImplementation(
+        async (_id, _current, status, data) => ({
+          ...subscription,
+          ...data,
+          status,
+        }),
+      ),
     } as unknown as jest.Mocked<SubscriptionsRepository>;
 
     service = new SubscriptionsService(repository);
   });
+
+  afterEach(() => jest.useRealTimers());
 
   it("creates a subscription", async () => {
     const result = await service.createSubscription({
@@ -145,23 +154,34 @@ describe("SubscriptionsService", () => {
   it("suspends a subscription", async () => {
     await service.suspendSubscription(subscription.id);
 
-    expect(repository.update).toHaveBeenCalledWith(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.SUSPENDED,
-    });
+    expect(repository.transition).toHaveBeenCalledWith(
+      subscription.id,
+      SUBSCRIPTION_STATUSES.ACTIVE,
+      SUBSCRIPTION_STATUSES.SUSPENDED,
+      {},
+    );
   });
 
   it("reactivates a subscription", async () => {
     const renewalDate = new Date("2026-03-01T00:00:00.000Z");
+    repository.findById.mockResolvedValue({
+      ...subscription,
+      status: SUBSCRIPTION_STATUSES.SUSPENDED,
+    });
 
     await service.reactivateSubscription(subscription.id, { renewalDate });
 
-    expect(repository.update).toHaveBeenCalledWith(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.ACTIVE,
-      startedAt: subscription.startedAt,
-      endsAt: undefined,
-      cancelledAt: null,
-      renewalDate,
-    });
+    expect(repository.transition).toHaveBeenCalledWith(
+      subscription.id,
+      SUBSCRIPTION_STATUSES.SUSPENDED,
+      SUBSCRIPTION_STATUSES.ACTIVE,
+      {
+        startedAt: subscription.startedAt,
+        endsAt: undefined,
+        cancelledAt: null,
+        renewalDate,
+      },
+    );
   });
 
   it("cancels a subscription", async () => {
@@ -169,11 +189,12 @@ describe("SubscriptionsService", () => {
 
     await service.cancelSubscription(subscription.id, { cancelledAt });
 
-    expect(repository.update).toHaveBeenCalledWith(subscription.id, {
-      status: SUBSCRIPTION_STATUSES.CANCELLED,
-      cancelledAt,
-      endsAt: cancelledAt,
-    });
+    expect(repository.transition).toHaveBeenCalledWith(
+      subscription.id,
+      SUBSCRIPTION_STATUSES.ACTIVE,
+      SUBSCRIPTION_STATUSES.CANCELLED,
+      { cancelledAt, endsAt: cancelledAt },
+    );
   });
 
   it("throws ConflictException when an active duplicate exists", async () => {
@@ -234,6 +255,107 @@ describe("SubscriptionsService", () => {
         offerKey: offer.key,
         priceId: price.id,
         startedAt: subscription.startedAt,
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.create).not.toHaveBeenCalled();
+  });
+
+  it("activates a pending subscription and keeps repeated activation idempotent", async () => {
+    repository.findById.mockResolvedValue({
+      ...subscription,
+      status: SUBSCRIPTION_STATUSES.PENDING,
+    });
+    await service.reactivateSubscription(subscription.id, {});
+    expect(repository.transition).toHaveBeenCalledWith(
+      subscription.id,
+      SUBSCRIPTION_STATUSES.PENDING,
+      SUBSCRIPTION_STATUSES.ACTIVE,
+      expect.objectContaining({ startedAt: subscription.startedAt }),
+    );
+
+    repository.transition.mockClear();
+    repository.findById.mockResolvedValue(subscription);
+    await expect(
+      service.reactivateSubscription(subscription.id, {
+        startedAt: new Date("2030-01-01T00:00:00.000Z"),
+      }),
+    ).resolves.toBe(subscription);
+    expect(repository.transition).not.toHaveBeenCalled();
+  });
+
+  it("keeps repeated suspension and cancellation idempotent", async () => {
+    const suspended = { ...subscription, status: SUBSCRIPTION_STATUSES.SUSPENDED };
+    repository.findById.mockResolvedValue(suspended);
+    await expect(service.suspendSubscription(subscription.id)).resolves.toBe(
+      suspended,
+    );
+    expect(repository.transition).not.toHaveBeenCalled();
+
+    const cancelled = {
+      ...subscription,
+      status: SUBSCRIPTION_STATUSES.CANCELLED,
+      cancelledAt: new Date("2026-06-01T00:00:00.000Z"),
+    };
+    repository.findById.mockResolvedValue(cancelled);
+    await expect(
+      service.cancelSubscription(subscription.id, {
+        cancelledAt: new Date("2030-01-01T00:00:00.000Z"),
+      }),
+    ).resolves.toBe(cancelled);
+    expect(repository.transition).not.toHaveBeenCalled();
+  });
+
+  it("expires non-terminal subscriptions and keeps expiry idempotent", async () => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-06-01T00:00:00.000Z"));
+    await service.expireSubscription(subscription.id);
+    expect(repository.transition).toHaveBeenCalledWith(
+      subscription.id,
+      SUBSCRIPTION_STATUSES.ACTIVE,
+      SUBSCRIPTION_STATUSES.EXPIRED,
+      { endsAt: new Date("2026-06-01T00:00:00.000Z") },
+    );
+
+    repository.transition.mockClear();
+    const expired = { ...subscription, status: SUBSCRIPTION_STATUSES.EXPIRED };
+    repository.findById.mockResolvedValue(expired);
+    await expect(service.expireSubscription(subscription.id)).resolves.toBe(expired);
+    expect(repository.transition).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [SUBSCRIPTION_STATUSES.CANCELLED, "reactivate"],
+    [SUBSCRIPTION_STATUSES.EXPIRED, "suspend"],
+    [SUBSCRIPTION_STATUSES.CANCELLED, "expire"],
+  ])("rejects terminal transition from %s through %s", async (status, action) => {
+    repository.findById.mockResolvedValue({ ...subscription, status });
+    const operation =
+      action === "reactivate"
+        ? service.reactivateSubscription(subscription.id, {})
+        : action === "suspend"
+          ? service.suspendSubscription(subscription.id)
+          : service.expireSubscription(subscription.id);
+    await expect(operation).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.transition).not.toHaveBeenCalled();
+  });
+
+  it("rejects offer changes on terminal subscriptions", async () => {
+    repository.findById.mockResolvedValue({
+      ...subscription,
+      status: SUBSCRIPTION_STATUSES.CANCELLED,
+    });
+    await expect(
+      service.changeOffer(subscription.id, { offerKey: nextOffer.key }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(repository.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects direct creation in a non-entry lifecycle state", async () => {
+    await expect(
+      service.createSubscription({
+        workspaceId: workspace.id,
+        offerKey: offer.key,
+        startedAt: subscription.startedAt,
+        status: SUBSCRIPTION_STATUSES.SUSPENDED,
       }),
     ).rejects.toBeInstanceOf(ConflictException);
     expect(repository.create).not.toHaveBeenCalled();

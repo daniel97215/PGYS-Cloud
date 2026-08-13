@@ -96,4 +96,13 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.cancelSubscription(subscriptionId, data);
   }
+
+  @ApiOperation({ summary: "Expire a subscription" })
+  @ApiParam({ name: "subscriptionId" })
+  @ApiOkResponse({ description: "Subscription expired" })
+  @ApiNotFoundResponse({ description: "Subscription not found" })
+  @Patch(":subscriptionId/expire")
+  expire(@Param("subscriptionId") subscriptionId: string) {
+    return this.subscriptionsService.expireSubscription(subscriptionId);
+  }
 }

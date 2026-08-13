@@ -241,6 +241,33 @@ Le depot contient deja des modules correspondant a plusieurs de ces capacites.
 Leur presence ne suffit pas a les marquer termines : chaque ticket doit etre
 audite individuellement contre son perimetre, ses tests et ses validations.
 
+## Decision PGYS-040 - Catalog Foundation
+
+PGYS-040 est satisfait par les fondations Catalog deja presentes et auditees
+dans le depot. Aucun second module Catalog et aucune migration supplementaire
+ne sont necessaires.
+
+Le socle confirme :
+
+- les racines `Product` et `ProductVariant` ;
+- les identifiants complementaires `ProductBarcode` et `ProductMedia` ;
+- les caracteristiques configurables `ProductAttribute` et leurs valeurs ;
+- les referentiels workspace-scoped `ProductCategory`, `Brand`,
+  `Manufacturer`, `Unit`, `Tax` et `PriceList` ;
+- des codes uniques dans chaque Workspace et des cycles actif/inactif ou
+  actif/archive selon le referentiel ;
+- des DTO valides et des operations publiques de creation, consultation,
+  modification et desactivation/archivage ;
+- un acces aux donnees centralise dans les repositories et des gardes de
+  coherence `workspaceId` pour les references ;
+- des migrations additives distinctes et une couverture repository/service
+  pour chacun des modules.
+
+L'audit PGYS-040 a execute 22 suites Catalog, soit 135 tests reussis. Le ticket
+ne cree pas d'association implicite entre Product et tous les referentiels :
+toute relation supplementaire devra repondre a un besoin metier explicite et
+faire l'objet d'un ticket dedie.
+
 ## Decisions differees
 
 PGYS-039 ne decide pas :

@@ -5,6 +5,7 @@ import { CrmPipelinesModule } from "./crm-pipelines/crm-pipelines.module";
 import { CrmActivitiesModule } from "./crm-activities/crm-activities.module";
 import { CrmOpportunitiesModule } from "./crm-opportunities/crm-opportunities.module";
 import { CrmReportingModule } from "./crm-reporting/crm-reporting.module";
+import { ErpReportingModule } from "./erp-reporting/erp-reporting.module";
 import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
 import { CheckoutModule } from "./checkout/checkout.module";
@@ -76,6 +77,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     CrmOpportunitiesModule,
     CrmPipelinesModule,
     CrmReportingModule,
+    ErpReportingModule,
     HealthModule,
     BrandsModule,
     BusinessPartnerAddressesModule,

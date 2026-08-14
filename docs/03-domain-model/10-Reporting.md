@@ -289,6 +289,35 @@ pas `SalesInvoice`, facture commerciale ERP. Il ne calcule ni MRR, ni ARR, ni
 churn, ni revenu reconnu, ni prevision et n'ajoute aucun historique, cache,
 export ou frontend.
 
+## Decision PGYS-068 - ERP Reporting Foundation
+
+PGYS-068 introduit cinq instantanes ERP en lecture seule :
+
+- Sales Orders groupes par statut et devise ;
+- Sales Invoices groupees par statut et devise ;
+- Purchase Orders groupes par statut et devise ;
+- Purchase Invoices groupees par statut et devise ;
+- Stock Movements groupes par direction.
+
+Les rapports de documents exposent le nombre, le sous-total, la taxe et le
+total. Les rapports de factures exposent aussi le montant paye. Les montants
+restent separes par devise et sont serialises avec la precision a quatre
+decimales des documents ERP.
+
+Les periodes inclusives utilisent `orderDate` pour les commandes, `issueDate`
+pour les factures Sales, `invoiceDate` pour les factures Purchasing et
+`occurredAt` pour les mouvements. Le rapport de mouvements accepte en plus un
+filtre optionnel par Warehouse et somme les quantites avec quatre decimales.
+
+Chaque lecture est bornee par `workspaceId` dans le repository. Le filtre
+Warehouse traverse uniquement l'Inventory Item appartenant au mouvement. Les
+rapports ne modifient aucun document ni mouvement et ne melangent jamais
+`Invoice` Billing avec `SalesInvoice` ERP.
+
+Le ticket ne calcule ni marge, ni cout des ventes, ni valorisation du stock, ni
+balance agee, ni prevision, ni conversion monetaire. Il n'ajoute aucun
+historique, cache, export ou frontend.
+
 ## Decisions differees
 
 PGYS-065 ne decide pas :

@@ -266,6 +266,29 @@ Le ticket ne lit ni Subscription, ni Offer, ni Invoice et ne calcule aucun
 revenu. Il n'ajoute aucun historique, monitoring d'infrastructure, uptime,
 alerte, cache, export ou dashboard frontend.
 
+## Decision PGYS-067 - Commercial Reporting Foundation
+
+PGYS-067 introduit deux instantanes commerciaux distincts pour un Workspace :
+
+- les Subscriptions groupees par `offerId` et statut ;
+- les Invoices Billing groupees par statut et devise, avec nombre de factures
+  et sommes du sous-total, de la remise, de la taxe et du total.
+
+Les deux rapports acceptent un filtre optionnel par Offer et une periode
+inclusive. La periode porte sur `createdAt` pour les Subscriptions et sur
+`issuedAt` pour les Invoices. Cette distinction reste explicite dans les routes
+et les contrats afin de ne pas melanger deux semantiques temporelles.
+
+Toutes les lectures sont bornees par `workspaceId`. Le filtre Offer applique
+aux factures traverse leur Subscription dans ce meme perimetre. Les montants
+sont serialises avec deux decimales et restent groupes par devise, sans somme
+inter-devise ni conversion implicite.
+
+Le rapport porte uniquement sur `Invoice`, facture SaaS de Billing. Il ne lit
+pas `SalesInvoice`, facture commerciale ERP. Il ne calcule ni MRR, ni ARR, ni
+churn, ni revenu reconnu, ni prevision et n'ajoute aucun historique, cache,
+export ou frontend.
+
 ## Decisions differees
 
 PGYS-065 ne decide pas :

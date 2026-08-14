@@ -8,6 +8,7 @@ import { CrmReportingModule } from "./crm-reporting/crm-reporting.module";
 import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
 import { CheckoutModule } from "./checkout/checkout.module";
+import { CommercialReportingModule } from "./commercial-reporting/commercial-reporting.module";
 import { BrandsModule } from "./brands/brands.module";
 import { BusinessPartnerAddressesModule } from "./business-partner-addresses/business-partner-addresses.module";
 import { BusinessPartnerContactsModule } from "./business-partner-contacts/business-partner-contacts.module";
@@ -70,6 +71,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     PrismaModule,
     BillingModule,
     CheckoutModule,
+    CommercialReportingModule,
     CrmActivitiesModule,
     CrmOpportunitiesModule,
     CrmPipelinesModule,

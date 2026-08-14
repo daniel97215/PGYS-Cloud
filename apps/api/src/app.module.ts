@@ -31,6 +31,7 @@ import { MarketingSegmentsModule } from "./marketing-segments/marketing-segments
 import { MarketingCampaignsModule } from "./marketing-campaigns/marketing-campaigns.module";
 import { MarketingAutomationsModule } from "./marketing-automations/marketing-automations.module";
 import { OffersModule } from "./offers/offers.module";
+import { OperationalReportingModule } from "./operational-reporting/operational-reporting.module";
 import { PricingModule } from "./pricing/pricing.module";
 import { PriceListsModule } from "./price-lists/price-lists.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -91,6 +92,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     InventoryItemsModule,
     IntegrationsModule,
     ManufacturersModule,
+    OperationalReportingModule,
     MarketingSegmentsModule,
     MarketingCampaignsModule,
     MarketingAutomationsModule,

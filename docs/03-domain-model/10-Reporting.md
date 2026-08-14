@@ -241,6 +241,31 @@ Chaque ticket doit definir ses mesures, dimensions, sources, dates, statuts,
 permissions, filtres, contrats de reponse et exclusions avant d'introduire du
 code ou une persistance.
 
+## Decision PGYS-066 - Operational Dashboards Foundation
+
+PGYS-066 introduit un instantane operationnel en lecture seule pour un
+Workspace.
+
+Le contrat V1 expose :
+
+- les services `Service` regroupes par type et statut ;
+- les jobs de provisioning regroupes par operation et statut ;
+- la date de generation de l'instantane ;
+- des filtres optionnels et inclusifs sur la date de creation des faits.
+
+Le filtre de periode s'applique de facon identique aux services et aux jobs.
+Il ne reconstitue pas un etat historique : les groupes de services decrivent
+les statuts courants des services crees pendant la periode selectionnee.
+
+Toutes les lectures sont bornees par `workspaceId` et centralisees dans le
+repository de Reporting. Les operations et statuts de provisioning sont
+limites aux constantes du moteur existant ; une valeur inconnue echoue
+explicitement au lieu d'etre exposee comme un nouveau contrat.
+
+Le ticket ne lit ni Subscription, ni Offer, ni Invoice et ne calcule aucun
+revenu. Il n'ajoute aucun historique, monitoring d'infrastructure, uptime,
+alerte, cache, export ou dashboard frontend.
+
 ## Decisions differees
 
 PGYS-065 ne decide pas :

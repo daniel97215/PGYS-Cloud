@@ -90,6 +90,34 @@ describe("CrmReportingService", () => {
     );
   });
 
+  it("returns the consolidated CRM snapshot with one validated query", async () => {
+    const result = await service.summary(workspaceId, { pipelineId });
+
+    expect(result.generatedAt).toEqual(expect.any(String));
+    expect(result.opportunities.groups[0]).toEqual({
+      pipelineId,
+      stageId,
+      status: CrmOpportunityStatus.OPEN,
+      count: 2,
+    });
+    expect(result.opportunities.amountsByCurrency[0]).toEqual(
+      expect.objectContaining({ currency: "EUR", amount: "1250.50" }),
+    );
+    expect(result.activities).toEqual({
+      groups: [
+        {
+          type: CrmActivityType.CALL,
+          status: CrmActivityStatus.PLANNED,
+          count: 4,
+        },
+      ],
+      overduePlanned: 1,
+    });
+    expect(repository.pipelineExists).toHaveBeenCalledTimes(1);
+    expect(repository.opportunityCounts).toHaveBeenCalledTimes(1);
+    expect(repository.activityCounts).toHaveBeenCalledTimes(1);
+  });
+
   it("converts and forwards pipeline and period filters", async () => {
     await service.opportunities(workspaceId, {
       pipelineId,

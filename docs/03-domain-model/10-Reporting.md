@@ -318,6 +318,29 @@ Le ticket ne calcule ni marge, ni cout des ventes, ni valorisation du stock, ni
 balance agee, ni prevision, ni conversion monetaire. Il n'ajoute aucun
 historique, cache, export ou frontend.
 
+## Decision PGYS-069 - CRM Reporting Consolidation
+
+PGYS-069 consolide les instantanes CRM de PGYS-051 sous le contrat Reporting
+commun, sans introduire de nouvelle mesure.
+
+Le resume V1 expose dans une meme reponse :
+
+- les opportunites groupees par pipeline, etape et statut ;
+- leurs montants groupes separement par devise ;
+- les activites groupees par type et statut ;
+- le nombre d'activites `PLANNED` en retard ;
+- la date de generation de l'instantane.
+
+Le contrat reutilise les filtres existants par Pipeline et periode de creation.
+Le Pipeline est verifie dans le Workspace une seule fois avant les lectures du
+resume. Toutes les agregations restent centralisees dans le repository CRM
+Reporting existant et bornees par `workspaceId`.
+
+Le nouvel endpoint suit la convention transverse
+`/workspaces/:workspaceId/reports/crm/summary`. Les endpoints PGYS-051 restent
+disponibles pour compatibilite. Le ticket n'ajoute ni historique de transition,
+ni taux de conversion, funnel, prevision, scoring, cache, export ou frontend.
+
 ## Decisions differees
 
 PGYS-065 ne decide pas :

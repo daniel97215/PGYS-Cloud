@@ -27,7 +27,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | v0.5 Marketing Foundation | Ajouter les capacites marketing de base. | Segments, campagnes, templates et suivi minimal des actions marketing disponibles. | Completed |
 | v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | Completed |
 | v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | Completed |
-| v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | Planned |
+| v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | In Progress |
 
 ## 3. EPIC
 
@@ -40,7 +40,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-05 | Marketing | Acquisition, campagnes et marketing automation. | v0.5 Marketing Foundation | Completed |
 | EPIC-06 | AI | Capacites IA transverses et gouvernees. | v0.6 AI Platform | Completed |
 | EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Completed |
-| EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | Planned |
+| EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | In Progress |
 | EPIC-09 | Administration | Back-office, gouvernance operationnelle et outils internes. | v1.0 First Commercial Release | Planned |
 | EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | Planned |
 
@@ -150,7 +150,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 
 | ID | Titre | Dependances | Priorite | Etat |
 | --- | --- | --- | --- | --- |
-| PGYS-065 | Reporting Domain Map | PGYS-031 | P2 | Planned |
+| PGYS-065 | Reporting Domain Map | PGYS-031 | P2 | Completed |
 | PGYS-066 | Operational Dashboards Foundation | PGYS-065 | P2 | Planned |
 | PGYS-067 | Commercial Reporting Foundation | PGYS-035, PGYS-065 | P2 | Planned |
 | PGYS-068 | ERP Reporting Foundation | PGYS-044, PGYS-065 | P3 | Planned |
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 64 |
-| Tickets planifies | 14 |
+| Tickets termines | 65 |
+| Tickets planifies | 13 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 82% |
+| Progression globale | 83% |
 
 ### Progression par EPIC
 
@@ -263,7 +263,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-05 Marketing | 8 | 8 | 0 | 100% |
 | EPIC-06 AI | 5 | 5 | 0 | 100% |
 | EPIC-07 Integrations | 6 | 6 | 0 | 100% |
-| EPIC-08 Reporting | 5 | 0 | 5 | 0% |
+| EPIC-08 Reporting | 5 | 1 | 4 | 20% |
 | EPIC-09 Administration | 6 | 2 | 4 | 33% |
 | EPIC-10 Mobile | 4 | 0 | 4 | 0% |
 
@@ -278,7 +278,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 6 | Completed |
-| v1.0 First Commercial Release | 15 | 2 | Planned |
+| v1.0 First Commercial Release | 15 | 3 | In Progress |
 
 ## 8. Maintenance du Backlog Master
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { portalMock } from "@/lib/mock";
-import { Sidebar } from "./sidebar";
+import { adminPortal } from "@/lib/admin";
+import { AdminSidebar } from "./admin-sidebar";
 import { Topbar } from "./topbar";
 
 type PortalShellProps = {
@@ -10,11 +10,11 @@ type PortalShellProps = {
 export function PortalShell({ children }: PortalShellProps) {
   return (
     <div className="portal-grid min-h-screen bg-background">
-      <Sidebar navigation={portalMock.navigation} />
+      <AdminSidebar navigation={adminPortal.navigation} />
       <div className="min-w-0">
         <Topbar
-          customer={portalMock.customer}
-          navigation={portalMock.navigation}
+          customer={adminPortal.operator}
+          navigation={adminPortal.navigation}
         />
         <main
           id="portal-content"

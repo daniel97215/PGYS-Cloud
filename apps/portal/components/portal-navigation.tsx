@@ -1,8 +1,8 @@
 import { Icon } from "@pgys/ui";
-import type { PortalNavigationItem } from "@/lib/mock";
+import type { AdminNavigationItem } from "@/lib/admin";
 
 type PortalNavigationProps = {
-  items: readonly PortalNavigationItem[];
+  items: readonly AdminNavigationItem[];
   label: string;
 };
 

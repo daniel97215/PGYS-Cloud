@@ -1,71 +1,70 @@
-import { Alert, Badge, Card, Heading, Icon } from "@pgys/ui";
-import { ServiceCard } from "@/components/service-card";
-import { portalMock } from "@/lib/mock";
+import { Alert, Badge, Icon } from "@pgys/ui";
+import { adminPortal } from "@/lib/admin";
 
 export default function DashboardPage() {
-  const { services } = portalMock;
-
   return (
-    <div className="grid gap-8 lg:gap-10">
-      <section
-        aria-labelledby="welcome-title"
-        className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <Heading
-          as="h1"
-          id="welcome-title"
-          eyebrow="Administration"
-          title="Vos services PROGYS"
-          description="Un point d’entrée unique pour rejoindre les services disponibles sur les sous-domaines PROGYS."
-        />
-        <Badge variant="brand" className="self-start sm:self-auto">
-          Lanceur de services
-        </Badge>
+    <div className="mx-auto grid max-w-6xl gap-8 lg:gap-9">
+      <section aria-labelledby="admin-title">
+        <h1
+          id="admin-title"
+          className="text-3xl font-black tracking-[-0.035em] text-content sm:text-4xl"
+        >
+          Centre d’administration
+        </h1>
+        <p className="mt-3 max-w-3xl text-base leading-7 text-content-muted">
+          Supervisez la plateforme PGYS depuis un espace réservé aux opérateurs
+          internes.
+        </p>
       </section>
 
-      <Alert variant="info" title="Interface initiale">
-        Cette interface est privée. Elle distingue les services publics, les
-        accès clients et les outils internes avant leur mise en production.
+      <Alert variant="info" title="Accès interne PGYS" className="px-5 py-5">
+        <p>
+          Les permissions <strong>OWNER</strong> et <strong>ADMIN</strong> des
+          clients restent limitées à leur propre workspace.
+        </p>
+        <p className="mt-1.5">
+          L’accès global des opérateurs utilisera une autorisation Platform
+          dédiée avant toute donnée réelle.
+        </p>
       </Alert>
 
-      <section id="services" aria-labelledby="services-title">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 id="services-title" className="text-2xl font-bold text-content">
-              Services disponibles
-            </h2>
-            <p className="mt-2 text-sm text-content-muted">
-              Chaque carte ouvre le service concerné dans un nouvel onglet.
-            </p>
-          </div>
-          <span className="hidden text-sm font-semibold text-content-muted sm:block">
-            {services.length} accès
-          </span>
+      <section id="modules" aria-labelledby="modules-title">
+        <div className="mb-4">
+          <h2 id="modules-title" className="text-xl font-bold text-content">
+            Espaces d’administration
+          </h2>
+          <p className="mt-1.5 text-sm leading-6 text-content-muted">
+            Les vues métier seront livrées séparément, avec leurs propres
+            contrats et contrôles d’accès.
+          </p>
         </div>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
-          {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+        <div className="overflow-hidden rounded-pgys-lg border border-border bg-surface shadow-pgys-sm">
+          {adminPortal.modules.map((module, index) => (
+            <article
+              key={module.id}
+              className={`flex items-center gap-4 px-5 py-5 sm:px-6 ${
+                index === 0 ? "" : "border-t border-border"
+              }`}
+            >
+              <span className="grid size-11 shrink-0 place-items-center rounded-pgys-md bg-brand-soft text-brand-dark">
+                <Icon name={module.icon} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-content">{module.title}</h3>
+                <p className="mt-1 text-sm leading-6 text-content-muted">
+                  {module.description}
+                </p>
+              </div>
+              <span className="hidden shrink-0 sm:block">
+                <Badge variant="brand">Prochainement</Badge>
+              </span>
+            </article>
           ))}
         </div>
-      </section>
-
-      <section id="settings" aria-labelledby="settings-title">
-        <Card className="border-brand/20 bg-brand-soft p-6 sm:p-8">
-          <div className="flex max-w-3xl gap-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-pgys-lg bg-brand text-white">
-              <Icon name="settings" size="lg" />
-            </span>
-            <div>
-              <h2 id="settings-title" className="text-xl font-bold text-content">
-                Administration progressive
-              </h2>
-              <p className="mt-2 leading-7 text-content-muted">
-                Le portail est prêt à accueillir ensuite l’authentification,
-                les rôles, la configuration des services et leur supervision.
-              </p>
-            </div>
-          </div>
-        </Card>
+        <p className="mt-4 text-xs leading-5 text-content-muted sm:hidden">
+          Les modules Workspaces, Abonnements et Audit seront activés dans les
+          prochains tickets.
+        </p>
       </section>
     </div>
   );

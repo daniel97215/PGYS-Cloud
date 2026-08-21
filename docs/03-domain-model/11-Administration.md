@@ -41,6 +41,12 @@ ainsi que leur detail commercial (workspace, offre, prix et echeances). Les
 vues sont strictement en lecture seule : elles reutilisent la source de verite
 Subscription et ne contournent aucune transition de son cycle de vie.
 
+PGYS-073 expose aux operateurs la consultation globale, filtree et paginee du
+journal `AuditLog`. La vue restitue l'action, le workspace, l'acteur, la cible
+et l'horodatage sans permettre aucune mutation. Le contenu JSON libre de
+`metadata` n'est pas expose tant qu'un contrat de redaction explicite n'est pas
+defini ; seule sa presence est signalee.
+
 ## 3. Administration d'une societe
 
 Chaque societe administre ses utilisateurs et leurs autorisations dans son
@@ -56,7 +62,7 @@ comme une capacite d'operateur PGYS.
 - PGYS-070 : fondation visuelle du portail operateur, sans donnees reelles ;
 - PGYS-071 : autorisation Platform et vues de consultation des workspaces ;
 - PGYS-072 : vues operateur en lecture seule des abonnements ;
-- PGYS-073 : vues d'administration du journal d'audit.
+- PGYS-073 : vues operateur en lecture seule du journal d'audit.
 
 Toute vue transverse doit verifier l'autorisation Platform dediee. Toute vue
 d'administration cliente doit conserver l'isolation stricte du workspace.

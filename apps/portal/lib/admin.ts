@@ -26,7 +26,7 @@ export const adminPortal = {
     { label: "Vue d’ensemble", href: "/", icon: "home" },
     { label: "Workspaces", href: "/workspaces", icon: "apps" },
     { label: "Abonnements", href: "/subscriptions", icon: "ticket" },
-    { label: "Journal d’audit", href: "/#modules", icon: "backup" },
+    { label: "Journal d’audit", href: "/audit", icon: "backup" },
   ] satisfies AdminNavigationItem[],
   modules: [
     {
@@ -49,8 +49,8 @@ export const adminPortal = {
     },
     {
       id: "audit",
-      available: false,
-      href: "/#modules",
+      available: true,
+      href: "/audit",
       title: "Journal d’audit",
       description:
         "Examiner les actions sensibles dans un périmètre interne contrôlé.",

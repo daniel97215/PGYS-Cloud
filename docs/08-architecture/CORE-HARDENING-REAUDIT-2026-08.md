@@ -88,12 +88,17 @@ Le premier increment technique de PGYS-032 applique `ParseUUIDPipe` en version
 controller verifient la presence du pipe, l'acceptation d'un UUID v4 et le rejet
 d'une valeur invalide ou d'une autre version.
 
+Le deuxieme increment installe un filtre d'exception global conforme a
+ADR-014. Les erreurs exposent desormais `code`, `message`, `details` et
+`correlationId`. Les erreurs de validation conservent leurs messages dans des
+details structures, un code metier explicite peut etre fourni par une exception
+et les erreurs internes sont masquees puis journalisees avec leur identifiant de
+correlation.
+
 Les ecarts suivants restent ouverts :
 
 - aucun test HTTP de bout en bout ne couvre encore guards, validation et
   erreurs ;
-- aucune enveloppe d'erreur commune avec code et identifiant de correlation
-  n'est installee ;
 - les collections Core potentiellement croissantes ne sont pas paginees.
 
 Ces sujets doivent rester separes : la validation d'identifiants, le format

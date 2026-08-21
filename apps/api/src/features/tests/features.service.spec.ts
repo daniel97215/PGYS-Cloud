@@ -29,6 +29,8 @@ describe("FeaturesService", () => {
         pageSize: 10,
       }),
       findByKey: jest.fn().mockResolvedValue(feature),
+      findById: jest.fn().mockResolvedValue(feature),
+      findByKeys: jest.fn().mockResolvedValue([feature]),
       archive: jest.fn().mockResolvedValue({
         ...feature,
         status: FEATURE_STATUS_ARCHIVED,
@@ -87,6 +89,20 @@ describe("FeaturesService", () => {
 
     expect(result).toEqual(feature);
     expect(repository.findByKey).toHaveBeenCalledWith(feature.key);
+  });
+
+  it("implements the public Features contract", async () => {
+    await expect(service.findById(feature.id)).resolves.toEqual(feature);
+    await expect(service.findByKey(" CRM.Contacts ")).resolves.toEqual(
+      feature,
+    );
+    await expect(
+      service.findByKeys([" CRM.Contacts ", "crm.contacts", " "]),
+    ).resolves.toEqual([feature]);
+
+    expect(repository.findById).toHaveBeenCalledWith(feature.id);
+    expect(repository.findByKey).toHaveBeenCalledWith(feature.key);
+    expect(repository.findByKeys).toHaveBeenCalledWith([feature.key]);
   });
 
   it("archives a feature", async () => {

@@ -57,6 +57,17 @@ export class FeaturesRepository {
     });
   }
 
+  findById(id: string): Promise<FeatureRecord | null> {
+    return this.prisma.feature.findUnique({ where: { id } });
+  }
+
+  findByKeys(keys: string[]): Promise<FeatureRecord[]> {
+    return this.prisma.feature.findMany({
+      where: { key: { in: keys } },
+      orderBy: { key: "asc" },
+    });
+  }
+
   archive(key: string): Promise<FeatureRecord> {
     return this.prisma.feature.update({
       where: { key },

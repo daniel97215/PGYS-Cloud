@@ -7,12 +7,16 @@ import {
   Page,
   PaginationQueryDto,
 } from "../common/dto/pagination-query.dto";
+import {
+  FeaturesContract,
+  PublicFeature,
+} from "../shared/contracts/features.contract";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { FeatureRecord, FeaturesRepository } from "./features.repository";
 
 @Injectable()
-export class FeaturesService {
+export class FeaturesService implements FeaturesContract {
   constructor(private readonly featuresRepository: FeaturesRepository) {}
 
   createFeature(data: CreateFeatureDto): Promise<FeatureRecord> {
@@ -40,6 +44,26 @@ export class FeaturesService {
 
   async getFeature(key: string): Promise<FeatureRecord> {
     return this.requireFeature(key);
+  }
+
+  findById(id: string): Promise<PublicFeature | null> {
+    return this.featuresRepository.findById(id);
+  }
+
+  findByKey(key: string): Promise<PublicFeature | null> {
+    const normalizedKey = key.trim().toLowerCase();
+    return normalizedKey
+      ? this.featuresRepository.findByKey(normalizedKey)
+      : Promise.resolve(null);
+  }
+
+  findByKeys(keys: string[]): Promise<PublicFeature[]> {
+    const normalizedKeys = [
+      ...new Set(keys.map((key) => key.trim().toLowerCase())),
+    ].filter(Boolean);
+    return normalizedKeys.length
+      ? this.featuresRepository.findByKeys(normalizedKeys)
+      : Promise.resolve([]);
   }
 
   async archiveFeature(key: string): Promise<FeatureRecord> {

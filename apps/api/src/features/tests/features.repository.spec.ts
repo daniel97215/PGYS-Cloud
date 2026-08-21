@@ -86,6 +86,24 @@ describe("FeaturesRepository", () => {
     });
   });
 
+  it("finds public features by id and keys", async () => {
+    const findUnique = jest.fn().mockResolvedValue(feature);
+    const findMany = jest.fn().mockResolvedValue([feature]);
+    const repository = new FeaturesRepository(
+      createPrismaMock({ findMany, findUnique }),
+    );
+
+    await expect(repository.findById(feature.id)).resolves.toEqual(feature);
+    await expect(repository.findByKeys([feature.key])).resolves.toEqual([
+      feature,
+    ]);
+    expect(findUnique).toHaveBeenCalledWith({ where: { id: feature.id } });
+    expect(findMany).toHaveBeenCalledWith({
+      where: { key: { in: [feature.key] } },
+      orderBy: { key: "asc" },
+    });
+  });
+
   it("archives a feature through Prisma", async () => {
     const update = jest.fn().mockResolvedValue({
       ...feature,

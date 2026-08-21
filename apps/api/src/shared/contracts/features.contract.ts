@@ -1,3 +1,5 @@
+export const FEATURES_CONTRACT = Symbol("FEATURES_CONTRACT");
+
 export interface PublicFeature {
   id: string;
   key: string;
@@ -11,4 +13,3 @@ export interface FeaturesContract {
   findByKey(key: string): Promise<PublicFeature | null>;
   findByKeys(keys: string[]): Promise<PublicFeature[]>;
 }
-

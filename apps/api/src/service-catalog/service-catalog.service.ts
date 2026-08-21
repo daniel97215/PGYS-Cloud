@@ -3,6 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import {
+  Page,
+  PaginationQueryDto,
+} from "../common/dto/pagination-query.dto";
 import { CreateServiceCatalogItemDto } from "./dto/create-service-catalog-item.dto";
 import { UpdateServiceCatalogItemDto } from "./dto/update-service-catalog-item.dto";
 import {
@@ -15,8 +19,10 @@ import {
 export class ServiceCatalogService {
   constructor(private readonly repository: ServiceCatalogRepository) {}
 
-  listServices(): Promise<ServiceCatalogItemRecord[]> {
-    return this.repository.findAll();
+  listServices(
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<ServiceCatalogItemRecord>> {
+    return this.repository.findPage(pagination);
   }
 
   createService(

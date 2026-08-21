@@ -23,7 +23,12 @@ describe("ServiceCatalogService", () => {
 
   beforeEach(() => {
     repository = {
-      findAll: jest.fn().mockResolvedValue([catalogItem]),
+      findPage: jest.fn().mockResolvedValue({
+        items: [catalogItem],
+        total: 1,
+        page: 2,
+        pageSize: 10,
+      }),
       findByKey: jest.fn().mockResolvedValue(catalogItem),
       create: jest.fn().mockResolvedValue(catalogItem),
       update: jest.fn().mockResolvedValue(catalogItem),
@@ -37,10 +42,18 @@ describe("ServiceCatalogService", () => {
   });
 
   it("lists services", async () => {
-    const result = await service.listServices();
+    const result = await service.listServices({ page: 2, pageSize: 10 });
 
-    expect(result).toEqual([catalogItem]);
-    expect(repository.findAll).toHaveBeenCalledWith();
+    expect(result).toEqual({
+      items: [catalogItem],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(repository.findPage).toHaveBeenCalledWith({
+      page: 2,
+      pageSize: 10,
+    });
   });
 
   it("creates a service catalog item", async () => {

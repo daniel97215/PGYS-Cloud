@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { Page } from "../common/dto/pagination-query.dto";
 
 export const SERVICE_CATALOG_STATUS_ARCHIVED = "archived";
 
@@ -25,14 +26,30 @@ export type UpdateServiceCatalogItemData = Omit<
   "key"
 >;
 
+export interface ServiceCatalogPagination {
+  page?: number;
+  pageSize?: number;
+}
+
 @Injectable()
 export class ServiceCatalogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll(): Promise<ServiceCatalogItemRecord[]> {
-    return this.prisma.serviceCatalogItem.findMany({
-      orderBy: { key: "asc" },
-    });
+  async findPage(
+    pagination: ServiceCatalogPagination,
+  ): Promise<Page<ServiceCatalogItemRecord>> {
+    const page = Math.max(pagination.page ?? 1, 1);
+    const pageSize = Math.min(Math.max(pagination.pageSize ?? 25, 1), 100);
+    const [items, total] = await Promise.all([
+      this.prisma.serviceCatalogItem.findMany({
+        orderBy: { key: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.serviceCatalogItem.count(),
+    ]);
+
+    return { items, total, page, pageSize };
   }
 
   findByKey(key: string): Promise<ServiceCatalogItemRecord | null> {

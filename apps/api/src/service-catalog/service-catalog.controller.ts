@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -19,6 +20,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { CreateServiceCatalogItemDto } from "./dto/create-service-catalog-item.dto";
 import { UpdateServiceCatalogItemDto } from "./dto/update-service-catalog-item.dto";
 import { ServiceCatalogService } from "./service-catalog.service";
@@ -31,8 +33,8 @@ export class ServiceCatalogController {
   @ApiOperation({ summary: "List service catalog items" })
   @ApiOkResponse({ description: "Service catalog items" })
   @Get()
-  findAll() {
-    return this.serviceCatalogService.listServices();
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.serviceCatalogService.listServices(query);
   }
 
   @ApiOperation({ summary: "Create a service catalog item" })

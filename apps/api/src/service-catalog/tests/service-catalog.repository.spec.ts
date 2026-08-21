@@ -22,16 +22,25 @@ describe("ServiceCatalogRepository", () => {
 
   it("lists service catalog items through Prisma", async () => {
     const findMany = jest.fn().mockResolvedValue([catalogItem]);
+    const count = jest.fn().mockResolvedValue(1);
     const repository = new ServiceCatalogRepository(
-      createPrismaMock({ findMany }),
+      createPrismaMock({ count, findMany }),
     );
 
-    const result = await repository.findAll();
+    const result = await repository.findPage({ page: 2, pageSize: 10 });
 
-    expect(result).toEqual([catalogItem]);
+    expect(result).toEqual({
+      items: [catalogItem],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
     expect(findMany).toHaveBeenCalledWith({
       orderBy: { key: "asc" },
+      skip: 10,
+      take: 10,
     });
+    expect(count).toHaveBeenCalledWith();
   });
 
   it("finds a service catalog item by key through Prisma", async () => {
@@ -99,6 +108,7 @@ describe("ServiceCatalogRepository", () => {
 });
 
 function createPrismaMock(methods: {
+  count?: jest.Mock;
   findMany?: jest.Mock;
   findUnique?: jest.Mock;
   create?: jest.Mock;
@@ -106,6 +116,7 @@ function createPrismaMock(methods: {
 }): PrismaService {
   const prisma = {
     serviceCatalogItem: {
+      count: methods.count ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),
       findUnique: methods.findUnique ?? jest.fn(),
       create: methods.create ?? jest.fn(),

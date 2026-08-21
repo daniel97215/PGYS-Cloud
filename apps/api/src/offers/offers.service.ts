@@ -8,13 +8,17 @@ import {
   Page,
   PaginationQueryDto,
 } from "../common/dto/pagination-query.dto";
+import {
+  OffersContract,
+  PublicOffer,
+} from "../shared/contracts/offers.contract";
 import { OFFER_STATUSES, OfferStatus } from "./offers.constants";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 import { UpdateOfferDto } from "./dto/update-offer.dto";
 import { OfferRecord, OffersRepository } from "./offers.repository";
 
 @Injectable()
-export class OffersService {
+export class OffersService implements OffersContract {
   constructor(private readonly offersRepository: OffersRepository) {}
 
   async createOffer(data: CreateOfferDto): Promise<OfferRecord> {
@@ -52,6 +56,17 @@ export class OffersService {
 
   async getOffer(key: string): Promise<OfferRecord> {
     return this.requireOffer(key);
+  }
+
+  findById(id: string): Promise<PublicOffer | null> {
+    return this.offersRepository.findById(id);
+  }
+
+  findByKey(key: string): Promise<PublicOffer | null> {
+    const normalizedKey = key.trim().toLowerCase();
+    return normalizedKey
+      ? this.offersRepository.findByKey(normalizedKey)
+      : Promise.resolve(null);
   }
 
   async archiveOffer(key: string): Promise<OfferRecord> {

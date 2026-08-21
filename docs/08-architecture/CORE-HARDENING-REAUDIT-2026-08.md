@@ -104,10 +104,10 @@ Les contrats publics de Features, Offers, Pricing et Subscriptions existent
 dans `shared/contracts`. Lors de la reevaluation initiale, aucun n'etait
 implemente ni injecte par son module proprietaire.
 
-Le contrat public Features est desormais implemente par `FeaturesService`,
-injectable via un token explicite exporte par `FeaturesModule`. Les contrats
-Offers, Pricing et Subscriptions restent a materialiser avant de remplacer les
-lectures inter-modules correspondantes.
+Les contrats publics Features et Offers sont desormais implementes par leurs
+services proprietaires, injectables via des tokens explicites exportes par
+leurs modules. Les contrats Pricing et Subscriptions restent a materialiser
+avant de remplacer les lectures inter-modules correspondantes.
 
 Plusieurs repositories continuent donc a lire directement les tables d'autres
 modules :

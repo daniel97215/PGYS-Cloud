@@ -57,6 +57,10 @@ export class OffersRepository {
     });
   }
 
+  findById(id: string): Promise<OfferRecord | null> {
+    return this.prisma.offer.findUnique({ where: { id } });
+  }
+
   async hasUsage(offerId: string): Promise<boolean> {
     const [subscriptions, checkouts] = await this.prisma.$transaction([
       this.prisma.subscription.count({ where: { offerId } }),

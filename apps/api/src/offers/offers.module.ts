@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { PlatformAuthorizationModule } from "../platform-administration/platform-authorization.module";
+import { OFFERS_CONTRACT } from "../shared/contracts/offers.contract";
 import { OfferFeaturesController } from "./offer-features.controller";
 import { OfferFeaturesRepository } from "./offer-features.repository";
 import { OfferFeaturesService } from "./offer-features.service";
@@ -15,6 +16,8 @@ import { OffersService } from "./offers.service";
     OffersService,
     OfferFeaturesRepository,
     OfferFeaturesService,
+    { provide: OFFERS_CONTRACT, useExisting: OffersService },
   ],
+  exports: [OFFERS_CONTRACT],
 })
 export class OffersModule {}

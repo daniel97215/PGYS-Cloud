@@ -84,6 +84,14 @@ describe("OffersRepository", () => {
     });
   });
 
+  it("finds an offer by id through Prisma", async () => {
+    const findUnique = jest.fn().mockResolvedValue(offer);
+    const repository = new OffersRepository(createPrismaMock({ findUnique }));
+
+    await expect(repository.findById(offer.id)).resolves.toEqual(offer);
+    expect(findUnique).toHaveBeenCalledWith({ where: { id: offer.id } });
+  });
+
   it("archives an offer through Prisma", async () => {
     const update = jest.fn().mockResolvedValue({
       ...offer,

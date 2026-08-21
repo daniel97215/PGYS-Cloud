@@ -1,3 +1,5 @@
+export const OFFERS_CONTRACT = Symbol("OFFERS_CONTRACT");
+
 export interface PublicOffer {
   id: string;
   key: string;
@@ -10,4 +12,3 @@ export interface OffersContract {
   findById(id: string): Promise<PublicOffer | null>;
   findByKey(key: string): Promise<PublicOffer | null>;
 }
-

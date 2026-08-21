@@ -29,6 +29,7 @@ describe("OffersService", () => {
         pageSize: 10,
       }),
       findByKey: jest.fn().mockResolvedValue(offer),
+      findById: jest.fn().mockResolvedValue(offer),
       hasUsage: jest.fn().mockResolvedValue(false),
       hasActivePrice: jest.fn().mockResolvedValue(true),
       transition: jest.fn().mockImplementation(async (_id, _current, status) => ({
@@ -101,6 +102,14 @@ describe("OffersService", () => {
     const result = await service.getOffer(offer.key);
 
     expect(result).toEqual(offer);
+    expect(repository.findByKey).toHaveBeenCalledWith(offer.key);
+  });
+
+  it("implements the public Offers contract", async () => {
+    await expect(service.findById(offer.id)).resolves.toEqual(offer);
+    await expect(service.findByKey(" CRM-Starter ")).resolves.toEqual(offer);
+
+    expect(repository.findById).toHaveBeenCalledWith(offer.id);
     expect(repository.findByKey).toHaveBeenCalledWith(offer.key);
   });
 

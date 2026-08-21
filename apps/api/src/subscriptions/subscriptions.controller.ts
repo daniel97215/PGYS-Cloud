@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+} from "@nestjs/common";
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -33,7 +41,10 @@ export class SubscriptionsController {
   @ApiOkResponse({ description: "Active subscription" })
   @ApiNotFoundResponse({ description: "Workspace or subscription not found" })
   @Get("workspaces/:workspaceId/active")
-  findActive(@Param("workspaceId") workspaceId: string) {
+  findActive(
+    @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
+    workspaceId: string,
+  ) {
     return this.subscriptionsService.getActiveSubscription(workspaceId);
   }
 
@@ -42,7 +53,10 @@ export class SubscriptionsController {
   @ApiOkResponse({ description: "Workspace subscriptions" })
   @ApiNotFoundResponse({ description: "Workspace not found" })
   @Get("workspaces/:workspaceId")
-  findAllForWorkspace(@Param("workspaceId") workspaceId: string) {
+  findAllForWorkspace(
+    @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
+    workspaceId: string,
+  ) {
     return this.subscriptionsService.listWorkspaceSubscriptions(workspaceId);
   }
 
@@ -53,7 +67,8 @@ export class SubscriptionsController {
   @ApiNotFoundResponse({ description: "Subscription, offer or price not found" })
   @Patch(":subscriptionId/offer")
   changeOffer(
-    @Param("subscriptionId") subscriptionId: string,
+    @Param("subscriptionId", new ParseUUIDPipe({ version: "4" }))
+    subscriptionId: string,
     @Body() data: ChangeOfferDto,
   ) {
     return this.subscriptionsService.changeOffer(subscriptionId, data);
@@ -64,7 +79,10 @@ export class SubscriptionsController {
   @ApiOkResponse({ description: "Subscription suspended" })
   @ApiNotFoundResponse({ description: "Subscription not found" })
   @Patch(":subscriptionId/suspend")
-  suspend(@Param("subscriptionId") subscriptionId: string) {
+  suspend(
+    @Param("subscriptionId", new ParseUUIDPipe({ version: "4" }))
+    subscriptionId: string,
+  ) {
     return this.subscriptionsService.suspendSubscription(subscriptionId);
   }
 
@@ -75,7 +93,8 @@ export class SubscriptionsController {
   @ApiNotFoundResponse({ description: "Subscription not found" })
   @Patch(":subscriptionId/reactivate")
   reactivate(
-    @Param("subscriptionId") subscriptionId: string,
+    @Param("subscriptionId", new ParseUUIDPipe({ version: "4" }))
+    subscriptionId: string,
     @Body() data: ReactivateSubscriptionDto,
   ) {
     return this.subscriptionsService.reactivateSubscription(
@@ -91,7 +110,8 @@ export class SubscriptionsController {
   @ApiNotFoundResponse({ description: "Subscription not found" })
   @Patch(":subscriptionId/cancel")
   cancel(
-    @Param("subscriptionId") subscriptionId: string,
+    @Param("subscriptionId", new ParseUUIDPipe({ version: "4" }))
+    subscriptionId: string,
     @Body() data: CancelSubscriptionDto,
   ) {
     return this.subscriptionsService.cancelSubscription(subscriptionId, data);
@@ -102,7 +122,10 @@ export class SubscriptionsController {
   @ApiOkResponse({ description: "Subscription expired" })
   @ApiNotFoundResponse({ description: "Subscription not found" })
   @Patch(":subscriptionId/expire")
-  expire(@Param("subscriptionId") subscriptionId: string) {
+  expire(
+    @Param("subscriptionId", new ParseUUIDPipe({ version: "4" }))
+    subscriptionId: string,
+  ) {
     return this.subscriptionsService.expireSubscription(subscriptionId);
   }
 }

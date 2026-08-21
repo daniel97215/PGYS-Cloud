@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from "@nestjs/common";
@@ -66,7 +67,7 @@ export class PricingController {
   @ApiNotFoundResponse({ description: "Price not found" })
   @Patch("prices/:priceId")
   update(
-    @Param("priceId") priceId: string,
+    @Param("priceId", new ParseUUIDPipe({ version: "4" })) priceId: string,
     @Body() data: UpdatePriceDto,
   ) {
     return this.pricingService.updatePrice(priceId, data);
@@ -78,7 +79,9 @@ export class PricingController {
   @ApiNotFoundResponse({ description: "Price not found" })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete("prices/:priceId")
-  async archive(@Param("priceId") priceId: string): Promise<void> {
+  async archive(
+    @Param("priceId", new ParseUUIDPipe({ version: "4" })) priceId: string,
+  ): Promise<void> {
     await this.pricingService.archivePrice(priceId);
   }
 }

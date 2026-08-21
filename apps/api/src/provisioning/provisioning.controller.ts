@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from "@nestjs/common";
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -24,7 +31,8 @@ export class ProvisioningController {
   @ApiCreatedResponse({ description: "Provisioning job" })
   @Post("workspaces/:workspaceId/provision")
   provision(
-    @Param("workspaceId") workspaceId: string,
+    @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
+    workspaceId: string,
     @Body() data: ProvisionWorkspaceDto,
   ) {
     return this.provisioningService.provisionWorkspace(workspaceId, data);
@@ -36,7 +44,8 @@ export class ProvisioningController {
   @ApiCreatedResponse({ description: "Provisioning job" })
   @Post("workspaces/:workspaceId/reprovision")
   reprovision(
-    @Param("workspaceId") workspaceId: string,
+    @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
+    workspaceId: string,
     @Body() data: ReprovisionWorkspaceDto,
   ) {
     return this.provisioningService.reprovisionWorkspace(workspaceId, data);
@@ -48,7 +57,8 @@ export class ProvisioningController {
   @ApiCreatedResponse({ description: "Provisioning job" })
   @Post("workspaces/:workspaceId/deprovision")
   deprovision(
-    @Param("workspaceId") workspaceId: string,
+    @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
+    workspaceId: string,
     @Body() data: DeprovisionWorkspaceDto,
   ) {
     return this.provisioningService.deprovisionWorkspace(workspaceId, data);
@@ -59,7 +69,9 @@ export class ProvisioningController {
   @ApiOkResponse({ description: "Provisioning job" })
   @ApiNotFoundResponse({ description: "Provisioning job not found" })
   @Get("jobs/:jobId")
-  findOne(@Param("jobId") jobId: string) {
+  findOne(
+    @Param("jobId", new ParseUUIDPipe({ version: "4" })) jobId: string,
+  ) {
     return this.provisioningService.getProvisioningJob(jobId);
   }
 }

@@ -83,9 +83,15 @@ La correction exige une matrice explicite distinguant :
 
 ### 4.2. Validation et contrat HTTP
 
-- les UUID de Pricing, Subscriptions et Provisioning ne sont pas valides par
-  `ParseUUIDPipe` ;
-- aucun test de controller ne couvre guards, pipes, validation HTTP ou erreurs ;
+Le premier increment technique de PGYS-032 applique `ParseUUIDPipe` en version
+4 aux identifiants de Pricing, Subscriptions et Provisioning. Treize cas de
+controller verifient la presence du pipe, l'acceptation d'un UUID v4 et le rejet
+d'une valeur invalide ou d'une autre version.
+
+Les ecarts suivants restent ouverts :
+
+- aucun test HTTP de bout en bout ne couvre encore guards, validation et
+  erreurs ;
 - aucune enveloppe d'erreur commune avec code et identifiant de correlation
   n'est installee ;
 - les collections Core potentiellement croissantes ne sont pas paginees.

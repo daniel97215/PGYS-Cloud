@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -19,6 +20,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 import { UpdateOfferDto } from "./dto/update-offer.dto";
 import { OffersService } from "./offers.service";
@@ -39,8 +41,8 @@ export class OffersController {
   @ApiOperation({ summary: "List offers" })
   @ApiOkResponse({ description: "Offers" })
   @Get()
-  findAll() {
-    return this.offersService.listOffers();
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.offersService.listOffers(query);
   }
 
   @ApiOperation({ summary: "Get an offer by key" })

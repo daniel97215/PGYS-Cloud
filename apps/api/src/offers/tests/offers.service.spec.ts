@@ -22,7 +22,12 @@ describe("OffersService", () => {
     repository = {
       create: jest.fn().mockResolvedValue(offer),
       update: jest.fn().mockResolvedValue(offer),
-      findAll: jest.fn().mockResolvedValue([offer]),
+      findPage: jest.fn().mockResolvedValue({
+        items: [offer],
+        total: 1,
+        page: 2,
+        pageSize: 10,
+      }),
       findByKey: jest.fn().mockResolvedValue(offer),
       hasUsage: jest.fn().mockResolvedValue(false),
       hasActivePrice: jest.fn().mockResolvedValue(true),
@@ -78,10 +83,18 @@ describe("OffersService", () => {
   });
 
   it("lists offers", async () => {
-    const result = await service.listOffers();
+    const result = await service.listOffers({ page: 2, pageSize: 10 });
 
-    expect(result).toEqual([offer]);
-    expect(repository.findAll).toHaveBeenCalledWith();
+    expect(result).toEqual({
+      items: [offer],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(repository.findPage).toHaveBeenCalledWith({
+      page: 2,
+      pageSize: 10,
+    });
   });
 
   it("gets an offer", async () => {

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { Page } from "../common/dto/pagination-query.dto";
 import { OFFER_STATUSES, OfferStatus } from "./offers.constants";
 
 export type OfferRecord = Prisma.OfferGetPayload<object>;
@@ -14,6 +15,11 @@ export interface CreateOfferData {
 }
 
 export type UpdateOfferData = Omit<Partial<CreateOfferData>, "key">;
+
+export interface OfferPagination {
+  page?: number;
+  pageSize?: number;
+}
 
 @Injectable()
 export class OffersRepository {
@@ -30,10 +36,19 @@ export class OffersRepository {
     });
   }
 
-  findAll(): Promise<OfferRecord[]> {
-    return this.prisma.offer.findMany({
-      orderBy: { key: "asc" },
-    });
+  async findPage(pagination: OfferPagination): Promise<Page<OfferRecord>> {
+    const page = Math.max(pagination.page ?? 1, 1);
+    const pageSize = Math.min(Math.max(pagination.pageSize ?? 25, 1), 100);
+    const [items, total] = await Promise.all([
+      this.prisma.offer.findMany({
+        orderBy: { key: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.offer.count(),
+    ]);
+
+    return { items, total, page, pageSize };
   }
 
   findByKey(key: string): Promise<OfferRecord | null> {

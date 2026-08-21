@@ -51,14 +51,25 @@ describe("OffersRepository", () => {
 
   it("lists offers through Prisma", async () => {
     const findMany = jest.fn().mockResolvedValue([offer]);
-    const repository = new OffersRepository(createPrismaMock({ findMany }));
+    const count = jest.fn().mockResolvedValue(1);
+    const repository = new OffersRepository(
+      createPrismaMock({ count, findMany }),
+    );
 
-    const result = await repository.findAll();
+    const result = await repository.findPage({ page: 2, pageSize: 10 });
 
-    expect(result).toEqual([offer]);
+    expect(result).toEqual({
+      items: [offer],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
     expect(findMany).toHaveBeenCalledWith({
       orderBy: { key: "asc" },
+      skip: 10,
+      take: 10,
     });
+    expect(count).toHaveBeenCalledWith();
   });
 
   it("finds an offer by key through Prisma", async () => {
@@ -119,6 +130,7 @@ describe("OffersRepository", () => {
 });
 
 function createPrismaMock(methods: {
+  count?: jest.Mock;
   create?: jest.Mock;
   update?: jest.Mock;
   findMany?: jest.Mock;
@@ -129,6 +141,7 @@ function createPrismaMock(methods: {
 }): PrismaService {
   const prisma = {
     offer: {
+      count: methods.count ?? jest.fn(),
       create: methods.create ?? jest.fn(),
       update: methods.update ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),

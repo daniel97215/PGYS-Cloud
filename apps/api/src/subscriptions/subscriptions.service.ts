@@ -15,6 +15,10 @@ import { ReactivateSubscriptionDto } from "./dto/reactivate-subscription.dto";
 import { OFFER_STATUSES } from "../offers/offers.constants";
 import { PRICE_STATUSES } from "../pricing/pricing.constants";
 import {
+  PublicSubscription,
+  SubscriptionsContract,
+} from "../shared/contracts/subscriptions.contract";
+import {
   SUBSCRIPTION_STATUSES,
   SubscriptionStatus,
 } from "./subscriptions.constants";
@@ -27,7 +31,7 @@ import {
 } from "./subscriptions.repository";
 
 @Injectable()
-export class SubscriptionsService {
+export class SubscriptionsService implements SubscriptionsContract {
   constructor(
     private readonly subscriptionsRepository: SubscriptionsRepository,
   ) {}
@@ -85,6 +89,26 @@ export class SubscriptionsService {
 
     return this.subscriptionsRepository.findPageByWorkspace(
       workspace.id,
+      pagination,
+    );
+  }
+
+  findById(id: string): Promise<PublicSubscription | null> {
+    return this.subscriptionsRepository.findById(id);
+  }
+
+  findActiveByWorkspaceId(
+    workspaceId: string,
+  ): Promise<PublicSubscription | null> {
+    return this.subscriptionsRepository.findActiveByWorkspace(workspaceId);
+  }
+
+  listByWorkspaceId(
+    workspaceId: string,
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<PublicSubscription>> {
+    return this.subscriptionsRepository.findPageByWorkspace(
+      workspaceId,
       pagination,
     );
   }

@@ -1,3 +1,10 @@
+import {
+  PaginationCriteria,
+  PublicPage,
+} from "./pagination.contract";
+
+export const SUBSCRIPTIONS_CONTRACT = Symbol("SUBSCRIPTIONS_CONTRACT");
+
 export interface PublicSubscription {
   id: string;
   workspaceId: string;
@@ -15,6 +22,8 @@ export interface SubscriptionsContract {
   findActiveByWorkspaceId(
     workspaceId: string,
   ): Promise<PublicSubscription | null>;
-  listByWorkspaceId(workspaceId: string): Promise<PublicSubscription[]>;
+  listByWorkspaceId(
+    workspaceId: string,
+    pagination?: PaginationCriteria,
+  ): Promise<PublicPage<PublicSubscription>>;
 }
-

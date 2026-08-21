@@ -146,6 +146,32 @@ describe("SubscriptionsService", () => {
     });
   });
 
+  it("implements the public Subscriptions contract", async () => {
+    await expect(service.findById(subscription.id)).resolves.toEqual(
+      subscription,
+    );
+    await expect(
+      service.findActiveByWorkspaceId(workspace.id),
+    ).resolves.toEqual(subscription);
+    await expect(
+      service.listByWorkspaceId(workspace.id, { page: 2, pageSize: 10 }),
+    ).resolves.toEqual({
+      items: [subscription],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+
+    expect(repository.findById).toHaveBeenCalledWith(subscription.id);
+    expect(repository.findActiveByWorkspace).toHaveBeenCalledWith(
+      workspace.id,
+    );
+    expect(repository.findPageByWorkspace).toHaveBeenCalledWith(workspace.id, {
+      page: 2,
+      pageSize: 10,
+    });
+  });
+
   it("changes the offer", async () => {
     repository.findOfferByKey.mockResolvedValueOnce(nextOffer);
     repository.findPriceById.mockResolvedValueOnce({

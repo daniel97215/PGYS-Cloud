@@ -1,0 +1,162 @@
+# Reevaluation Core Platform Hardening - 2026-08
+
+## 1. Objet
+
+Ce document reevalue PGYS-032 sur l'etat reel du depot au 21 aout 2026. Il ne
+remplace pas l'historique de `ARCHITECTURE-REVIEW-CORE-SAAS.md` ni de
+`CORE-AUDIT-REPORT.md` ; il identifie les constats devenus obsoletes et les
+ecarts encore actionnables.
+
+PGYS-032 reste `Planned`. Son ancien perimetre ne doit pas etre implemente en
+un seul changement : les corrections restantes touchent des frontieres de
+securite, de contrats inter-modules, de pagination et de provisioning qui
+doivent etre traitees en increments independants.
+
+## 2. Verification du socle actuel
+
+Les controles suivants ont ete executes sur l'API actuelle :
+
+| Controle | Resultat |
+| --- | --- |
+| Prisma validate | OK |
+| Prisma generate | OK |
+| Build API | OK |
+| Tests API | 150 suites et 932 tests passes |
+| Lint API | OK |
+| Typecheck API | OK |
+
+Le schema Prisma a ete valide avec une URL PostgreSQL locale factice, sans
+connexion ni migration. Aucun fichier applicatif n'a ete modifie par l'audit.
+
+## 3. Constats historiques deja corriges
+
+Les points suivants du rapport historique ne sont plus des ecarts :
+
+- le prefixe global `/api/v1` est applique dans `main.ts` ;
+- le build Swagger de Workspace Services est repare ;
+- les vocabulaires stables de Feature, Offer, Price, Subscription et
+  Provisioning sont centralises par module ;
+- les transitions critiques de Subscription et Provisioning disposent de
+  tests unitaires ;
+- PGYS-034 fournit un test d'integration applicatif du vertical slice
+  Workspace Onboarding, y compris rejeu, changement d'offre, resiliation et
+  isolation entre Workspaces ;
+- la contrainte PostgreSQL d'une souscription active unique par Workspace et
+  Offer existe dans la migration dediee ;
+- l'autorisation globale des operateurs PGYS existe avec les roles
+  `PLATFORM_ADMIN` et `PLATFORM_SUPPORT`.
+
+Le rapport `CORE-AUDIT-REPORT.md` reste utile comme historique, mais ses
+resultats de build et de tests ne doivent plus etre utilises comme etat
+courant.
+
+## 4. Ecarts encore reels
+
+### 4.1. Autorisation des surfaces Core
+
+Les controllers suivants n'appliquent actuellement ni `JwtAuthGuard`, ni
+autorisation Platform ou Workspace :
+
+- Service Catalog ;
+- Features ;
+- Offers et Offer Features ;
+- Pricing ;
+- Subscriptions ;
+- Provisioning.
+
+Ils exposent des lectures et des mutations globales ou sensibles. Ajouter
+uniquement un JWT serait insuffisant : un membre authentifie d'un Workspace ne
+doit pas obtenir implicitement le droit de modifier les offres globales ou de
+provisionner un autre Workspace.
+
+`WorkspaceServicesController` exige un JWT et valide le `workspaceId`, mais ne
+transmet pas l'identite de l'utilisateur au service. Un utilisateur authentifie
+peut donc cibler un Workspace arbitraire si aucune couche amont ne l'arrete.
+
+La correction exige une matrice explicite distinguant :
+
+- lecture anonyme eventuelle du catalogue commercial ;
+- lecture operateur `PLATFORM_SUPPORT` ;
+- mutation globale reservee a `PLATFORM_ADMIN` ;
+- lecture ou administration locale reservee aux membres, `OWNER` ou `ADMIN`
+  du Workspace concerne.
+
+### 4.2. Validation et contrat HTTP
+
+- les UUID de Pricing, Subscriptions et Provisioning ne sont pas valides par
+  `ParseUUIDPipe` ;
+- aucun test de controller ne couvre guards, pipes, validation HTTP ou erreurs ;
+- aucune enveloppe d'erreur commune avec code et identifiant de correlation
+  n'est installee ;
+- les collections Core potentiellement croissantes ne sont pas paginees.
+
+Ces sujets doivent rester separes : la validation d'identifiants, le format
+d'erreur et la pagination modifient des contrats clients differents.
+
+### 4.3. Frontieres inter-modules
+
+Les contrats publics de Features, Offers, Pricing et Subscriptions existent
+dans `shared/contracts`, mais ne sont pas implementes ni injectes par les
+modules proprietaires.
+
+Plusieurs repositories continuent donc a lire directement les tables d'autres
+modules :
+
+- Offer Features lit Offer, Feature, Subscription et CheckoutSession ;
+- Pricing lit Offer, Subscription et CheckoutSession ;
+- Subscriptions lit Workspace, Offer et Price ;
+- Provisioning lit Subscription, Offer, OfferFeature et WorkspaceService.
+
+Une correction mecanique repository par repository serait dangereuse. Chaque
+dependance doit etre remplacee par un contrat public minimal, avec un test
+d'integration prouvant que les invariants actuels sont conserves.
+
+### 4.4. Provisioning incomplet
+
+Le `ProvisioningOrchestratorService` charge Subscription, Offer, Offer Features
+et Workspace Services, puis execute une etape `publish-event-placeholder`. Il
+n'active ni ne desactive encore de Workspace Service et ne publie aucun
+evenement de domaine reel.
+
+Le test d'integration PGYS-034 valide l'orchestration applicative avec un etat
+en memoire ; il ne prouve pas une activation persistante de services ni la
+reprise d'une execution partiellement echouee.
+
+Completer ce flux necessite de definir la correspondance entre une Offer, ses
+Features et les `serviceKey` a activer, ainsi que les effets attendus d'un
+reprovisioning ou d'un deprovisioning. Ce comportement ne doit pas etre deduit
+implicitement du schema Prisma.
+
+## 5. Decoupage atomique recommande
+
+PGYS-032 doit etre traite dans l'ordre suivant, chaque increment ayant ses
+propres tests, validations et commit :
+
+1. definir puis appliquer la matrice d'autorisation des surfaces Core ;
+2. garantir l'appartenance Workspace sur Workspace Services ;
+3. valider les UUID des controllers Core et ajouter les tests HTTP associes ;
+4. standardiser le contrat d'erreur et l'identifiant de correlation ;
+5. paginer les collections Core avec des DTO compatibles ;
+6. remplacer les lectures Prisma inter-modules par les contrats publics ;
+7. definir puis implementer les effets persistants du provisioning ;
+8. refaire l'audit et ne cloturer PGYS-032 que lorsque chaque ecart accepte est
+   corrige ou explicitement reporte dans un nouveau ticket.
+
+Les increments 1, 2 et 7 exigent une decision d'autorisation ou de comportement
+metier. Les increments 3 a 6 sont techniques, mais leurs contrats publics
+doivent etre stabilises avant implementation pour eviter une rupture API
+globale.
+
+## 6. Criteres de cloture de PGYS-032
+
+PGYS-032 pourra passer a `Completed` lorsque :
+
+- aucune mutation Core sensible n'est accessible sans l'autorisation attendue ;
+- toute ressource tenant-aware verifie l'identite et le Workspace ;
+- les UUID, erreurs et collections respectent un contrat HTTP teste ;
+- les modules proprietaires exposent et implementent leurs contrats publics ;
+- Provisioning ne depend plus d'un effet persistant implicite ou d'un
+  placeholder ;
+- Prisma validate/generate, build, tests, lint et typecheck restent verts ;
+- le perimetre Git ne contient aucun changement Website, Portal ou
+  configuration preexistant.

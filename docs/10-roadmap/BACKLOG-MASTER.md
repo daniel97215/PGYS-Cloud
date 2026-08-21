@@ -71,7 +71,15 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | PGYS-033 | Core Status Constants | PGYS-029 | P2 | Completed |
 | PGYS-034 | Core Integration Test Suite | PGYS-030 | P1 | Completed |
 
-Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique de son perimetre. Le plan de hardening existant est partiellement obsolete et doit etre audite puis redécoupe en increments atomiques avant demarrage. Le ticket reste `Planned` et ne bloque pas le lancement de l'EPIC Marketing.
+Note de planification : PGYS-032 reste reporte apres la reevaluation technique
+du 21 aout 2026 documentee dans
+[`CORE-HARDENING-REAUDIT-2026-08.md`](../08-architecture/CORE-HARDENING-REAUDIT-2026-08.md).
+Le prefixe API, le build, les constantes et le test d'integration historique
+sont corriges. Les ecarts restants concernent notamment les autorisations Core,
+l'isolation de Workspace Services, les contrats HTTP, les frontieres
+inter-modules et les effets persistants du provisioning. Ils doivent etre
+traites en increments atomiques ; PGYS-032 reste `Planned` jusqu'a validation
+de la matrice d'autorisation et du comportement de provisioning.
 
 ### EPIC-02 Commercial Core
 

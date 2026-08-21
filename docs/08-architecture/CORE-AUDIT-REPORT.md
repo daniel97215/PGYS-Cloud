@@ -1,5 +1,9 @@
 # Core Audit Report - PGYS
 
+> Ce rapport conserve l'etat observe lors de l'audit initial de juillet 2026.
+> Pour l'etat courant et le nouveau decoupage de PGYS-032, consulter
+> [`CORE-HARDENING-REAUDIT-2026-08.md`](./CORE-HARDENING-REAUDIT-2026-08.md).
+
 ## Objectif
 
 Ce rapport audite le Core SaaS PGYS deja produit afin d'identifier les points conformes, les zones a ameliorer et les corrections necessaires avant de poursuivre vers Billing, ERP, CRM et Marketing.

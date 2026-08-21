@@ -142,6 +142,12 @@ Sa sortie attendue est une recommandation `GO`, `ADAPTER` ou `STOP`, avec les
 risques et prerequis. Aucun moteur POS concurrent ne doit etre cree pendant
 l'exploration.
 
+L'exploration conclut a **`ADAPTER`** : les fondations Catalog, Sales,
+Inventory et SalesPayment doivent etre reutilisees, mais un contrat serveur
+atomique et idempotent reste necessaire avant toute caisse. Les constats,
+risques, mesures pilotes et criteres de passage a `GO` sont documentes dans
+[`13-Mobile-POS-Exploration.md`](./13-Mobile-POS-Exploration.md).
+
 ## 6. Criteres de passage vers du natif
 
 Une application native ne sera envisagee que si au moins un parcours pilote

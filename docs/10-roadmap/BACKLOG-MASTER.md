@@ -27,7 +27,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | v0.5 Marketing Foundation | Ajouter les capacites marketing de base. | Segments, campagnes, templates et suivi minimal des actions marketing disponibles. | Completed |
 | v0.6 AI Platform | Structurer les capacites IA transverses. | Contrats IA, fournisseurs, usages controles, logs et garde-fous definis. | Completed |
 | v0.7 Marketplace & Integrations | Prepararer les extensions et integrations externes. | Connecteurs prioritaires, contrats d'extension et mecanismes d'activation documentes. | Completed |
-| v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | In Progress |
+| v1.0 First Commercial Release | Livrer une premiere version commercialisable. | Onboarding complet, offre vendable, modules prioritaires stables, support et exploitation prets. | Completed |
 
 ## 3. EPIC
 
@@ -42,7 +42,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Completed |
 | EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | Completed |
 | EPIC-09 | Administration | Back-office, gouvernance operationnelle et outils internes. | v1.0 First Commercial Release | Completed |
-| EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | In Progress |
+| EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | Completed |
 
 ## 4. Tickets
 
@@ -174,7 +174,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-074 | Mobile Strategy | PGYS-031 | P3 | Completed |
 | PGYS-075 | Mobile Workspace Access | PGYS-074 | P3 | Completed |
 | PGYS-076 | Mobile CRM Companion | PGYS-047, PGYS-074 | P3 | Completed |
-| PGYS-077 | Mobile POS Exploration | PGYS-044, PGYS-074 | P3 | Planned |
+| PGYS-077 | Mobile POS Exploration | PGYS-044, PGYS-074 | P3 | Completed |
 
 ## 5. Dependances entre EPIC
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 76 |
-| Tickets planifies | 2 |
+| Tickets termines | 77 |
+| Tickets planifies | 1 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 97% |
+| Progression globale | 99% |
 
 ### Progression par EPIC
 
@@ -265,7 +265,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-07 Integrations | 6 | 6 | 0 | 100% |
 | EPIC-08 Reporting | 5 | 5 | 0 | 100% |
 | EPIC-09 Administration | 6 | 6 | 0 | 100% |
-| EPIC-10 Mobile | 4 | 3 | 1 | 75% |
+| EPIC-10 Mobile | 4 | 4 | 0 | 100% |
 
 ### Progression par version
 
@@ -278,7 +278,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 6 | Completed |
-| v1.0 First Commercial Release | 15 | 14 | In Progress |
+| v1.0 First Commercial Release | 15 | 15 | Completed |
 
 ## 8. Maintenance du Backlog Master
 

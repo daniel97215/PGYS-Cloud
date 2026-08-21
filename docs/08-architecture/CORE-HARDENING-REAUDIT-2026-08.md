@@ -115,7 +115,8 @@ modules :
 - Offer Features lit Offer, Feature, Subscription et CheckoutSession ;
 - Pricing consomme desormais Offer via son contrat public, mais lit encore
   Subscription et CheckoutSession pour verifier l'utilisation d'une offre ;
-- Subscriptions lit Workspace, Offer et Price ;
+- Subscriptions consomme desormais Workspace, Offer et Price via leurs contrats
+  publics ;
 - Provisioning lit Subscription, Offer, OfferFeature et WorkspaceService.
 
 Une correction mecanique repository par repository serait dangereuse. Chaque

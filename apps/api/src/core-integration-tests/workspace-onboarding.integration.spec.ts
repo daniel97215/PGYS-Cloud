@@ -143,6 +143,9 @@ describe("Core Workspace Onboarding integration", () => {
     offerFeatureLinks = [];
 
     const workspaceRepository = {
+      findById: jest.fn(async (id: string) =>
+        workspaces.find((workspace) => workspace.id === id) ?? null,
+      ),
       slugExists: jest.fn(async (slug: string) =>
         workspaces.some((workspace) => workspace.slug === slug),
       ),
@@ -178,6 +181,9 @@ describe("Core Workspace Onboarding integration", () => {
       }),
       findByKey: jest.fn(async (key: string) =>
         offers.find((offer) => offer.key === key) ?? null,
+      ),
+      findById: jest.fn(async (id: string) =>
+        offers.find((offer) => offer.id === id) ?? null,
       ),
       hasUsage: jest.fn(async (offerId: string) =>
         subscriptions.some((item) => item.offerId === offerId),
@@ -273,6 +279,9 @@ describe("Core Workspace Onboarding integration", () => {
           return price;
         },
       ),
+      findById: jest.fn(async (id: string) =>
+        prices.find((price) => price.id === id) ?? null,
+      ),
       findActiveByOffer: jest.fn(async (offerId: string) =>
         prices.find(
           (price) =>
@@ -282,15 +291,6 @@ describe("Core Workspace Onboarding integration", () => {
     } as unknown as PricingRepository;
 
     const subscriptionsRepository = {
-      findWorkspaceById: jest.fn(async (id: string) =>
-        workspaces.find((workspace) => workspace.id === id) ?? null,
-      ),
-      findOfferByKey: jest.fn(async (key: string) =>
-        offers.find((offer) => offer.key === key) ?? null,
-      ),
-      findPriceById: jest.fn(async (id: string) =>
-        prices.find((price) => price.id === id) ?? null,
-      ),
       findActiveByWorkspaceAndOffer: jest.fn(
         async (workspaceId: string, offerId: string) =>
           subscriptions.find(
@@ -460,7 +460,12 @@ describe("Core Workspace Onboarding integration", () => {
     featuresService = new FeaturesService(featuresRepository);
     offerFeaturesService = new OfferFeaturesService(offerFeaturesRepository);
     pricingService = new PricingService(pricingRepository, offersService);
-    subscriptionsService = new SubscriptionsService(subscriptionsRepository);
+    subscriptionsService = new SubscriptionsService(
+      subscriptionsRepository,
+      workspaceService,
+      offersService,
+      pricingService,
+    );
     workspaceServicesService = new WorkspaceServicesService(
       workspaceServicesRepository,
     );

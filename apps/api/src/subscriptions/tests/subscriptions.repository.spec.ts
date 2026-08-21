@@ -55,48 +55,6 @@ describe("SubscriptionsRepository", () => {
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
   };
 
-  it("finds workspace by id through Prisma", async () => {
-    const workspaceFindUnique = jest.fn().mockResolvedValue(workspace);
-    const repository = new SubscriptionsRepository(
-      createPrismaMock({ workspaceFindUnique }),
-    );
-
-    const result = await repository.findWorkspaceById(workspace.id);
-
-    expect(result).toEqual(workspace);
-    expect(workspaceFindUnique).toHaveBeenCalledWith({
-      where: { id: workspace.id },
-    });
-  });
-
-  it("finds offer by key through Prisma", async () => {
-    const offerFindUnique = jest.fn().mockResolvedValue(offer);
-    const repository = new SubscriptionsRepository(
-      createPrismaMock({ offerFindUnique }),
-    );
-
-    const result = await repository.findOfferByKey(offer.key);
-
-    expect(result).toEqual(offer);
-    expect(offerFindUnique).toHaveBeenCalledWith({
-      where: { key: offer.key },
-    });
-  });
-
-  it("finds price by id through Prisma", async () => {
-    const priceFindUnique = jest.fn().mockResolvedValue(price);
-    const repository = new SubscriptionsRepository(
-      createPrismaMock({ priceFindUnique }),
-    );
-
-    const result = await repository.findPriceById(price.id);
-
-    expect(result).toEqual(price);
-    expect(priceFindUnique).toHaveBeenCalledWith({
-      where: { id: price.id },
-    });
-  });
-
   it("creates a subscription through Prisma", async () => {
     const create = jest.fn().mockResolvedValue(subscription);
     const repository = new SubscriptionsRepository(createPrismaMock({ create }));
@@ -253,9 +211,6 @@ describe("SubscriptionsRepository", () => {
 
 function createPrismaMock(methods: {
   count?: jest.Mock;
-  workspaceFindUnique?: jest.Mock;
-  offerFindUnique?: jest.Mock;
-  priceFindUnique?: jest.Mock;
   subscriptionFindUnique?: jest.Mock;
   findFirst?: jest.Mock;
   findMany?: jest.Mock;
@@ -264,15 +219,6 @@ function createPrismaMock(methods: {
   updateMany?: jest.Mock;
 }): PrismaService {
   const prisma = {
-    workspace: {
-      findUnique: methods.workspaceFindUnique ?? jest.fn(),
-    },
-    offer: {
-      findUnique: methods.offerFindUnique ?? jest.fn(),
-    },
-    price: {
-      findUnique: methods.priceFindUnique ?? jest.fn(),
-    },
     subscription: {
       count: methods.count ?? jest.fn(),
       findUnique: methods.subscriptionFindUnique ?? jest.fn(),

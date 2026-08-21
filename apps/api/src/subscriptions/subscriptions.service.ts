@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -15,25 +16,43 @@ import { ReactivateSubscriptionDto } from "./dto/reactivate-subscription.dto";
 import { OFFER_STATUSES } from "../offers/offers.constants";
 import { PRICE_STATUSES } from "../pricing/pricing.constants";
 import {
+  OFFERS_CONTRACT,
+  OffersContract,
+  PublicOffer,
+} from "../shared/contracts/offers.contract";
+import {
+  PRICING_CONTRACT,
+  PricingContract,
+  PublicPrice,
+} from "../shared/contracts/pricing.contract";
+import {
   PublicSubscription,
   SubscriptionsContract,
 } from "../shared/contracts/subscriptions.contract";
+import {
+  PublicWorkspace,
+  WORKSPACE_CONTRACT,
+  WorkspaceContract,
+} from "../shared/contracts/workspace.contract";
 import {
   SUBSCRIPTION_STATUSES,
   SubscriptionStatus,
 } from "./subscriptions.constants";
 import {
-  SubscriptionOfferRecord,
-  SubscriptionPriceRecord,
   SubscriptionRecord,
   SubscriptionsRepository,
-  SubscriptionWorkspaceRecord,
 } from "./subscriptions.repository";
 
 @Injectable()
 export class SubscriptionsService implements SubscriptionsContract {
   constructor(
     private readonly subscriptionsRepository: SubscriptionsRepository,
+    @Inject(WORKSPACE_CONTRACT)
+    private readonly workspaceContract: WorkspaceContract,
+    @Inject(OFFERS_CONTRACT)
+    private readonly offersContract: OffersContract,
+    @Inject(PRICING_CONTRACT)
+    private readonly pricingContract: PricingContract,
   ) {}
 
   async createSubscription(
@@ -264,10 +283,9 @@ export class SubscriptionsService implements SubscriptionsContract {
 
   private async requireWorkspace(
     workspaceId: string,
-  ): Promise<SubscriptionWorkspaceRecord> {
+  ): Promise<PublicWorkspace> {
     const normalizedId = this.normalizeId(workspaceId, "Workspace id");
-    const workspace =
-      await this.subscriptionsRepository.findWorkspaceById(normalizedId);
+    const workspace = await this.workspaceContract.findById(normalizedId);
 
     if (!workspace) {
       throw new NotFoundException(`Workspace "${workspaceId}" not found`);
@@ -278,11 +296,9 @@ export class SubscriptionsService implements SubscriptionsContract {
 
   private async requireOffer(
     offerKey: string,
-  ): Promise<SubscriptionOfferRecord> {
+  ): Promise<PublicOffer> {
     const normalizedKey = this.normalizeKey(offerKey, "Offer key");
-    const offer = await this.subscriptionsRepository.findOfferByKey(
-      normalizedKey,
-    );
+    const offer = await this.offersContract.findByKey(normalizedKey);
 
     if (!offer) {
       throw new NotFoundException(`Offer "${offerKey}" not found`);
@@ -294,15 +310,13 @@ export class SubscriptionsService implements SubscriptionsContract {
   private async requirePriceIfProvided(
     priceId?: string,
     offerId?: string,
-  ): Promise<SubscriptionPriceRecord | null> {
+  ): Promise<PublicPrice | null> {
     if (!priceId) {
       return null;
     }
 
     const normalizedId = this.normalizeId(priceId, "Price id");
-    const price = await this.subscriptionsRepository.findPriceById(
-      normalizedId,
-    );
+    const price = await this.pricingContract.findById(normalizedId);
 
     if (!price) {
       throw new NotFoundException(`Price "${priceId}" not found`);
@@ -320,7 +334,7 @@ export class SubscriptionsService implements SubscriptionsContract {
     return price;
   }
 
-  private requireOfferAvailable(offer: SubscriptionOfferRecord): void {
+  private requireOfferAvailable(offer: PublicOffer): void {
     if (offer.status !== OFFER_STATUSES.ACTIVE) {
       throw new ConflictException("Only an active offer can be subscribed");
     }

@@ -8,9 +8,6 @@ import {
 } from "./subscriptions.constants";
 
 export type SubscriptionRecord = Prisma.SubscriptionGetPayload<object>;
-export type SubscriptionWorkspaceRecord = Prisma.WorkspaceGetPayload<object>;
-export type SubscriptionOfferRecord = Prisma.OfferGetPayload<object>;
-export type SubscriptionPriceRecord = Prisma.PriceGetPayload<object>;
 
 export interface CreateSubscriptionData {
   workspaceId: string;
@@ -43,26 +40,6 @@ export interface SubscriptionPagination {
 @Injectable()
 export class SubscriptionsRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  findWorkspaceById(
-    workspaceId: string,
-  ): Promise<SubscriptionWorkspaceRecord | null> {
-    return this.prisma.workspace.findUnique({
-      where: { id: workspaceId },
-    });
-  }
-
-  findOfferByKey(offerKey: string): Promise<SubscriptionOfferRecord | null> {
-    return this.prisma.offer.findUnique({
-      where: { key: offerKey },
-    });
-  }
-
-  findPriceById(priceId: string): Promise<SubscriptionPriceRecord | null> {
-    return this.prisma.price.findUnique({
-      where: { id: priceId },
-    });
-  }
 
   findById(subscriptionId: string): Promise<SubscriptionRecord | null> {
     return this.prisma.subscription.findUnique({

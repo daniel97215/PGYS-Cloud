@@ -4,17 +4,26 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import { OffersContract } from "../../shared/contracts/offers.contract";
+import { PricingContract } from "../../shared/contracts/pricing.contract";
+import { WorkspaceContract } from "../../shared/contracts/workspace.contract";
 import { SUBSCRIPTION_STATUSES } from "../subscriptions.constants";
 import { SubscriptionsRepository } from "../subscriptions.repository";
 import { SubscriptionsService } from "../subscriptions.service";
 
 describe("SubscriptionsService", () => {
   let repository: jest.Mocked<SubscriptionsRepository>;
+  let workspaceContract: jest.Mocked<WorkspaceContract>;
+  let offersContract: jest.Mocked<OffersContract>;
+  let pricingContract: jest.Mocked<PricingContract>;
   let service: SubscriptionsService;
 
   const workspace = {
     id: "10000000-0000-4000-8000-000000000001",
     name: "Acme",
+    displayName: "Acme",
+    slug: "acme",
+    status: "ACTIVE",
   };
 
   const offer = {
@@ -62,11 +71,19 @@ describe("SubscriptionsService", () => {
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
   };
 
+  const publicPrice = {
+    id: price.id,
+    offerId: price.offerId,
+    currency: price.currency,
+    amount: price.amount.toString(),
+    billingPeriod: price.billingPeriod,
+    validFrom: price.validFrom,
+    validTo: price.validTo,
+    status: price.status,
+  };
+
   beforeEach(() => {
     repository = {
-      findWorkspaceById: jest.fn().mockResolvedValue(workspace),
-      findOfferByKey: jest.fn().mockResolvedValue(offer),
-      findPriceById: jest.fn().mockResolvedValue(price),
       findById: jest.fn().mockResolvedValue(subscription),
       findActiveByWorkspace: jest.fn().mockResolvedValue(subscription),
       findActiveByWorkspaceAndOffer: jest.fn().mockResolvedValue(null),
@@ -87,7 +104,27 @@ describe("SubscriptionsService", () => {
       ),
     } as unknown as jest.Mocked<SubscriptionsRepository>;
 
-    service = new SubscriptionsService(repository);
+    workspaceContract = {
+      findById: jest.fn().mockResolvedValue(workspace),
+      findBySlug: jest.fn(),
+      exists: jest.fn(),
+    };
+    offersContract = {
+      findById: jest.fn(),
+      findByKey: jest.fn().mockResolvedValue(offer),
+    };
+    pricingContract = {
+      findById: jest.fn().mockResolvedValue(publicPrice),
+      findActiveByOfferId: jest.fn(),
+      listByOfferId: jest.fn(),
+    };
+
+    service = new SubscriptionsService(
+      repository,
+      workspaceContract,
+      offersContract,
+      pricingContract,
+    );
   });
 
   afterEach(() => jest.useRealTimers());
@@ -103,9 +140,9 @@ describe("SubscriptionsService", () => {
     });
 
     expect(result).toEqual(subscription);
-    expect(repository.findWorkspaceById).toHaveBeenCalledWith(workspace.id);
-    expect(repository.findOfferByKey).toHaveBeenCalledWith(offer.key);
-    expect(repository.findPriceById).toHaveBeenCalledWith(price.id);
+    expect(workspaceContract.findById).toHaveBeenCalledWith(workspace.id);
+    expect(offersContract.findByKey).toHaveBeenCalledWith(offer.key);
+    expect(pricingContract.findById).toHaveBeenCalledWith(price.id);
     expect(repository.findActiveByWorkspaceAndOffer).toHaveBeenCalledWith(
       workspace.id,
       offer.id,
@@ -173,9 +210,9 @@ describe("SubscriptionsService", () => {
   });
 
   it("changes the offer", async () => {
-    repository.findOfferByKey.mockResolvedValueOnce(nextOffer);
-    repository.findPriceById.mockResolvedValueOnce({
-      ...price,
+    offersContract.findByKey.mockResolvedValueOnce(nextOffer);
+    pricingContract.findById.mockResolvedValueOnce({
+      ...publicPrice,
       offerId: nextOffer.id,
     });
 
@@ -256,7 +293,7 @@ describe("SubscriptionsService", () => {
   });
 
   it("throws NotFoundException when workspace is unknown", async () => {
-    repository.findWorkspaceById.mockResolvedValueOnce(null);
+    workspaceContract.findById.mockResolvedValueOnce(null);
 
     await expect(service.listWorkspaceSubscriptions(workspace.id)).rejects
       .toBeInstanceOf(NotFoundException);
@@ -287,7 +324,7 @@ describe("SubscriptionsService", () => {
   });
 
   it("rejects new subscriptions to an archived offer", async () => {
-    repository.findOfferByKey.mockResolvedValue({
+    offersContract.findByKey.mockResolvedValue({
       ...offer,
       status: "archived",
     });

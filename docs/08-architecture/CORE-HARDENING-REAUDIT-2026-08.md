@@ -54,8 +54,7 @@ courant.
 
 ### 4.1. Autorisation des surfaces Core
 
-Les controllers suivants n'appliquent actuellement ni `JwtAuthGuard`, ni
-autorisation Platform ou Workspace :
+La matrice d'autorisation confirmee est appliquee aux controllers suivants :
 
 - Service Catalog ;
 - Features ;
@@ -64,22 +63,15 @@ autorisation Platform ou Workspace :
 - Subscriptions ;
 - Provisioning.
 
-Ils exposent des lectures et des mutations globales ou sensibles. Ajouter
-uniquement un JWT serait insuffisant : un membre authentifie d'un Workspace ne
-doit pas obtenir implicitement le droit de modifier les offres globales ou de
-provisionner un autre Workspace.
+Chaque surface exige desormais un JWT et un profil PlatformOperator actif.
+`PLATFORM_SUPPORT` dispose des lectures et `PLATFORM_ADMIN` des lectures et
+mutations. Workspace Services suit la meme frontiere ; un simple membre d'un
+Workspace ne peut plus cibler arbitrairement ces routes.
 
-`WorkspaceServicesController` exige un JWT et valide le `workspaceId`, mais ne
-transmet pas l'identite de l'utilisateur au service. Un utilisateur authentifie
-peut donc cibler un Workspace arbitraire si aucune couche amont ne l'arrete.
-
-La correction exige une matrice explicite distinguant :
-
-- lecture anonyme eventuelle du catalogue commercial ;
-- lecture operateur `PLATFORM_SUPPORT` ;
-- mutation globale reservee a `PLATFORM_ADMIN` ;
-- lecture ou administration locale reservee aux membres, `OWNER` ou `ADMIN`
-  du Workspace concerne.
+Le futur catalogue commercial anonyme et les consultations locales d'un
+abonnement ou de services utiliseront des endpoints distincts, filtres et
+Workspace-scoped. Aucun role Workspace n'obtient de mutation implicite sur
+l'offre souscrite ou le provisioning.
 
 ### 4.2. Validation et contrat HTTP
 

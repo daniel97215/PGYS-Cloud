@@ -21,11 +21,16 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 import { UpdateOfferDto } from "./dto/update-offer.dto";
 import { OffersService } from "./offers.service";
 
 @ApiTags("Offers")
+@PlatformOperatorReadAccess()
 @Controller("offers")
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
@@ -33,6 +38,7 @@ export class OffersController {
   @ApiOperation({ summary: "Create an offer" })
   @ApiBody({ type: CreateOfferDto })
   @ApiCreatedResponse({ description: "Offer created" })
+  @PlatformAdminOnly()
   @Post()
   create(@Body() data: CreateOfferDto) {
     return this.offersService.createOffer(data);
@@ -59,12 +65,14 @@ export class OffersController {
   @ApiBody({ type: UpdateOfferDto })
   @ApiOkResponse({ description: "Offer updated" })
   @ApiNotFoundResponse({ description: "Offer not found" })
+  @PlatformAdminOnly()
   @Patch(":key")
   update(@Param("key") key: string, @Body() data: UpdateOfferDto) {
     return this.offersService.updateOffer(key, data);
   }
 
   @ApiOperation({ summary: "Activate a draft offer" })
+  @PlatformAdminOnly()
   @Post(":key/activate")
   activate(@Param("key") key: string) {
     return this.offersService.activateOffer(key);
@@ -74,6 +82,7 @@ export class OffersController {
   @ApiParam({ name: "key" })
   @ApiNoContentResponse({ description: "Offer archived" })
   @ApiNotFoundResponse({ description: "Offer not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":key")
   async archive(@Param("key") key: string): Promise<void> {

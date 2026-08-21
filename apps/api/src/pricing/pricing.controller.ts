@@ -22,11 +22,16 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
 import { PricingService } from "./pricing.service";
 
 @ApiTags("Pricing")
+@PlatformOperatorReadAccess()
 @Controller("pricing")
 export class PricingController {
   constructor(private readonly pricingService: PricingService) {}
@@ -36,6 +41,7 @@ export class PricingController {
   @ApiBody({ type: CreatePriceDto })
   @ApiCreatedResponse({ description: "Price created" })
   @ApiNotFoundResponse({ description: "Offer not found" })
+  @PlatformAdminOnly()
   @Post("offers/:offerKey/prices")
   create(
     @Param("offerKey") offerKey: string,
@@ -70,6 +76,7 @@ export class PricingController {
   @ApiBody({ type: UpdatePriceDto })
   @ApiOkResponse({ description: "Price updated" })
   @ApiNotFoundResponse({ description: "Price not found" })
+  @PlatformAdminOnly()
   @Patch("prices/:priceId")
   update(
     @Param("priceId", new ParseUUIDPipe({ version: "4" })) priceId: string,
@@ -82,6 +89,7 @@ export class PricingController {
   @ApiParam({ name: "priceId" })
   @ApiNoContentResponse({ description: "Price archived" })
   @ApiNotFoundResponse({ description: "Price not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete("prices/:priceId")
   async archive(

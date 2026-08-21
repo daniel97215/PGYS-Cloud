@@ -15,12 +15,17 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { DeprovisionWorkspaceDto } from "./dto/deprovision-workspace.dto";
 import { ProvisionWorkspaceDto } from "./dto/provision-workspace.dto";
 import { ReprovisionWorkspaceDto } from "./dto/reprovision-workspace.dto";
 import { ProvisioningService } from "./provisioning.service";
 
 @ApiTags("Provisioning")
+@PlatformOperatorReadAccess()
 @Controller("provisioning")
 export class ProvisioningController {
   constructor(private readonly provisioningService: ProvisioningService) {}
@@ -29,6 +34,7 @@ export class ProvisioningController {
   @ApiParam({ name: "workspaceId" })
   @ApiBody({ type: ProvisionWorkspaceDto })
   @ApiCreatedResponse({ description: "Provisioning job" })
+  @PlatformAdminOnly()
   @Post("workspaces/:workspaceId/provision")
   provision(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
@@ -42,6 +48,7 @@ export class ProvisioningController {
   @ApiParam({ name: "workspaceId" })
   @ApiBody({ type: ReprovisionWorkspaceDto })
   @ApiCreatedResponse({ description: "Provisioning job" })
+  @PlatformAdminOnly()
   @Post("workspaces/:workspaceId/reprovision")
   reprovision(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
@@ -55,6 +62,7 @@ export class ProvisioningController {
   @ApiParam({ name: "workspaceId" })
   @ApiBody({ type: DeprovisionWorkspaceDto })
   @ApiCreatedResponse({ description: "Provisioning job" })
+  @PlatformAdminOnly()
   @Post("workspaces/:workspaceId/deprovision")
   deprovision(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))

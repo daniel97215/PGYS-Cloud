@@ -21,11 +21,16 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { CreateServiceCatalogItemDto } from "./dto/create-service-catalog-item.dto";
 import { UpdateServiceCatalogItemDto } from "./dto/update-service-catalog-item.dto";
 import { ServiceCatalogService } from "./service-catalog.service";
 
 @ApiTags("Service catalog")
+@PlatformOperatorReadAccess()
 @Controller("service-catalog")
 export class ServiceCatalogController {
   constructor(private readonly serviceCatalogService: ServiceCatalogService) {}
@@ -40,6 +45,7 @@ export class ServiceCatalogController {
   @ApiOperation({ summary: "Create a service catalog item" })
   @ApiBody({ type: CreateServiceCatalogItemDto })
   @ApiCreatedResponse({ description: "Service catalog item created" })
+  @PlatformAdminOnly()
   @Post()
   create(@Body() data: CreateServiceCatalogItemDto) {
     return this.serviceCatalogService.createService(data);
@@ -59,6 +65,7 @@ export class ServiceCatalogController {
   @ApiBody({ type: UpdateServiceCatalogItemDto })
   @ApiOkResponse({ description: "Service catalog item updated" })
   @ApiNotFoundResponse({ description: "Service catalog item not found" })
+  @PlatformAdminOnly()
   @Patch(":key")
   update(
     @Param("key") key: string,
@@ -71,6 +78,7 @@ export class ServiceCatalogController {
   @ApiParam({ name: "key" })
   @ApiNoContentResponse({ description: "Service catalog item archived" })
   @ApiNotFoundResponse({ description: "Service catalog item not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":key")
   async archive(@Param("key") key: string): Promise<void> {

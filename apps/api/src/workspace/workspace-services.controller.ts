@@ -9,10 +9,8 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from "@nestjs/common";
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -23,10 +21,12 @@ import {
   ApiProperty,
   ApiPropertyOptional,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { IsObject, IsOptional } from "class-validator";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { WorkspaceServicesService } from "./workspace-services.service";
 
 class ActivateWorkspaceServiceDto {
@@ -51,9 +51,7 @@ class UpdateWorkspaceServiceConfigurationDto {
 }
 
 @ApiTags("Workspace services")
-@ApiBearerAuth()
-@ApiUnauthorizedResponse({ description: "Access token missing or invalid" })
-@UseGuards(JwtAuthGuard)
+@PlatformOperatorReadAccess()
 @Controller("workspaces/:workspaceId/services")
 export class WorkspaceServicesController {
   constructor(
@@ -76,6 +74,7 @@ export class WorkspaceServicesController {
   @ApiParam({ name: "serviceKey" })
   @ApiBody({ type: ActivateWorkspaceServiceDto, required: false })
   @ApiCreatedResponse({ description: "Workspace service activated" })
+  @PlatformAdminOnly()
   @Post(":serviceKey")
   create(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
@@ -95,6 +94,7 @@ export class WorkspaceServicesController {
   @ApiParam({ name: "serviceKey" })
   @ApiNoContentResponse({ description: "Workspace service disabled" })
   @ApiNotFoundResponse({ description: "Workspace service not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":serviceKey")
   async remove(
@@ -128,6 +128,7 @@ export class WorkspaceServicesController {
   @ApiBody({ type: UpdateWorkspaceServiceConfigurationDto })
   @ApiOkResponse({ description: "Workspace service configuration updated" })
   @ApiNotFoundResponse({ description: "Workspace service not found" })
+  @PlatformAdminOnly()
   @Put(":serviceKey/configuration")
   updateConfiguration(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))

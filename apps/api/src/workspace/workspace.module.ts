@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { PlatformAuthorizationModule } from "../platform-administration/platform-authorization.module";
 import { WorkspaceProfileController } from "./workspace-profile.controller";
 import { WorkspaceSettingsController } from "./workspace-settings.controller";
 import { WorkspaceServicesController } from "./workspace-services.controller";
@@ -10,7 +11,7 @@ import { WorkspaceRepository } from "./workspace.repository";
 import { WorkspaceService } from "./workspace.service";
 
 @Module({
-  imports: [WorkspaceContextModule],
+  imports: [PlatformAuthorizationModule, WorkspaceContextModule],
   controllers: [
     WorkspaceController,
     WorkspaceProfileController,

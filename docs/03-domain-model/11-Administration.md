@@ -66,3 +66,23 @@ comme une capacite d'operateur PGYS.
 
 Toute vue transverse doit verifier l'autorisation Platform dediee. Toute vue
 d'administration cliente doit conserver l'isolation stricte du workspace.
+
+## 5. Matrice d'acces aux referentiels Core
+
+Les endpoints Core existants de Service Catalog, Features, Offers, Offer
+Features, Pricing, Subscriptions, Provisioning et Workspace Services sont des
+surfaces operateur :
+
+- `PLATFORM_SUPPORT` peut uniquement les consulter ;
+- `PLATFORM_ADMIN` peut les consulter et executer leurs mutations ;
+- un role de Workspace ne donne aucun acces implicite a ces routes globales.
+
+Un futur catalogue commercial anonyme utilisera un endpoint distinct, limite
+aux offres publiques actives et a leurs tarifs actifs. Il ne reutilisera pas
+les listes operateur qui contiennent aussi les brouillons et references
+internes.
+
+Les administrateurs d'une societe disposeront de routes Workspace dediees pour
+consulter leur abonnement et leurs services. Ils ne pourront pas modifier
+directement l'offre souscrite, le provisioning ou les services actives tant
+qu'un parcours metier distinct ne l'autorise pas explicitement.

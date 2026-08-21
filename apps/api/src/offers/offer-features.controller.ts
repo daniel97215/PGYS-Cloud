@@ -17,8 +17,13 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { OfferFeaturesService } from "./offer-features.service";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 
 @ApiTags("Offer Features")
+@PlatformOperatorReadAccess()
 @Controller()
 export class OfferFeaturesController {
   constructor(private readonly offerFeaturesService: OfferFeaturesService) {}
@@ -28,6 +33,7 @@ export class OfferFeaturesController {
   @ApiParam({ name: "featureKey" })
   @ApiCreatedResponse({ description: "Feature added to offer" })
   @ApiNotFoundResponse({ description: "Offer or feature not found" })
+  @PlatformAdminOnly()
   @Post("offers/:offerKey/features/:featureKey")
   addFeatureToOffer(
     @Param("offerKey") offerKey: string,
@@ -59,6 +65,7 @@ export class OfferFeaturesController {
   @ApiParam({ name: "featureKey" })
   @ApiNoContentResponse({ description: "Feature removed from offer" })
   @ApiNotFoundResponse({ description: "Offer, feature or relation not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete("offers/:offerKey/features/:featureKey")
   async removeFeatureFromOffer(

@@ -21,11 +21,16 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
+import {
+  PlatformAdminOnly,
+  PlatformOperatorReadAccess,
+} from "../platform-administration/platform-access.decorators";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { FeaturesService } from "./features.service";
 
 @ApiTags("Features")
+@PlatformOperatorReadAccess()
 @Controller("features")
 export class FeaturesController {
   constructor(private readonly featuresService: FeaturesService) {}
@@ -33,6 +38,7 @@ export class FeaturesController {
   @ApiOperation({ summary: "Create a feature" })
   @ApiBody({ type: CreateFeatureDto })
   @ApiCreatedResponse({ description: "Feature created" })
+  @PlatformAdminOnly()
   @Post()
   create(@Body() data: CreateFeatureDto) {
     return this.featuresService.createFeature(data);
@@ -59,6 +65,7 @@ export class FeaturesController {
   @ApiBody({ type: UpdateFeatureDto })
   @ApiOkResponse({ description: "Feature updated" })
   @ApiNotFoundResponse({ description: "Feature not found" })
+  @PlatformAdminOnly()
   @Patch(":key")
   update(@Param("key") key: string, @Body() data: UpdateFeatureDto) {
     return this.featuresService.updateFeature(key, data);
@@ -68,6 +75,7 @@ export class FeaturesController {
   @ApiParam({ name: "key" })
   @ApiNoContentResponse({ description: "Feature archived" })
   @ApiNotFoundResponse({ description: "Feature not found" })
+  @PlatformAdminOnly()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(":key")
   async archive(@Param("key") key: string): Promise<void> {

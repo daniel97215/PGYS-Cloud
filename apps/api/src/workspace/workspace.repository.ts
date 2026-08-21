@@ -193,6 +193,18 @@ export class WorkspaceRepository {
     });
   }
 
+  findBySlug(slug: string): Promise<WorkspaceRecord | null> {
+    return this.prisma.workspace.findUnique({
+      where: { slug },
+      select: workspaceSelect,
+    });
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    const count = await this.prisma.workspace.count({ where: { id } });
+    return count > 0;
+  }
+
   findCurrentProfileForUser(
     userId: string,
   ): Promise<WorkspaceProfileRecord | null> {

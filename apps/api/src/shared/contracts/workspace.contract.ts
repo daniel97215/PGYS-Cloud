@@ -1,3 +1,5 @@
+export const WORKSPACE_CONTRACT = Symbol("WORKSPACE_CONTRACT");
+
 export interface PublicWorkspace {
   id: string;
   slug: string;
@@ -11,4 +13,3 @@ export interface WorkspaceContract {
   findBySlug(slug: string): Promise<PublicWorkspace | null>;
   exists(id: string): Promise<boolean>;
 }
-

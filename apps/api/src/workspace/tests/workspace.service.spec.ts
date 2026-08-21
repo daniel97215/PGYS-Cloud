@@ -90,6 +90,8 @@ describe("WorkspaceService", () => {
     repository = {
       findManyForUser: jest.fn(),
       findById: jest.fn().mockResolvedValue(workspace),
+      findBySlug: jest.fn().mockResolvedValue(workspace),
+      existsById: jest.fn().mockResolvedValue(true),
       findCurrentProfileForUser: jest.fn().mockResolvedValue(profile),
       findCurrentSettingsForUser: jest.fn().mockResolvedValue({
         id: workspace.id,
@@ -117,6 +119,18 @@ describe("WorkspaceService", () => {
       countActiveOwners: jest.fn(),
     } as unknown as jest.Mocked<WorkspaceRepository>;
     service = new WorkspaceService(repository);
+  });
+
+  it("implements the public Workspace contract", async () => {
+    await expect(service.findById(workspace.id)).resolves.toEqual(workspace);
+    await expect(service.findBySlug(workspace.slug)).resolves.toEqual(
+      workspace,
+    );
+    await expect(service.exists(workspace.id)).resolves.toBe(true);
+
+    expect(repository.findById).toHaveBeenCalledWith(workspace.id);
+    expect(repository.findBySlug).toHaveBeenCalledWith(workspace.slug);
+    expect(repository.existsById).toHaveBeenCalledWith(workspace.id);
   });
 
   it("generates a unique slug with an incrementing suffix", async () => {

@@ -26,6 +26,10 @@ import {
   WorkspaceSettingsUpdateData,
 } from "./workspace.repository";
 import { toSlug } from "./validators/slug.validator";
+import {
+  PublicWorkspace,
+  WorkspaceContract,
+} from "../shared/contracts/workspace.contract";
 
 const MANAGER_ROLES = new Set<MemberRole>([
   MemberRole.OWNER,
@@ -53,11 +57,23 @@ export interface WorkspaceSettingsView {
 }
 
 @Injectable()
-export class WorkspaceService {
+export class WorkspaceService implements WorkspaceContract {
   constructor(private readonly repository: WorkspaceRepository) {}
 
   findAll(userId: string): Promise<WorkspaceRecord[]> {
     return this.repository.findManyForUser(userId);
+  }
+
+  findById(id: string): Promise<PublicWorkspace | null> {
+    return this.repository.findById(id);
+  }
+
+  findBySlug(slug: string): Promise<PublicWorkspace | null> {
+    return this.repository.findBySlug(slug);
+  }
+
+  exists(id: string): Promise<boolean> {
+    return this.repository.existsById(id);
   }
 
   async findOne(id: string, userId: string): Promise<WorkspaceRecord> {

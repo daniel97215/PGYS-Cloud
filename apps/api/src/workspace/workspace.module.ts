@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { PlatformAuthorizationModule } from "../platform-administration/platform-authorization.module";
+import { WORKSPACE_CONTRACT } from "../shared/contracts/workspace.contract";
 import { WorkspaceProfileController } from "./workspace-profile.controller";
 import { WorkspaceSettingsController } from "./workspace-settings.controller";
 import { WorkspaceServicesController } from "./workspace-services.controller";
@@ -23,7 +24,8 @@ import { WorkspaceService } from "./workspace.service";
     WorkspaceService,
     WorkspaceServicesRepository,
     WorkspaceServicesService,
+    { provide: WORKSPACE_CONTRACT, useExisting: WorkspaceService },
   ],
-  exports: [WorkspaceContextModule],
+  exports: [WorkspaceContextModule, WORKSPACE_CONTRACT],
 })
 export class WorkspaceModule {}

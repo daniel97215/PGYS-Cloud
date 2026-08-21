@@ -33,6 +33,25 @@ describe("WorkspaceRepository", () => {
     closedAt: null,
   };
 
+  it("finds and checks workspaces through Prisma", async () => {
+    const findUnique = jest.fn().mockResolvedValue(workspace);
+    const count = jest.fn().mockResolvedValue(1);
+    const repository = new WorkspaceRepository({
+      workspace: { findUnique, count },
+    } as unknown as PrismaService);
+
+    await expect(repository.findBySlug(workspace.slug)).resolves.toEqual(
+      workspace,
+    );
+    await expect(repository.existsById(workspace.id)).resolves.toBe(true);
+
+    expect(findUnique).toHaveBeenCalledWith({
+      where: { slug: workspace.slug },
+      select: expect.any(Object),
+    });
+    expect(count).toHaveBeenCalledWith({ where: { id: workspace.id } });
+  });
+
   it("creates an active workspace", async () => {
     const workspaceCreate = jest.fn().mockResolvedValue(workspace);
     const memberCreate = jest.fn().mockResolvedValue({});

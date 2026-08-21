@@ -165,17 +165,29 @@ describe("SubscriptionsRepository", () => {
 
   it("lists subscriptions by workspace through Prisma", async () => {
     const findMany = jest.fn().mockResolvedValue([subscription]);
+    const count = jest.fn().mockResolvedValue(1);
     const repository = new SubscriptionsRepository(
-      createPrismaMock({ findMany }),
+      createPrismaMock({ count, findMany }),
     );
 
-    const result = await repository.listByWorkspace(workspace.id);
+    const result = await repository.findPageByWorkspace(workspace.id, {
+      page: 2,
+      pageSize: 10,
+    });
 
-    expect(result).toEqual([subscription]);
+    expect(result).toEqual({
+      items: [subscription],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
     expect(findMany).toHaveBeenCalledWith({
       where: { workspaceId: workspace.id },
       orderBy: [{ startedAt: "desc" }, { createdAt: "desc" }],
+      skip: 10,
+      take: 10,
     });
+    expect(count).toHaveBeenCalledWith({ where: { workspaceId: workspace.id } });
   });
 
   it("updates a subscription through Prisma", async () => {
@@ -240,6 +252,7 @@ describe("SubscriptionsRepository", () => {
 });
 
 function createPrismaMock(methods: {
+  count?: jest.Mock;
   workspaceFindUnique?: jest.Mock;
   offerFindUnique?: jest.Mock;
   priceFindUnique?: jest.Mock;
@@ -261,6 +274,7 @@ function createPrismaMock(methods: {
       findUnique: methods.priceFindUnique ?? jest.fn(),
     },
     subscription: {
+      count: methods.count ?? jest.fn(),
       findUnique: methods.subscriptionFindUnique ?? jest.fn(),
       findFirst: methods.findFirst ?? jest.fn(),
       findMany: methods.findMany ?? jest.fn(),

@@ -4,6 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import {
+  Page,
+  PaginationQueryDto,
+} from "../common/dto/pagination-query.dto";
 import { CancelSubscriptionDto } from "./dto/cancel-subscription.dto";
 import { ChangeOfferDto } from "./dto/change-offer.dto";
 import { CreateSubscriptionDto } from "./dto/create-subscription.dto";
@@ -75,10 +79,14 @@ export class SubscriptionsService {
 
   async listWorkspaceSubscriptions(
     workspaceId: string,
-  ): Promise<SubscriptionRecord[]> {
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<SubscriptionRecord>> {
     const workspace = await this.requireWorkspace(workspaceId);
 
-    return this.subscriptionsRepository.listByWorkspace(workspace.id);
+    return this.subscriptionsRepository.findPageByWorkspace(
+      workspace.id,
+      pagination,
+    );
   }
 
   async changeOffer(

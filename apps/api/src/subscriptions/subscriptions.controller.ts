@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -16,6 +17,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { CancelSubscriptionDto } from "./dto/cancel-subscription.dto";
 import { ChangeOfferDto } from "./dto/change-offer.dto";
 import { CreateSubscriptionDto } from "./dto/create-subscription.dto";
@@ -56,8 +58,12 @@ export class SubscriptionsController {
   findAllForWorkspace(
     @Param("workspaceId", new ParseUUIDPipe({ version: "4" }))
     workspaceId: string,
+    @Query() query: PaginationQueryDto,
   ) {
-    return this.subscriptionsService.listWorkspaceSubscriptions(workspaceId);
+    return this.subscriptionsService.listWorkspaceSubscriptions(
+      workspaceId,
+      query,
+    );
   }
 
   @ApiOperation({ summary: "Change subscription offer" })

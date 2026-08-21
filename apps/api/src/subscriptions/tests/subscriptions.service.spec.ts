@@ -70,7 +70,12 @@ describe("SubscriptionsService", () => {
       findById: jest.fn().mockResolvedValue(subscription),
       findActiveByWorkspace: jest.fn().mockResolvedValue(subscription),
       findActiveByWorkspaceAndOffer: jest.fn().mockResolvedValue(null),
-      listByWorkspace: jest.fn().mockResolvedValue([subscription]),
+      findPageByWorkspace: jest.fn().mockResolvedValue({
+        items: [subscription],
+        total: 1,
+        page: 2,
+        pageSize: 10,
+      }),
       create: jest.fn().mockResolvedValue(subscription),
       update: jest.fn().mockResolvedValue(subscription),
       transition: jest.fn().mockImplementation(
@@ -124,10 +129,21 @@ describe("SubscriptionsService", () => {
   });
 
   it("lists subscriptions for a workspace", async () => {
-    const result = await service.listWorkspaceSubscriptions(workspace.id);
+    const result = await service.listWorkspaceSubscriptions(workspace.id, {
+      page: 2,
+      pageSize: 10,
+    });
 
-    expect(result).toEqual([subscription]);
-    expect(repository.listByWorkspace).toHaveBeenCalledWith(workspace.id);
+    expect(result).toEqual({
+      items: [subscription],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(repository.findPageByWorkspace).toHaveBeenCalledWith(workspace.id, {
+      page: 2,
+      pageSize: 10,
+    });
   });
 
   it("changes the offer", async () => {

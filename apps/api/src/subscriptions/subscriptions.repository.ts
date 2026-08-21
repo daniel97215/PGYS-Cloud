@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { Page } from "../common/dto/pagination-query.dto";
 import {
   SUBSCRIPTION_STATUSES,
   SubscriptionStatus,
@@ -33,6 +34,11 @@ export type UpdateSubscriptionData = Partial<
     | "renewalDate"
   >
 >;
+
+export interface SubscriptionPagination {
+  page?: number;
+  pageSize?: number;
+}
 
 @Injectable()
 export class SubscriptionsRepository {
@@ -90,11 +96,24 @@ export class SubscriptionsRepository {
     });
   }
 
-  listByWorkspace(workspaceId: string): Promise<SubscriptionRecord[]> {
-    return this.prisma.subscription.findMany({
-      where: { workspaceId },
-      orderBy: [{ startedAt: "desc" }, { createdAt: "desc" }],
-    });
+  async findPageByWorkspace(
+    workspaceId: string,
+    pagination: SubscriptionPagination,
+  ): Promise<Page<SubscriptionRecord>> {
+    const page = Math.max(pagination.page ?? 1, 1);
+    const pageSize = Math.min(Math.max(pagination.pageSize ?? 25, 1), 100);
+    const where = { workspaceId };
+    const [items, total] = await Promise.all([
+      this.prisma.subscription.findMany({
+        where,
+        orderBy: [{ startedAt: "desc" }, { createdAt: "desc" }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.subscription.count({ where }),
+    ]);
+
+    return { items, total, page, pageSize };
   }
 
   create(data: CreateSubscriptionData): Promise<SubscriptionRecord> {

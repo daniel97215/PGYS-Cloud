@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "@pgys/ui/styles.css";
+
+:root {
+  --font-sans: var(--font-geist);
+  --pgys-brand: #064bb7;
+  --pgys-brand-dark: #06378c;
+  --pgys-brand-soft: #eaf2ff;
+  --pgys-accent: #ff7900;
+}
+
+@theme inline {
+  --color-accent: var(--pgys-accent);
+}
+
+* {
+  border-color: var(--pgys-border);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+html {
+  background: var(--pgys-background);
+}
+
+body {
+  min-width: 320px;
+  background: var(--pgys-background);
+  color: var(--pgys-content);
+  font-family: var(--font-geist), Arial, Helvetica, sans-serif;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #172554;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

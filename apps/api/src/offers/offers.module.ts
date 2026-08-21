@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { PlatformAuthorizationModule } from "../platform-administration/platform-authorization.module";
+import { FeaturesModule } from "../features/features.module";
 import { OFFERS_CONTRACT } from "../shared/contracts/offers.contract";
 import { OfferFeaturesController } from "./offer-features.controller";
 import { OfferFeaturesRepository } from "./offer-features.repository";
@@ -9,7 +10,7 @@ import { OffersRepository } from "./offers.repository";
 import { OffersService } from "./offers.service";
 
 @Module({
-  imports: [PlatformAuthorizationModule],
+  imports: [PlatformAuthorizationModule, FeaturesModule],
   controllers: [OffersController, OfferFeaturesController],
   providers: [
     OffersRepository,

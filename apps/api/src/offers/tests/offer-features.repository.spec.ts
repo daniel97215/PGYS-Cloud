@@ -34,34 +34,6 @@ describe("OfferFeaturesRepository", () => {
     feature,
   };
 
-  it("finds an offer by key through Prisma", async () => {
-    const offerFindUnique = jest.fn().mockResolvedValue(offer);
-    const repository = new OfferFeaturesRepository(
-      createPrismaMock({ offerFindUnique }),
-    );
-
-    const result = await repository.findOfferByKey(offer.key);
-
-    expect(result).toEqual(offer);
-    expect(offerFindUnique).toHaveBeenCalledWith({
-      where: { key: offer.key },
-    });
-  });
-
-  it("finds a feature by key through Prisma", async () => {
-    const featureFindUnique = jest.fn().mockResolvedValue(feature);
-    const repository = new OfferFeaturesRepository(
-      createPrismaMock({ featureFindUnique }),
-    );
-
-    const result = await repository.findFeatureByKey(feature.key);
-
-    expect(result).toEqual(feature);
-    expect(featureFindUnique).toHaveBeenCalledWith({
-      where: { key: feature.key },
-    });
-  });
-
   it("finds an offer feature relation through Prisma", async () => {
     const offerFeatureFindUnique = jest.fn().mockResolvedValue(offerFeature);
     const repository = new OfferFeaturesRepository(
@@ -197,20 +169,12 @@ describe("OfferFeaturesRepository", () => {
 });
 
 function createPrismaMock(methods: {
-  offerFindUnique?: jest.Mock;
-  featureFindUnique?: jest.Mock;
   offerFeatureFindUnique?: jest.Mock;
   upsert?: jest.Mock;
   update?: jest.Mock;
   findMany?: jest.Mock;
 }): PrismaService {
   const prisma = {
-    offer: {
-      findUnique: methods.offerFindUnique ?? jest.fn(),
-    },
-    feature: {
-      findUnique: methods.featureFindUnique ?? jest.fn(),
-    },
     offerFeature: {
       findUnique: methods.offerFeatureFindUnique ?? jest.fn(),
       upsert: methods.upsert ?? jest.fn(),

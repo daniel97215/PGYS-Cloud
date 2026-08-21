@@ -1,9 +1,13 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
+import { FeaturesContract } from "../../shared/contracts/features.contract";
+import { OffersContract } from "../../shared/contracts/offers.contract";
 import { OfferFeaturesRepository } from "../offer-features.repository";
 import { OfferFeaturesService } from "../offer-features.service";
 
 describe("OfferFeaturesService", () => {
   let repository: jest.Mocked<OfferFeaturesRepository>;
+  let offersContract: jest.Mocked<OffersContract>;
+  let featuresContract: jest.Mocked<FeaturesContract>;
   let service: OfferFeaturesService;
 
   const offer = {
@@ -40,8 +44,6 @@ describe("OfferFeaturesService", () => {
 
   beforeEach(() => {
     repository = {
-      findOfferByKey: jest.fn().mockResolvedValue(offer),
-      findFeatureByKey: jest.fn().mockResolvedValue(feature),
       hasOfferUsage: jest.fn().mockResolvedValue(false),
       findByOfferAndFeature: jest.fn().mockResolvedValue(offerFeature),
       addFeatureToOffer: jest.fn().mockResolvedValue(offerFeature),
@@ -53,7 +55,21 @@ describe("OfferFeaturesService", () => {
       findOffersByFeature: jest.fn().mockResolvedValue([offerFeature]),
     } as unknown as jest.Mocked<OfferFeaturesRepository>;
 
-    service = new OfferFeaturesService(repository);
+    offersContract = {
+      findById: jest.fn(),
+      findByKey: jest.fn().mockResolvedValue(offer),
+    };
+    featuresContract = {
+      findById: jest.fn(),
+      findByKey: jest.fn().mockResolvedValue(feature),
+      findByKeys: jest.fn(),
+    };
+
+    service = new OfferFeaturesService(
+      repository,
+      offersContract,
+      featuresContract,
+    );
   });
 
   it("adds a feature to an offer", async () => {
@@ -63,8 +79,8 @@ describe("OfferFeaturesService", () => {
     );
 
     expect(result).toEqual(offerFeature);
-    expect(repository.findOfferByKey).toHaveBeenCalledWith(offer.key);
-    expect(repository.findFeatureByKey).toHaveBeenCalledWith(feature.key);
+    expect(offersContract.findByKey).toHaveBeenCalledWith(offer.key);
+    expect(featuresContract.findByKey).toHaveBeenCalledWith(feature.key);
     expect(repository.addFeatureToOffer).toHaveBeenCalledWith(
       offer.id,
       feature.id,
@@ -103,7 +119,7 @@ describe("OfferFeaturesService", () => {
   });
 
   it("throws NotFoundException when the offer is unknown", async () => {
-    repository.findOfferByKey.mockResolvedValueOnce(null);
+    offersContract.findByKey.mockResolvedValueOnce(null);
 
     await expect(
       service.addFeatureToOffer("unknown", feature.key),
@@ -111,7 +127,7 @@ describe("OfferFeaturesService", () => {
   });
 
   it("throws NotFoundException when the feature is unknown", async () => {
-    repository.findFeatureByKey.mockResolvedValueOnce(null);
+    featuresContract.findByKey.mockResolvedValueOnce(null);
 
     await expect(
       service.addFeatureToOffer(offer.key, "unknown"),

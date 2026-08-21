@@ -1,13 +1,22 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import { OFFER_STATUSES } from "./offers.constants";
 import {
-  OfferFeatureFeatureRecord,
-  OfferFeatureOfferRecord,
+  FEATURES_CONTRACT,
+  FeaturesContract,
+  PublicFeature,
+} from "../shared/contracts/features.contract";
+import {
+  OFFERS_CONTRACT,
+  OffersContract,
+  PublicOffer,
+} from "../shared/contracts/offers.contract";
+import {
   OfferFeatureRecord,
   OfferFeaturesRepository,
 } from "./offer-features.repository";
@@ -16,6 +25,10 @@ import {
 export class OfferFeaturesService {
   constructor(
     private readonly offerFeaturesRepository: OfferFeaturesRepository,
+    @Inject(OFFERS_CONTRACT)
+    private readonly offersContract: OffersContract,
+    @Inject(FEATURES_CONTRACT)
+    private readonly featuresContract: FeaturesContract,
   ) {}
 
   async addFeatureToOffer(
@@ -69,13 +82,9 @@ export class OfferFeaturesService {
     return this.offerFeaturesRepository.findOffersByFeature(feature.id);
   }
 
-  private async requireOffer(
-    offerKey: string,
-  ): Promise<OfferFeatureOfferRecord> {
+  private async requireOffer(offerKey: string): Promise<PublicOffer> {
     const normalizedKey = this.normalizeKey(offerKey, "Offer key");
-    const offer = await this.offerFeaturesRepository.findOfferByKey(
-      normalizedKey,
-    );
+    const offer = await this.offersContract.findByKey(normalizedKey);
 
     if (!offer) {
       throw new NotFoundException(`Offer "${offerKey}" not found`);
@@ -84,13 +93,9 @@ export class OfferFeaturesService {
     return offer;
   }
 
-  private async requireFeature(
-    featureKey: string,
-  ): Promise<OfferFeatureFeatureRecord> {
+  private async requireFeature(featureKey: string): Promise<PublicFeature> {
     const normalizedKey = this.normalizeKey(featureKey, "Feature key");
-    const feature = await this.offerFeaturesRepository.findFeatureByKey(
-      normalizedKey,
-    );
+    const feature = await this.featuresContract.findByKey(normalizedKey);
 
     if (!feature) {
       throw new NotFoundException(`Feature "${featureKey}" not found`);
@@ -99,9 +104,7 @@ export class OfferFeaturesService {
     return feature;
   }
 
-  private async ensureOfferMutable(
-    offer: OfferFeatureOfferRecord,
-  ): Promise<void> {
+  private async ensureOfferMutable(offer: PublicOffer): Promise<void> {
     if (offer.status === OFFER_STATUSES.ARCHIVED) {
       throw new ConflictException("Archived offers are immutable");
     }

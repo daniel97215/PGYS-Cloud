@@ -224,12 +224,6 @@ describe("Core Workspace Onboarding integration", () => {
     } as unknown as FeaturesRepository;
 
     const offerFeaturesRepository = {
-      findOfferByKey: jest.fn(async (key: string) =>
-        offers.find((offer) => offer.key === key) ?? null,
-      ),
-      findFeatureByKey: jest.fn(async (key: string) =>
-        features.find((feature) => feature.key === key) ?? null,
-      ),
       hasOfferUsage: jest.fn(async (offerId: string) =>
         subscriptions.some((item) => item.offerId === offerId),
       ),
@@ -458,7 +452,11 @@ describe("Core Workspace Onboarding integration", () => {
     workspaceService = new WorkspaceService(workspaceRepository);
     offersService = new OffersService(offersRepository);
     featuresService = new FeaturesService(featuresRepository);
-    offerFeaturesService = new OfferFeaturesService(offerFeaturesRepository);
+    offerFeaturesService = new OfferFeaturesService(
+      offerFeaturesRepository,
+      offersService,
+      featuresService,
+    );
     pricingService = new PricingService(pricingRepository, offersService);
     subscriptionsService = new SubscriptionsService(
       subscriptionsRepository,

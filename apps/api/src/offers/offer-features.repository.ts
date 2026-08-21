@@ -11,24 +11,9 @@ export type OfferFeatureRecord = Prisma.OfferFeatureGetPayload<{
   include: typeof offerFeatureInclude;
 }>;
 
-export type OfferFeatureOfferRecord = Prisma.OfferGetPayload<object>;
-export type OfferFeatureFeatureRecord = Prisma.FeatureGetPayload<object>;
-
 @Injectable()
 export class OfferFeaturesRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  findOfferByKey(key: string): Promise<OfferFeatureOfferRecord | null> {
-    return this.prisma.offer.findUnique({
-      where: { key },
-    });
-  }
-
-  findFeatureByKey(key: string): Promise<OfferFeatureFeatureRecord | null> {
-    return this.prisma.feature.findUnique({
-      where: { key },
-    });
-  }
 
   async hasOfferUsage(offerId: string): Promise<boolean> {
     const [subscriptions, checkouts] = await this.prisma.$transaction([

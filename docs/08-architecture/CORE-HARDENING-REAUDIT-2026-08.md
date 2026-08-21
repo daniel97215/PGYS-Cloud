@@ -112,7 +112,9 @@ maintenant migrer progressivement sans importer les repositories proprietaires.
 Plusieurs repositories continuent donc a lire directement les tables d'autres
 modules :
 
-- Offer Features lit Offer, Feature, Subscription et CheckoutSession ;
+- Offer Features resout Offer et Feature via leurs contrats publics, mais son
+  repository materialise encore les relations et lit Subscription et
+  CheckoutSession pour verifier l'utilisation d'une offre ;
 - Pricing consomme desormais Offer via son contrat public, mais lit encore
   Subscription et CheckoutSession pour verifier l'utilisation d'une offre ;
 - Subscriptions consomme desormais Workspace, Offer et Price via leurs contrats

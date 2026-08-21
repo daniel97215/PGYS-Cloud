@@ -36,6 +36,11 @@ PGYS-071 ajoute l'autorisation Platform et la consultation globale, filtree et
 paginee des workspaces. Cette consultation n'ajoute aucune mutation de
 workspace.
 
+PGYS-072 ajoute la consultation globale, filtree et paginee des abonnements,
+ainsi que leur detail commercial (workspace, offre, prix et echeances). Les
+vues sont strictement en lecture seule : elles reutilisent la source de verite
+Subscription et ne contournent aucune transition de son cycle de vie.
+
 ## 3. Administration d'une societe
 
 Chaque societe administre ses utilisateurs et leurs autorisations dans son
@@ -50,7 +55,7 @@ comme une capacite d'operateur PGYS.
 
 - PGYS-070 : fondation visuelle du portail operateur, sans donnees reelles ;
 - PGYS-071 : autorisation Platform et vues de consultation des workspaces ;
-- PGYS-072 : vues d'administration des abonnements ;
+- PGYS-072 : vues operateur en lecture seule des abonnements ;
 - PGYS-073 : vues d'administration du journal d'audit.
 
 Toute vue transverse doit verifier l'autorisation Platform dediee. Toute vue

@@ -25,7 +25,7 @@ export const adminPortal = {
   navigation: [
     { label: "Vue d’ensemble", href: "/", icon: "home" },
     { label: "Workspaces", href: "/workspaces", icon: "apps" },
-    { label: "Abonnements", href: "/#modules", icon: "ticket" },
+    { label: "Abonnements", href: "/subscriptions", icon: "ticket" },
     { label: "Journal d’audit", href: "/#modules", icon: "backup" },
   ] satisfies AdminNavigationItem[],
   modules: [
@@ -40,8 +40,8 @@ export const adminPortal = {
     },
     {
       id: "subscriptions",
-      available: false,
-      href: "/#modules",
+      available: true,
+      href: "/subscriptions",
       title: "Abonnements",
       description:
         "Suivre les engagements commerciaux sans contourner leur cycle métier.",

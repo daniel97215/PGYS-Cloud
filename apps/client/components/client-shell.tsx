@@ -43,8 +43,9 @@ export function ClientShell({ children }: ClientShellProps) {
       <main className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
 
       <nav aria-label="Navigation principale" className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
-        <div className="mx-auto grid max-w-sm grid-cols-2 gap-2">
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
           <NavLink href="/" active={pathname === "/"} label="Accueil" icon="⌂" />
+          <NavLink href="/crm" active={pathname.startsWith("/crm")} label="CRM" icon="◎" />
           <NavLink href="/workspaces" active={pathname === "/workspaces"} label="Espaces" icon="◇" />
         </div>
       </nav>

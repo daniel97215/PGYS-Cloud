@@ -101,10 +101,14 @@ function WorkspaceView({ workspace }: { workspace: Workspace }) {
         </dl>
       </section>
 
-      <section className="rounded-3xl border border-border bg-surface p-5 shadow-pgys-sm">
-        <p className="text-sm font-bold text-content">Votre point d’entrée mobile est prêt.</p>
-        <p className="mt-2 text-sm leading-6 text-content-muted">Les prochains parcours métier seront ajoutés ici à partir des usages réellement validés sur le terrain.</p>
-      </section>
+      <Link href="/crm" className="group flex items-center gap-4 rounded-3xl border border-brand/20 bg-brand-soft/60 p-5 shadow-pgys-sm transition hover:border-brand/40 hover:shadow-pgys-card focus-visible:outline-2 focus-visible:outline-brand">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand text-xl font-black text-white" aria-hidden="true">◎</span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-base font-black text-content">Ouvrir le CRM terrain</span>
+          <span className="mt-1 block text-sm leading-5 text-content-muted">Retrouvez un Business Partner et préparez votre prochaine activité.</span>
+        </span>
+        <span className="text-xl text-brand transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+      </Link>
     </div>
   );
 }

@@ -112,6 +112,17 @@ Ce ticket doit composer les contrats CRM et Business Partners existants pour
 des usages terrain courts. Son perimetre fonctionnel exact doit etre confirme
 depuis les observations pilotes avant implementation.
 
+Le parcours V1 confirme est volontairement court :
+
+- rechercher et consulter les Business Partners actifs du Workspace ;
+- consulter leurs contacts actifs et utiliser leurs coordonnees ;
+- consulter, creer et terminer leurs activites CRM ;
+- reutiliser exclusivement les contrats BusinessPartner,
+  BusinessPartnerContact et CrmActivity existants.
+
+Le deplacement des opportunites entre etapes ne fait pas partie de PGYS-076 et
+necessitera un ticket distinct fonde sur un usage pilote confirme.
+
 Il ne doit dupliquer ni BusinessPartner, ni BusinessPartnerContact, ni
 Opportunity, ni Activity. L'automatisation, la messagerie et le calendrier
 externe restent hors perimetre tant qu'un ticket ne les definit pas.

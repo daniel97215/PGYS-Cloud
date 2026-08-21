@@ -173,7 +173,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | --- | --- | --- | --- | --- |
 | PGYS-074 | Mobile Strategy | PGYS-031 | P3 | Completed |
 | PGYS-075 | Mobile Workspace Access | PGYS-074 | P3 | Completed |
-| PGYS-076 | Mobile CRM Companion | PGYS-047, PGYS-074 | P3 | Planned |
+| PGYS-076 | Mobile CRM Companion | PGYS-047, PGYS-074 | P3 | Completed |
 | PGYS-077 | Mobile POS Exploration | PGYS-044, PGYS-074 | P3 | Planned |
 
 ## 5. Dependances entre EPIC
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 75 |
-| Tickets planifies | 3 |
+| Tickets termines | 76 |
+| Tickets planifies | 2 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 96% |
+| Progression globale | 97% |
 
 ### Progression par EPIC
 
@@ -265,7 +265,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-07 Integrations | 6 | 6 | 0 | 100% |
 | EPIC-08 Reporting | 5 | 5 | 0 | 100% |
 | EPIC-09 Administration | 6 | 6 | 0 | 100% |
-| EPIC-10 Mobile | 4 | 2 | 2 | 50% |
+| EPIC-10 Mobile | 4 | 3 | 1 | 75% |
 
 ### Progression par version
 
@@ -278,7 +278,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 6 | Completed |
-| v1.0 First Commercial Release | 15 | 13 | In Progress |
+| v1.0 First Commercial Release | 15 | 14 | In Progress |
 
 ## 8. Maintenance du Backlog Master
 

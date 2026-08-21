@@ -97,15 +97,29 @@ describe("PricingRepository", () => {
 
   it("lists prices for an offer through Prisma", async () => {
     const findMany = jest.fn().mockResolvedValue([price]);
-    const repository = new PricingRepository(createPrismaMock({ findMany }));
+    const count = jest.fn().mockResolvedValue(1);
+    const repository = new PricingRepository(
+      createPrismaMock({ count, findMany }),
+    );
 
-    const result = await repository.findByOffer(offer.id);
+    const result = await repository.findPageByOffer(offer.id, {
+      page: 2,
+      pageSize: 10,
+    });
 
-    expect(result).toEqual([price]);
+    expect(result).toEqual({
+      items: [price],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
     expect(findMany).toHaveBeenCalledWith({
       where: { offerId: offer.id },
       orderBy: [{ validFrom: "desc" }, { createdAt: "desc" }],
+      skip: 10,
+      take: 10,
     });
+    expect(count).toHaveBeenCalledWith({ where: { offerId: offer.id } });
   });
 
   it("finds the active price for an offer through Prisma", async () => {
@@ -145,6 +159,7 @@ describe("PricingRepository", () => {
 });
 
 function createPrismaMock(methods: {
+  count?: jest.Mock;
   offerFindUnique?: jest.Mock;
   create?: jest.Mock;
   update?: jest.Mock;
@@ -157,6 +172,7 @@ function createPrismaMock(methods: {
       findUnique: methods.offerFindUnique ?? jest.fn(),
     },
     price: {
+      count: methods.count ?? jest.fn(),
       create: methods.create ?? jest.fn(),
       update: methods.update ?? jest.fn(),
       findUnique: methods.findUnique ?? jest.fn(),

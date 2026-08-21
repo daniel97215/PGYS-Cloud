@@ -99,9 +99,9 @@ Les ecarts suivants restent ouverts :
 
 - aucun test HTTP de bout en bout ne couvre encore guards, validation et
   erreurs ;
-- Service Catalog, Features et Offers sont desormais pagines selon la convention ADR-014, avec
+- Service Catalog, Features, Offers et Pricing sont desormais pagines selon la convention ADR-014, avec
   `page` a partir de 1, `pageSize` limite a 100, `total` et `items` ;
-- les collections Pricing et Subscriptions restent a paginer.
+- la collection Subscriptions reste a paginer.
 
 Ces sujets doivent rester separes : la validation d'identifiants, le format
 d'erreur et la pagination modifient des contrats clients differents.

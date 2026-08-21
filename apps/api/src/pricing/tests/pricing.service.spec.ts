@@ -39,7 +39,12 @@ describe("PricingService", () => {
       create: jest.fn().mockResolvedValue(price),
       update: jest.fn().mockResolvedValue(price),
       findById: jest.fn().mockResolvedValue(price),
-      findByOffer: jest.fn().mockResolvedValue([price]),
+      findPageByOffer: jest.fn().mockResolvedValue({
+        items: [price],
+        total: 1,
+        page: 2,
+        pageSize: 10,
+      }),
       findActiveByOffer: jest.fn().mockResolvedValue(price),
       archive: jest.fn().mockResolvedValue({
         ...price,
@@ -82,10 +87,21 @@ describe("PricingService", () => {
   });
 
   it("lists prices for an offer", async () => {
-    const result = await service.listPricesForOffer(offer.key);
+    const result = await service.listPricesForOffer(offer.key, {
+      page: 2,
+      pageSize: 10,
+    });
 
-    expect(result).toEqual([price]);
-    expect(repository.findByOffer).toHaveBeenCalledWith(offer.id);
+    expect(result).toEqual({
+      items: [price],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(repository.findPageByOffer).toHaveBeenCalledWith(offer.id, {
+      page: 2,
+      pageSize: 10,
+    });
   });
 
   it("gets the active price for an offer", async () => {

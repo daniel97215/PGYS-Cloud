@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -20,6 +21,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
 import { PricingService } from "./pricing.service";
@@ -47,8 +49,11 @@ export class PricingController {
   @ApiOkResponse({ description: "Offer prices" })
   @ApiNotFoundResponse({ description: "Offer not found" })
   @Get("offers/:offerKey/prices")
-  findAllForOffer(@Param("offerKey") offerKey: string) {
-    return this.pricingService.listPricesForOffer(offerKey);
+  findAllForOffer(
+    @Param("offerKey") offerKey: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.pricingService.listPricesForOffer(offerKey, query);
   }
 
   @ApiOperation({ summary: "Get active price for an offer" })

@@ -4,6 +4,10 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import {
+  Page,
+  PaginationQueryDto,
+} from "../common/dto/pagination-query.dto";
 import { OFFER_STATUSES } from "../offers/offers.constants";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
@@ -41,10 +45,13 @@ export class PricingService {
     return this.pricingRepository.update(normalizedId, data);
   }
 
-  async listPricesForOffer(offerKey: string): Promise<PriceRecord[]> {
+  async listPricesForOffer(
+    offerKey: string,
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<PriceRecord>> {
     const offer = await this.requireOffer(offerKey);
 
-    return this.pricingRepository.findByOffer(offer.id);
+    return this.pricingRepository.findPageByOffer(offer.id, pagination);
   }
 
   async getActivePriceForOffer(offerKey: string): Promise<PriceRecord> {

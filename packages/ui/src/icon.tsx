@@ -9,12 +9,16 @@ export type IconName =
   | "check"
   | "checkCircle"
   | "chevronDown"
+  | "chevronLeft"
+  | "chevronRight"
   | "cloud"
   | "error"
+  | "eye"
   | "hosting"
   | "home"
   | "info"
   | "menu"
+  | "search"
   | "settings"
   | "ticket"
   | "warning";
@@ -70,6 +74,10 @@ function IconPaths({ name }: { name: IconName }) {
       );
     case "chevronDown":
       return <path d="m7 10 5 5 5-5" />;
+    case "chevronLeft":
+      return <path d="m15 18-6-6 6-6" />;
+    case "chevronRight":
+      return <path d="m9 18 6-6-6-6" />;
     case "cloud":
       return (
         <>
@@ -82,6 +90,13 @@ function IconPaths({ name }: { name: IconName }) {
         <>
           <circle cx="12" cy="12" r="9" />
           <path d="m9 9 6 6m0-6-6 6" />
+        </>
+      );
+    case "eye":
+      return (
+        <>
+          <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+          <circle cx="12" cy="12" r="2.5" />
         </>
       );
     case "hosting":
@@ -108,6 +123,13 @@ function IconPaths({ name }: { name: IconName }) {
       );
     case "menu":
       return <path d="M4 7h16M4 12h16M4 17h16" />;
+    case "search":
+      return (
+        <>
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-4-4" />
+        </>
+      );
     case "settings":
       return (
         <>

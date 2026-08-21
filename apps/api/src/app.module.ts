@@ -35,6 +35,7 @@ import { MarketingAutomationsModule } from "./marketing-automations/marketing-au
 import { OffersModule } from "./offers/offers.module";
 import { OperationalReportingModule } from "./operational-reporting/operational-reporting.module";
 import { PricingModule } from "./pricing/pricing.module";
+import { PlatformAdministrationModule } from "./platform-administration/platform-administration.module";
 import { PriceListsModule } from "./price-lists/price-lists.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { PurchaseInvoicesModule } from "./purchase-invoices/purchase-invoices.module";
@@ -102,6 +103,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
     MarketingAutomationsModule,
     OffersModule,
     PricingModule,
+    PlatformAdministrationModule,
     PriceListsModule,
     PurchaseInvoicesModule,
     PurchaseOrdersModule,

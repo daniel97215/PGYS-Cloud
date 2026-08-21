@@ -23,8 +23,8 @@ export default function DashboardPage() {
           clients restent limitées à leur propre workspace.
         </p>
         <p className="mt-1.5">
-          L’accès global des opérateurs utilisera une autorisation Platform
-          dédiée avant toute donnée réelle.
+          L’accès global repose sur les rôles Platform dédiés aux opérateurs
+          PGYS.
         </p>
       </Alert>
 
@@ -34,8 +34,7 @@ export default function DashboardPage() {
             Espaces d’administration
           </h2>
           <p className="mt-1.5 text-sm leading-6 text-content-muted">
-            Les vues métier seront livrées séparément, avec leurs propres
-            contrats et contrôles d’accès.
+            Chaque vue respecte ses propres contrats et contrôles d’accès.
           </p>
         </div>
         <div className="overflow-hidden rounded-pgys-lg border border-border bg-surface shadow-pgys-sm">
@@ -56,15 +55,20 @@ export default function DashboardPage() {
                 </p>
               </div>
               <span className="hidden shrink-0 sm:block">
-                <Badge variant="brand">Prochainement</Badge>
+                {module.available ? (
+                  <a
+                    href={module.href}
+                    className="inline-flex min-h-9 items-center rounded-pgys-md px-3 text-sm font-bold text-brand-dark hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-brand"
+                  >
+                    Ouvrir
+                  </a>
+                ) : (
+                  <Badge variant="brand">Prochainement</Badge>
+                )}
               </span>
             </article>
           ))}
         </div>
-        <p className="mt-4 text-xs leading-5 text-content-muted sm:hidden">
-          Les modules Workspaces, Abonnements et Audit seront activés dans les
-          prochains tickets.
-        </p>
       </section>
     </div>
   );

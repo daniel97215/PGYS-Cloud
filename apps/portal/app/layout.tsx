@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
-import { PortalShell } from "@/components/portal-shell";
 import "./globals.css";
 
 const geist = Geist({
@@ -33,13 +32,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${geist.variable} antialiased`}>
       <body>
-        <a
-          href="#portal-content"
-          className="sr-only z-50 rounded-pgys-md bg-brand px-4 py-3 text-sm font-bold text-white focus:fixed focus:left-4 focus:top-4 focus:not-sr-only"
-        >
-          Aller au contenu principal
-        </a>
-        <PortalShell>{children}</PortalShell>
+        {children}
       </body>
     </html>
   );

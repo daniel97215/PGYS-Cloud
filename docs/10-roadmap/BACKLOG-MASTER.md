@@ -163,7 +163,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 | PGYS-007 | Design system | PGYS-003 | P1 | Completed |
 | PGYS-008 | Admin MVP | PGYS-007 | P1 | Completed |
 | PGYS-070 | Admin Portal Foundation | PGYS-021, PGYS-027, PGYS-031 | P2 | Completed |
-| PGYS-071 | Workspace Administration Views | PGYS-070 | P2 | Planned |
+| PGYS-071 | Workspace Administration Views | PGYS-070 | P2 | Completed |
 | PGYS-072 | Subscription Administration Views | PGYS-070, PGYS-027 | P2 | Planned |
 | PGYS-073 | Audit Administration Views | PGYS-070 | P3 | Planned |
 
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 70 |
-| Tickets planifies | 8 |
+| Tickets termines | 71 |
+| Tickets planifies | 7 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 90% |
+| Progression globale | 91% |
 
 ### Progression par EPIC
 
@@ -264,7 +264,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-06 AI | 5 | 5 | 0 | 100% |
 | EPIC-07 Integrations | 6 | 6 | 0 | 100% |
 | EPIC-08 Reporting | 5 | 5 | 0 | 100% |
-| EPIC-09 Administration | 6 | 3 | 3 | 50% |
+| EPIC-09 Administration | 6 | 4 | 2 | 67% |
 | EPIC-10 Mobile | 4 | 0 | 4 | 0% |
 
 ### Progression par version
@@ -278,7 +278,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 6 | Completed |
-| v1.0 First Commercial Release | 15 | 8 | In Progress |
+| v1.0 First Commercial Release | 15 | 9 | In Progress |
 
 ## 8. Maintenance du Backlog Master
 

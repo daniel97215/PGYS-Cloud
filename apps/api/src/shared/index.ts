@@ -2,6 +2,7 @@ export * from "./constants";
 export * from "./contracts/features.contract";
 export * from "./contracts/offers.contract";
 export * from "./contracts/pricing.contract";
+export * from "./contracts/pagination.contract";
 export * from "./contracts/subscriptions.contract";
 export * from "./contracts/workspace.contract";
 export * from "./enums";
@@ -10,4 +11,3 @@ export * from "./events";
 export * from "./pagination";
 export * from "./result";
 export * from "./types";
-

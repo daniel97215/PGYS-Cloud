@@ -8,6 +8,10 @@ import {
   Page,
   PaginationQueryDto,
 } from "../common/dto/pagination-query.dto";
+import {
+  PricingContract,
+  PublicPrice,
+} from "../shared/contracts/pricing.contract";
 import { OFFER_STATUSES } from "../offers/offers.constants";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
@@ -18,7 +22,7 @@ import {
 } from "./pricing.repository";
 
 @Injectable()
-export class PricingService {
+export class PricingService implements PricingContract {
   constructor(private readonly pricingRepository: PricingRepository) {}
 
   async createPrice(
@@ -65,6 +69,25 @@ export class PricingService {
     }
 
     return price;
+  }
+
+  async findById(id: string): Promise<PublicPrice | null> {
+    const price = await this.pricingRepository.findById(id);
+    return price ? this.toPublicPrice(price) : null;
+  }
+
+  findActiveByOfferId(
+    offerId: string,
+    at?: Date,
+  ): Promise<PublicPrice | null> {
+    return this.findActivePublicPrice(offerId, at);
+  }
+
+  listByOfferId(
+    offerId: string,
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<PublicPrice>> {
+    return this.findPublicPricePage(offerId, pagination);
   }
 
   async archivePrice(priceId: string): Promise<PriceRecord> {
@@ -131,5 +154,40 @@ export class PricingService {
     }
 
     return normalizedId;
+  }
+
+  private async findActivePublicPrice(
+    offerId: string,
+    at?: Date,
+  ): Promise<PublicPrice | null> {
+    const price = await this.pricingRepository.findActiveByOffer(offerId, at);
+    return price ? this.toPublicPrice(price) : null;
+  }
+
+  private async findPublicPricePage(
+    offerId: string,
+    pagination: PaginationQueryDto,
+  ): Promise<Page<PublicPrice>> {
+    const page = await this.pricingRepository.findPageByOffer(
+      offerId,
+      pagination,
+    );
+    return {
+      ...page,
+      items: page.items.map((price) => this.toPublicPrice(price)),
+    };
+  }
+
+  private toPublicPrice(price: PriceRecord): PublicPrice {
+    return {
+      id: price.id,
+      offerId: price.offerId,
+      currency: price.currency,
+      amount: price.amount.toString(),
+      billingPeriod: price.billingPeriod,
+      validFrom: price.validFrom,
+      validTo: price.validTo,
+      status: price.status,
+    };
   }
 }

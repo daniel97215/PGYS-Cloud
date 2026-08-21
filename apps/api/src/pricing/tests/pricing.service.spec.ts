@@ -111,6 +111,42 @@ describe("PricingService", () => {
     expect(repository.findActiveByOffer).toHaveBeenCalledWith(offer.id);
   });
 
+  it("implements the public Pricing contract", async () => {
+    const publicPrice = {
+      id: price.id,
+      offerId: price.offerId,
+      currency: price.currency,
+      amount: price.amount.toString(),
+      billingPeriod: price.billingPeriod,
+      validFrom: price.validFrom,
+      validTo: price.validTo,
+      status: price.status,
+    };
+
+    await expect(service.findById(price.id)).resolves.toEqual(publicPrice);
+    await expect(service.findActiveByOfferId(offer.id)).resolves.toEqual(
+      publicPrice,
+    );
+    await expect(
+      service.listByOfferId(offer.id, { page: 2, pageSize: 10 }),
+    ).resolves.toEqual({
+      items: [publicPrice],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+
+    expect(repository.findById).toHaveBeenCalledWith(price.id);
+    expect(repository.findActiveByOffer).toHaveBeenCalledWith(
+      offer.id,
+      undefined,
+    );
+    expect(repository.findPageByOffer).toHaveBeenCalledWith(offer.id, {
+      page: 2,
+      pageSize: 10,
+    });
+  });
+
   it("archives a price", async () => {
     const result = await service.archivePrice(price.id);
 

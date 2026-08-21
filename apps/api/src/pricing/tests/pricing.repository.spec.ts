@@ -30,20 +30,6 @@ describe("PricingRepository", () => {
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
   };
 
-  it("finds an offer by key through Prisma", async () => {
-    const offerFindUnique = jest.fn().mockResolvedValue(offer);
-    const repository = new PricingRepository(
-      createPrismaMock({ offerFindUnique }),
-    );
-
-    const result = await repository.findOfferByKey(offer.key);
-
-    expect(result).toEqual(offer);
-    expect(offerFindUnique).toHaveBeenCalledWith({
-      where: { key: offer.key },
-    });
-  });
-
   it("creates a price through Prisma", async () => {
     const create = jest.fn().mockResolvedValue(price);
     const repository = new PricingRepository(createPrismaMock({ create }));
@@ -160,7 +146,6 @@ describe("PricingRepository", () => {
 
 function createPrismaMock(methods: {
   count?: jest.Mock;
-  offerFindUnique?: jest.Mock;
   create?: jest.Mock;
   update?: jest.Mock;
   findUnique?: jest.Mock;
@@ -168,9 +153,6 @@ function createPrismaMock(methods: {
   findFirst?: jest.Mock;
 }): PrismaService {
   const prisma = {
-    offer: {
-      findUnique: methods.offerFindUnique ?? jest.fn(),
-    },
     price: {
       count: methods.count ?? jest.fn(),
       create: methods.create ?? jest.fn(),

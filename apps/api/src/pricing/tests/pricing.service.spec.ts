@@ -1,10 +1,12 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
+import { OffersContract } from "../../shared/contracts/offers.contract";
 import { PRICE_STATUS_ARCHIVED } from "../pricing.constants";
 import { PricingRepository } from "../pricing.repository";
 import { PricingService } from "../pricing.service";
 
 describe("PricingService", () => {
   let repository: jest.Mocked<PricingRepository>;
+  let offersContract: jest.Mocked<OffersContract>;
   let service: PricingService;
 
   const offer = {
@@ -33,8 +35,6 @@ describe("PricingService", () => {
 
   beforeEach(() => {
     repository = {
-      findOfferByKey: jest.fn().mockResolvedValue(offer),
-      findOfferById: jest.fn().mockResolvedValue(offer),
       hasOfferUsage: jest.fn().mockResolvedValue(false),
       create: jest.fn().mockResolvedValue(price),
       update: jest.fn().mockResolvedValue(price),
@@ -52,7 +52,12 @@ describe("PricingService", () => {
       }),
     } as unknown as jest.Mocked<PricingRepository>;
 
-    service = new PricingService(repository);
+    offersContract = {
+      findById: jest.fn().mockResolvedValue(offer),
+      findByKey: jest.fn().mockResolvedValue(offer),
+    };
+
+    service = new PricingService(repository, offersContract);
   });
 
   it("creates a price for an offer", async () => {
@@ -64,7 +69,7 @@ describe("PricingService", () => {
     });
 
     expect(result).toEqual(price);
-    expect(repository.findOfferByKey).toHaveBeenCalledWith(offer.key);
+    expect(offersContract.findByKey).toHaveBeenCalledWith(offer.key);
     expect(repository.create).toHaveBeenCalledWith({
       offerId: offer.id,
       currency: price.currency,
@@ -156,7 +161,7 @@ describe("PricingService", () => {
   });
 
   it("throws NotFoundException when the offer is unknown", async () => {
-    repository.findOfferByKey.mockResolvedValueOnce(null);
+    offersContract.findByKey.mockResolvedValueOnce(null);
 
     await expect(
       service.createPrice("unknown", {

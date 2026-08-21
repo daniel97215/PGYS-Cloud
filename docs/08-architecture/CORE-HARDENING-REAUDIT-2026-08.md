@@ -113,7 +113,8 @@ Plusieurs repositories continuent donc a lire directement les tables d'autres
 modules :
 
 - Offer Features lit Offer, Feature, Subscription et CheckoutSession ;
-- Pricing lit Offer, Subscription et CheckoutSession ;
+- Pricing consomme desormais Offer via son contrat public, mais lit encore
+  Subscription et CheckoutSession pour verifier l'utilisation d'une offre ;
 - Subscriptions lit Workspace, Offer et Price ;
 - Provisioning lit Subscription, Offer, OfferFeature et WorkspaceService.
 

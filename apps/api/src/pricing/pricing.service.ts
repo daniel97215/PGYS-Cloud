@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -13,17 +14,25 @@ import {
   PublicPrice,
 } from "../shared/contracts/pricing.contract";
 import { OFFER_STATUSES } from "../offers/offers.constants";
+import {
+  OFFERS_CONTRACT,
+  OffersContract,
+  PublicOffer,
+} from "../shared/contracts/offers.contract";
 import { CreatePriceDto } from "./dto/create-price.dto";
 import { UpdatePriceDto } from "./dto/update-price.dto";
 import {
-  PriceOfferRecord,
   PriceRecord,
   PricingRepository,
 } from "./pricing.repository";
 
 @Injectable()
 export class PricingService implements PricingContract {
-  constructor(private readonly pricingRepository: PricingRepository) {}
+  constructor(
+    private readonly pricingRepository: PricingRepository,
+    @Inject(OFFERS_CONTRACT)
+    private readonly offersContract: OffersContract,
+  ) {}
 
   async createPrice(
     offerKey: string,
@@ -98,9 +107,9 @@ export class PricingService implements PricingContract {
     return this.pricingRepository.archive(normalizedId);
   }
 
-  private async requireOffer(offerKey: string): Promise<PriceOfferRecord> {
+  private async requireOffer(offerKey: string): Promise<PublicOffer> {
     const normalizedKey = this.normalizeKey(offerKey, "Offer key");
-    const offer = await this.pricingRepository.findOfferByKey(normalizedKey);
+    const offer = await this.offersContract.findByKey(normalizedKey);
 
     if (!offer) {
       throw new NotFoundException(`Offer "${offerKey}" not found`);
@@ -120,12 +129,12 @@ export class PricingService implements PricingContract {
   }
 
   private async ensurePriceOfferMutable(offerId: string): Promise<void> {
-    const offer = await this.pricingRepository.findOfferById(offerId);
+    const offer = await this.offersContract.findById(offerId);
     if (!offer) throw new NotFoundException("Offer not found");
     return this.ensureOfferMutable(offer);
   }
 
-  private async ensureOfferMutable(offer: PriceOfferRecord): Promise<void> {
+  private async ensureOfferMutable(offer: PublicOffer): Promise<void> {
     if (offer.status === OFFER_STATUSES.ARCHIVED) {
       throw new ConflictException("Archived offers are immutable");
     }

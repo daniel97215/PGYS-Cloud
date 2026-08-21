@@ -5,7 +5,6 @@ import { Page } from "../common/dto/pagination-query.dto";
 import { PRICE_STATUSES, PriceStatus } from "./pricing.constants";
 
 export type PriceRecord = Prisma.PriceGetPayload<object>;
-export type PriceOfferRecord = Prisma.OfferGetPayload<object>;
 
 export interface CreatePriceData {
   offerId: string;
@@ -27,16 +26,6 @@ export interface PricePagination {
 @Injectable()
 export class PricingRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  findOfferByKey(key: string): Promise<PriceOfferRecord | null> {
-    return this.prisma.offer.findUnique({
-      where: { key },
-    });
-  }
-
-  findOfferById(id: string): Promise<PriceOfferRecord | null> {
-    return this.prisma.offer.findUnique({ where: { id } });
-  }
 
   async hasOfferUsage(offerId: string): Promise<boolean> {
     const [subscriptions, checkouts] = await this.prisma.$transaction([

@@ -42,7 +42,7 @@ Regle de lecture : ce document organise le travail, mais ne decrit pas le conten
 | EPIC-07 | Integrations | Connecteurs, extensions et marketplace technique. | v0.7 Marketplace & Integrations | Completed |
 | EPIC-08 | Reporting | Tableaux de bord, indicateurs et exports. | v1.0 First Commercial Release | Completed |
 | EPIC-09 | Administration | Back-office, gouvernance operationnelle et outils internes. | v1.0 First Commercial Release | Completed |
-| EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | Planned |
+| EPIC-10 | Mobile | Experiences mobiles et usages terrain. | v1.0 First Commercial Release | In Progress |
 
 ## 4. Tickets
 
@@ -171,7 +171,7 @@ Note de planification : PGYS-032 est reporte jusqu'a une reevaluation technique 
 
 | ID | Titre | Dependances | Priorite | Etat |
 | --- | --- | --- | --- | --- |
-| PGYS-074 | Mobile Strategy | PGYS-031 | P3 | Planned |
+| PGYS-074 | Mobile Strategy | PGYS-031 | P3 | Completed |
 | PGYS-075 | Mobile Workspace Access | PGYS-074 | P3 | Planned |
 | PGYS-076 | Mobile CRM Companion | PGYS-047, PGYS-074 | P3 | Planned |
 | PGYS-077 | Mobile POS Exploration | PGYS-044, PGYS-074 | P3 | Planned |
@@ -246,11 +246,11 @@ Ces indicateurs sont mis a jour manuellement.
 | Indicateur | Valeur |
 | --- | ---: |
 | Nombre total de tickets repertories | 78 |
-| Tickets termines | 73 |
-| Tickets planifies | 5 |
+| Tickets termines | 74 |
+| Tickets planifies | 4 |
 | Tickets en cours | 0 |
 | Tickets bloques | 0 |
-| Progression globale | 94% |
+| Progression globale | 95% |
 
 ### Progression par EPIC
 
@@ -265,7 +265,7 @@ Ces indicateurs sont mis a jour manuellement.
 | EPIC-07 Integrations | 6 | 6 | 0 | 100% |
 | EPIC-08 Reporting | 5 | 5 | 0 | 100% |
 | EPIC-09 Administration | 6 | 6 | 0 | 100% |
-| EPIC-10 Mobile | 4 | 0 | 4 | 0% |
+| EPIC-10 Mobile | 4 | 1 | 3 | 25% |
 
 ### Progression par version
 
@@ -278,7 +278,7 @@ Ces indicateurs sont mis a jour manuellement.
 | v0.5 Marketing Foundation | 8 | 8 | Completed |
 | v0.6 AI Platform | 5 | 5 | Completed |
 | v0.7 Marketplace & Integrations | 6 | 6 | Completed |
-| v1.0 First Commercial Release | 15 | 11 | In Progress |
+| v1.0 First Commercial Release | 15 | 12 | In Progress |
 
 ## 8. Maintenance du Backlog Master
 

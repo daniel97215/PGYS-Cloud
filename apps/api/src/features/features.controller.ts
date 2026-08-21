@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 import {
   ApiBody,
@@ -19,6 +20,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { FeaturesService } from "./features.service";
@@ -39,8 +41,8 @@ export class FeaturesController {
   @ApiOperation({ summary: "List features" })
   @ApiOkResponse({ description: "Features" })
   @Get()
-  findAll() {
-    return this.featuresService.listFeatures();
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.featuresService.listFeatures(query);
   }
 
   @ApiOperation({ summary: "Get a feature by key" })

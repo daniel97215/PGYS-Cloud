@@ -3,6 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import {
+  Page,
+  PaginationQueryDto,
+} from "../common/dto/pagination-query.dto";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { FeatureRecord, FeaturesRepository } from "./features.repository";
@@ -28,8 +32,10 @@ export class FeaturesService {
     return this.featuresRepository.update(normalizedKey, data);
   }
 
-  listFeatures(): Promise<FeatureRecord[]> {
-    return this.featuresRepository.findAll();
+  listFeatures(
+    pagination: PaginationQueryDto = {},
+  ): Promise<Page<FeatureRecord>> {
+    return this.featuresRepository.findPage(pagination);
   }
 
   async getFeature(key: string): Promise<FeatureRecord> {

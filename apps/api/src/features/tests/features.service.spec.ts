@@ -22,7 +22,12 @@ describe("FeaturesService", () => {
     repository = {
       create: jest.fn().mockResolvedValue(feature),
       update: jest.fn().mockResolvedValue(feature),
-      findAll: jest.fn().mockResolvedValue([feature]),
+      findPage: jest.fn().mockResolvedValue({
+        items: [feature],
+        total: 1,
+        page: 2,
+        pageSize: 10,
+      }),
       findByKey: jest.fn().mockResolvedValue(feature),
       archive: jest.fn().mockResolvedValue({
         ...feature,
@@ -63,10 +68,18 @@ describe("FeaturesService", () => {
   });
 
   it("lists features", async () => {
-    const result = await service.listFeatures();
+    const result = await service.listFeatures({ page: 2, pageSize: 10 });
 
-    expect(result).toEqual([feature]);
-    expect(repository.findAll).toHaveBeenCalledWith();
+    expect(result).toEqual({
+      items: [feature],
+      total: 1,
+      page: 2,
+      pageSize: 10,
+    });
+    expect(repository.findPage).toHaveBeenCalledWith({
+      page: 2,
+      pageSize: 10,
+    });
   });
 
   it("gets a feature", async () => {
